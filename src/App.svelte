@@ -3,12 +3,24 @@
   import TabBar from "./lib/components/TabBar.svelte";
   import EditorPane from "./lib/components/EditorPane.svelte";
   import BacklinksPanel from "./lib/components/BacklinksPanel.svelte";
+  import SearchModal from "./lib/components/SearchModal.svelte";
   import { vaultStore } from "./lib/stores/vault.svelte";
+
+  let searchOpen = $state(false);
 
   $effect(() => {
     vaultStore.init();
   });
+
+  function handleKeydown(e: KeyboardEvent) {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "F") {
+      e.preventDefault();
+      searchOpen = !searchOpen;
+    }
+  }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <main class="flex h-full flex-col">
   <header
@@ -30,3 +42,5 @@
     <BacklinksPanel />
   </div>
 </main>
+
+<SearchModal open={searchOpen} onclose={() => (searchOpen = false)} />

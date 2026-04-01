@@ -8,6 +8,8 @@ import {
   indexFile,
   getBacklinks,
   getAllNoteNames,
+  buildSearchIndex,
+  updateSearchIndex,
   type Backlink,
   type NoteName,
 } from "../services/tauri";
@@ -75,6 +77,7 @@ class VaultStore {
     if (!this.vault) return;
     try {
       await indexVault(this.vault.path);
+      await buildSearchIndex(this.vault.path);
       this.noteNames = await getAllNoteNames();
     } catch {
       // Sidecar not available
@@ -134,6 +137,9 @@ class VaultStore {
       // Re-index the saved file
       try {
         await indexFile(path);
+        if (this.vault) {
+          await updateSearchIndex(this.vault.path, path);
+        }
         this.noteNames = await getAllNoteNames();
         await this.refreshBacklinks();
       } catch {

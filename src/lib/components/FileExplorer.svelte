@@ -2,6 +2,7 @@
   import type { VaultEntry } from "../types";
   import { vaultStore } from "../stores/vault.svelte";
   import FileTreeNode from "./FileTreeNode.svelte";
+  import TagsPanel from "./TagsPanel.svelte";
   import { open } from "@tauri-apps/plugin-dialog";
 
   async function openVault() {
@@ -55,4 +56,6 @@
       {/each}
     {/if}
   </div>
+
+  <TagsPanel />
 </aside>
