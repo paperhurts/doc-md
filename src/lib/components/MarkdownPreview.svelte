@@ -1,12 +1,25 @@
 <script lang="ts">
   import { renderMarkdown } from "../editor/markdown";
+  import { vaultStore } from "../stores/vault.svelte";
 
   let { content = "" }: { content: string } = $props();
 
   const html = $derived(renderMarkdown(content));
+
+  function handleClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains("wikilink")) {
+      e.preventDefault();
+      const noteName = target.dataset.target;
+      if (noteName) {
+        vaultStore.navigateToNote(noteName);
+      }
+    }
+  }
 </script>
 
-<div class="preview h-full overflow-y-auto p-6">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="preview h-full overflow-y-auto p-6" onclick={handleClick}>
   {@html html}
 </div>
 
