@@ -2,6 +2,7 @@
   import FileExplorer from "./lib/components/FileExplorer.svelte";
   import TabBar from "./lib/components/TabBar.svelte";
   import EditorPane from "./lib/components/EditorPane.svelte";
+  import BacklinksPanel from "./lib/components/BacklinksPanel.svelte";
   import { vaultStore } from "./lib/stores/vault.svelte";
 
   $effect(() => {
@@ -26,5 +27,6 @@
       <TabBar />
       <EditorPane />
     </div>
+    <BacklinksPanel />
   </div>
 </main>
