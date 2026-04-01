@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nickel-org/nickel.rs/master/tauri.schema.json",
+  "productName": "doc-md",
+  "version": "0.1.0",
+  "identifier": "com.docmd.app",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "doc-md",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "plugins": {
+    "shell": {
+      "sidecar": true,
+      "scope": [
+        {
+          "name": "doc-md-sidecar",
+          "sidecar": true,
+          "cmd": "binaries/doc-md-sidecar"
+        }
+      ]
+    }
+  }
+}

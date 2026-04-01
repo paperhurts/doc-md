@@ -1,0 +1,20 @@
+[project]
+name = "doc-md-sidecar"
+version = "0.1.0"
+description = "Python sidecar backend for doc-md"
+requires-python = ">=3.11"
+dependencies = [
+    "python-frontmatter>=1.1.0",
+    "markdown-it-py>=3.0.0",
+    "whoosh>=2.7.4",
+]
+
+[project.scripts]
+doc-md-sidecar = "doc_md.main:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
