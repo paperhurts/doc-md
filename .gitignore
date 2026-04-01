@@ -1,3 +1,6 @@
+# Node
+node_modules/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -14,7 +17,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# Python lib (not src/lib)
+/lib/
 lib64/
 parts/
 sdist/

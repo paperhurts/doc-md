@@ -1,0 +1,32 @@
+{
+  "name": "doc-md",
+  "version": "1.0.0",
+  "description": "A local-first markdown knowledge management app",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:40011/git/paperhurts/doc-md"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@tauri-apps/cli": "^2.10.1",
+    "svelte": "^5.55.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/plugin-dialog": "^2.6.0",
+    "tailwindcss": "^4.2.2"
+  }
+}
