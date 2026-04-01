@@ -1,7 +1,7 @@
 <script lang="ts">
   import { sidecarPing } from "./lib/services/tauri";
 
-  let status = $state("Initializing...");
+  let status = $state("Ready");
   let sidecarStatus = $state("Not connected");
 
   async function checkSidecar() {
@@ -12,10 +12,6 @@
       sidecarStatus = `Error: ${e}`;
     }
   }
-
-  $effect(() => {
-    status = "Ready";
-  });
 </script>
 
 <main class="flex h-full flex-col">
