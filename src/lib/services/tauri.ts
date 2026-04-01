@@ -87,3 +87,27 @@ export async function getAllNoteNames(): Promise<NoteName[]> {
 export async function getAllTags(): Promise<Record<string, number>> {
   return (await sidecarRequest("get_all_tags")) as Record<string, number>;
 }
+
+// Search commands
+export async function buildSearchIndex(vaultPath: string): Promise<unknown> {
+  return await sidecarRequest("build_search_index", { vault_path: vaultPath });
+}
+
+export async function updateSearchIndex(vaultPath: string, filePath: string): Promise<unknown> {
+  return await sidecarRequest("update_search_index", { vault_path: vaultPath, file_path: filePath });
+}
+
+export interface SearchResult {
+  path: string;
+  title: string;
+  snippet: string;
+  score: number;
+}
+
+export async function searchVault(
+  vaultPath: string,
+  query: string,
+  limit: number = 20,
+): Promise<SearchResult[]> {
+  return (await sidecarRequest("search", { vault_path: vaultPath, query, limit })) as SearchResult[];
+}
