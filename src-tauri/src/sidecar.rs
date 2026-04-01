@@ -11,7 +11,7 @@ static REQUEST_ID: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Debug, Serialize)]
 struct JsonRpcRequest {
-    jsonrpc: String,
+    jsonrpc: &'static str,
     id: u64,
     method: String,
     params: Value,
@@ -50,33 +50,36 @@ impl SidecarState {
         method: &str,
         params: Value,
     ) -> Result<Value, String> {
-        let id = REQUEST_ID.fetch_add(1, Ordering::SeqCst);
+        let id = REQUEST_ID.fetch_add(1, Ordering::Relaxed);
         let request = JsonRpcRequest {
-            jsonrpc: "2.0".to_string(),
+            jsonrpc: "2.0",
             id,
             method: method.to_string(),
             params,
         };
 
-        let request_line =
+        let mut request_line =
             serde_json::to_string(&request).map_err(|e| format!("Serialize error: {}", e))?;
+        request_line.push('\n');
 
         let (tx, rx) = oneshot::channel();
 
-        {
-            let mut pending = self.pending.lock().await;
-            pending.insert(id, tx);
-        }
-
+        // Write to the sidecar first, only register the pending sender on success.
+        // This avoids leaking the sender in the pending map if the write fails.
         {
             let mut child_lock = self.child.lock().await;
             if let Some(ref mut child) = *child_lock {
                 child
-                    .write(format!("{}\n", request_line).as_bytes())
+                    .write(request_line.as_bytes())
                     .map_err(|e| format!("Write error: {}", e))?;
             } else {
                 return Err("Sidecar not running".to_string());
             }
+        }
+
+        {
+            let mut pending = self.pending.lock().await;
+            pending.insert(id, tx);
         }
 
         rx.await.map_err(|_| "Response channel closed".to_string())?

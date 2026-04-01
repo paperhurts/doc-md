@@ -30,6 +30,21 @@ class RpcServer:
         method = data.get("method", "")
         params = data.get("params", {})
 
+        # JSON-RPC 2.0: notifications (no "id") must not receive a reply
+        if "id" not in data:
+            handler = self._handlers.get(method)
+            if handler is not None:
+                try:
+                    if isinstance(params, dict):
+                        handler(**params)
+                    elif isinstance(params, list):
+                        handler(*params)
+                    else:
+                        handler()
+                except Exception:
+                    pass
+            return None
+
         handler = self._handlers.get(method)
         if handler is None:
             return self._make_response(
@@ -53,7 +68,12 @@ class RpcServer:
 
     def run(self) -> None:
         """Main loop: read JSON-RPC requests from stdin, write responses to stdout."""
-        for line in sys.stdin:
+        # Use readline() instead of iterating sys.stdin to avoid read-ahead buffering
+        # that causes latency when requests arrive slowly.
+        while True:
+            line = sys.stdin.readline()
+            if not line:
+                break
             line = line.strip()
             if not line:
                 continue
