@@ -11,8 +11,15 @@
       if (selected) {
         await vaultStore.openVault(selected as string);
       }
-    } catch {
-      // User cancelled or not in Tauri
+    } catch (e) {
+      console.error("Failed to open vault:", e);
+    }
+  }
+
+  async function createNote() {
+    const name = prompt("Note name:");
+    if (name) {
+      await vaultStore.createNote(name);
     }
   }
 </script>
@@ -28,14 +35,26 @@
     <span class="truncate text-xs font-semibold uppercase tracking-wider" style="color: var(--text-secondary);">
       {vaultStore.vault?.name ?? "No Vault"}
     </span>
-    <button
-      class="rounded p-1 text-xs hover:opacity-80"
-      style="color: var(--accent);"
-      onclick={openVault}
-      title="Open vault folder"
-    >
-      {vaultStore.vault ? "Switch" : "Open"}
-    </button>
+    <div class="flex items-center gap-1">
+      {#if vaultStore.vault}
+        <button
+          class="rounded p-1 text-xs hover:opacity-80"
+          style="color: var(--accent);"
+          onclick={createNote}
+          title="New note"
+        >
+          +
+        </button>
+      {/if}
+      <button
+        class="rounded p-1 text-xs hover:opacity-80"
+        style="color: var(--accent);"
+        onclick={openVault}
+        title="Open vault folder"
+      >
+        {vaultStore.vault ? "Switch" : "Open"}
+      </button>
+    </div>
   </div>
 
   <div class="flex-1 overflow-y-auto px-1 py-1">
