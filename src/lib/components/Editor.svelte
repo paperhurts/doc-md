@@ -15,7 +15,8 @@
 
   let container: HTMLDivElement;
   let view: EditorView | undefined;
-  let currentContent = content;
+  let currentContent = $state(content);
+  let initialContent = content;
 
   function handleUpdate(newContent: string) {
     currentContent = newContent;
@@ -29,13 +30,14 @@
     }
   }
 
+  // Create the editor once when the container is available
   $effect(() => {
     if (!container) return;
 
     const extensions = createEditorExtensions(handleUpdate);
 
     const state = EditorState.create({
-      doc: content,
+      doc: initialContent,
       extensions,
     });
 
@@ -50,17 +52,16 @@
     };
   });
 
-  // Update editor content when the file changes externally
+  // Update editor content when the prop changes externally (e.g. switching files)
   $effect(() => {
     if (view && content !== currentContent) {
-      const transaction = view.state.update({
+      view.dispatch({
         changes: {
           from: 0,
           to: view.state.doc.length,
           insert: content,
         },
       });
-      view.dispatch(transaction);
       currentContent = content;
     }
   });
