@@ -102,9 +102,27 @@ impl SidecarState {
 
 pub async fn start_sidecar(app: &AppHandle) -> Result<(), String> {
     let shell = app.shell();
-    let command = shell
-        .sidecar("doc-md-sidecar")
-        .map_err(|e| format!("Failed to create sidecar command: {}", e))?;
+
+    // In development, run `python -m doc_md` from the sidecar/src directory.
+    // In production, use the bundled sidecar binary.
+    let command = if cfg!(debug_assertions) {
+        // cargo tauri dev runs from src-tauri/, so go up one level to project root
+        let project_root = std::env::current_dir()
+            .unwrap_or_default()
+            .parent()
+            .unwrap_or(std::path::Path::new("."))
+            .to_path_buf();
+        let sidecar_src = project_root.join("sidecar").join("src");
+        eprintln!("[sidecar] Starting python from: {:?}", sidecar_src);
+        shell
+            .command("python")
+            .args(["-m", "doc_md"])
+            .current_dir(sidecar_src)
+    } else {
+        shell
+            .sidecar("doc-md-sidecar")
+            .map_err(|e| format!("Failed to create sidecar command: {}", e))?
+    };
 
     let state = Arc::new(SidecarState::new());
     let state_clone = state.clone();
