@@ -25,14 +25,7 @@
   },
   "plugins": {
     "shell": {
-      "sidecar": true,
-      "scope": [
-        {
-          "name": "doc-md-sidecar",
-          "sidecar": true,
-          "cmd": "binaries/doc-md-sidecar"
-        }
-      ]
+      "open": true
     }
   }
 }
