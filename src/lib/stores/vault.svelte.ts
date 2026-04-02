@@ -49,28 +49,52 @@ class VaultStore {
   async init() {
     try {
       const saved = await getCurrentVault();
+      console.log("[vault] init, saved:", saved);
       if (saved) {
         this.vault = saved;
         await this.refreshTree();
         await this.buildIndex();
       }
-    } catch {
-      // No saved vault or not in Tauri — that's fine
+    } catch (e) {
+      console.error("[vault] init error:", e);
     }
   }
 
   async openVault(path: string) {
-    const config = await setCurrentVault(path);
-    this.vault = config;
-    this.openFiles = [];
-    this.activeFilePath = null;
-    await this.refreshTree();
-    await this.buildIndex();
+    try {
+      const config = await setCurrentVault(path);
+      this.vault = config;
+      this.openFiles = [];
+      this.activeFilePath = null;
+      await this.refreshTree();
+      await this.buildIndex();
+    } catch (e) {
+      console.error("Failed to open vault:", e);
+    }
+  }
+
+  async createNote(name: string) {
+    if (!this.vault) return;
+    const fileName = name.endsWith(".md") ? name : `${name}.md`;
+    const sep = this.vault.path.includes("\\") ? "\\" : "/";
+    const filePath = `${this.vault.path}${sep}${fileName}`;
+    try {
+      await writeFile(filePath, `# ${name.replace(/\.md$/, "")}\n\n`);
+      await this.refreshTree();
+      await this.openFile(filePath, fileName);
+    } catch (e) {
+      console.error("Failed to create note:", e);
+    }
   }
 
   async refreshTree() {
     if (!this.vault) return;
-    this.tree = await listFiles(this.vault.path);
+    try {
+      this.tree = await listFiles(this.vault.path);
+      console.log("[vault] tree loaded:", this.tree.length, "entries");
+    } catch (e) {
+      console.error("[vault] refreshTree error:", e);
+    }
   }
 
   async buildIndex() {
