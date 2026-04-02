@@ -45,6 +45,7 @@ def main() -> None:
     server.register("get_forward_links", indexer.get_forward_links)
     server.register("get_all_note_names", indexer.get_all_note_names)
     server.register("get_all_tags", indexer.get_all_tags)
+    server.register("get_graph_data", indexer.get_graph_data)
 
     # Search
     server.register("build_search_index", search_mod.build_search_index)

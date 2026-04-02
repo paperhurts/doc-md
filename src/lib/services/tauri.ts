@@ -104,6 +104,11 @@ export interface SearchResult {
   score: number;
 }
 
+// Graph commands
+export async function getGraphData(): Promise<import("../types").GraphData> {
+  return (await sidecarRequest("get_graph_data")) as import("../types").GraphData;
+}
+
 export async function searchVault(
   vaultPath: string,
   query: string,
