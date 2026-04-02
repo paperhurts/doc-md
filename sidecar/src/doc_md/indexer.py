@@ -163,3 +163,26 @@ def get_all_note_names() -> list[dict[str, str]]:
 def get_all_tags() -> dict[str, int]:
     """Return all tags with their note counts."""
     return {tag: len(paths) for tag, paths in _all_tags.items()}
+
+
+def get_graph_data() -> dict[str, Any]:
+    """Return nodes and edges for the graph view."""
+    nodes = []
+    node_ids: set[str] = set()
+
+    # Add all indexed notes as nodes
+    for name, path in _note_names.items():
+        link_count = len(_forward_links.get(path, [])) + len(_backlinks.get(name, []))
+        nodes.append({"id": path, "label": Path(path).stem, "links": link_count})
+        node_ids.add(path)
+
+    edges = []
+    for source_path, targets in _forward_links.items():
+        if source_path not in node_ids:
+            continue
+        for target in targets:
+            resolved = _resolve_link(target)
+            if resolved and resolved in node_ids:
+                edges.append({"source": source_path, "target": resolved})
+
+    return {"nodes": nodes, "edges": edges}

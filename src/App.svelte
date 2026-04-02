@@ -4,9 +4,11 @@
   import EditorPane from "./lib/components/EditorPane.svelte";
   import BacklinksPanel from "./lib/components/BacklinksPanel.svelte";
   import SearchModal from "./lib/components/SearchModal.svelte";
+  import GraphView from "./lib/components/GraphView.svelte";
   import { vaultStore } from "./lib/stores/vault.svelte";
 
   let searchOpen = $state(false);
+  let graphOpen = $state(false);
 
   $effect(() => {
     vaultStore.init();
@@ -16,6 +18,10 @@
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "F") {
       e.preventDefault();
       searchOpen = !searchOpen;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "G") {
+      e.preventDefault();
+      graphOpen = !graphOpen;
     }
   }
 </script>
@@ -28,9 +34,27 @@
     style="border-color: var(--border); background-color: var(--bg-secondary);"
   >
     <span class="text-sm font-semibold" style="color: var(--accent);">doc-md</span>
-    <span class="text-xs" style="color: var(--text-secondary);">
-      {vaultStore.vault?.name ?? "No vault open"}
-    </span>
+    <div class="flex items-center gap-3">
+      <button
+        class="rounded px-2 py-0.5 text-xs hover:opacity-80"
+        style="color: var(--text-secondary); border: 1px solid var(--border);"
+        onclick={() => (graphOpen = true)}
+        title="Graph view (Ctrl+Shift+G)"
+      >
+        Graph
+      </button>
+      <button
+        class="rounded px-2 py-0.5 text-xs hover:opacity-80"
+        style="color: var(--text-secondary); border: 1px solid var(--border);"
+        onclick={() => (searchOpen = true)}
+        title="Search (Ctrl+Shift+F)"
+      >
+        Search
+      </button>
+      <span class="text-xs" style="color: var(--text-secondary);">
+        {vaultStore.vault?.name ?? "No vault open"}
+      </span>
+    </div>
   </header>
 
   <div class="flex flex-1 overflow-hidden">
@@ -44,3 +68,7 @@
 </main>
 
 <SearchModal open={searchOpen} onclose={() => (searchOpen = false)} />
+
+{#if graphOpen}
+  <GraphView onclose={() => (graphOpen = false)} />
+{/if}

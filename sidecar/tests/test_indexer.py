@@ -10,6 +10,7 @@ from doc_md.indexer import (
     get_forward_links,
     get_all_note_names,
     get_all_tags,
+    get_graph_data,
 )
 
 
@@ -120,3 +121,21 @@ def test_tags():
         tags = get_all_tags()
         assert tags["project"] == 2
         assert tags["daily"] == 1
+
+
+def test_graph_data():
+    with tempfile.TemporaryDirectory() as d:
+        vault = Path(d)
+        _make_vault(vault, {
+            "note-a": "Links to [[note-b]] and [[note-c]].",
+            "note-b": "Links back to [[note-a]].",
+            "note-c": "No links here.",
+        })
+        index_vault(str(vault))
+
+        graph = get_graph_data()
+        assert len(graph["nodes"]) == 3
+        assert len(graph["edges"]) == 3  # a->b, a->c, b->a
+
+        labels = {n["label"] for n in graph["nodes"]}
+        assert labels == {"note-a", "note-b", "note-c"}
