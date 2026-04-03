@@ -1,6 +1,11 @@
 """Entry point for the doc-md Python sidecar."""
 
+import logging
 import sys
+
+# Log warnings and errors to stderr (captured by Tauri's sidecar stderr handler)
+logging.basicConfig(level=logging.WARNING, stream=sys.stderr,
+                    format="%(name)s: %(levelname)s: %(message)s")
 
 from doc_md import __version__
 from doc_md.rpc import RpcServer

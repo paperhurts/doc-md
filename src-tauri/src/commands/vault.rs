@@ -4,6 +4,22 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tokio::sync::Mutex;
 
+/// Validate that a filesystem path is within the vault boundary.
+/// For paths that don't exist yet (new files), canonicalizes the parent directory.
+fn canonicalize_or_parent(path: &str) -> Result<PathBuf, String> {
+    // Try canonicalizing directly first (works for existing paths)
+    if let Ok(canon) = fs::canonicalize(path) {
+        return Ok(canon);
+    }
+    // For new files: canonicalize the parent and append the filename
+    let p = PathBuf::from(path);
+    let parent = p.parent().ok_or_else(|| format!("No parent directory for: {}", path))?;
+    let filename = p.file_name().ok_or_else(|| format!("No filename in path: {}", path))?;
+    let canon_parent = fs::canonicalize(parent)
+        .map_err(|e| format!("Cannot resolve parent directory: {}", e))?;
+    Ok(canon_parent.join(filename))
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct VaultConfig {
     pub path: String,
@@ -35,6 +51,20 @@ impl VaultState {
             current: Mutex::new(current),
             config_path,
         }
+    }
+
+    /// Validate that a path is within the currently open vault.
+    /// Returns the canonicalized path on success.
+    pub async fn validate_path(&self, path: &str) -> Result<PathBuf, String> {
+        let current = self.current.lock().await;
+        let vault = current.as_ref().ok_or("No vault is open")?;
+        let vault_root = fs::canonicalize(&vault.path)
+            .map_err(|e| format!("Vault root resolve error: {}", e))?;
+        let requested = canonicalize_or_parent(path)?;
+        if !requested.starts_with(&vault_root) {
+            return Err(format!("Path is outside the vault: {}", path));
+        }
+        Ok(requested)
     }
 
     pub async fn set_vault(&self, config: VaultConfig) -> Result<(), String> {

@@ -1,9 +1,13 @@
 """Full-text search using Whoosh."""
 
+import html as html_mod
+import logging
 import os
 import tempfile
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from whoosh import index as whoosh_index
 from whoosh.fields import Schema, TEXT, ID, STORED
@@ -20,6 +24,16 @@ _schema = Schema(
 
 _ix: whoosh_index.Index | None = None
 _index_dir: str | None = None
+
+
+def _sanitize_snippet(snippet: str) -> str:
+    """Escape HTML in snippet, preserving only <mark> tags from Whoosh."""
+    snippet = snippet.replace("<mark>", "\x00MARK_OPEN\x00")
+    snippet = snippet.replace("</mark>", "\x00MARK_CLOSE\x00")
+    snippet = html_mod.escape(snippet)
+    snippet = snippet.replace("\x00MARK_OPEN\x00", "<mark>")
+    snippet = snippet.replace("\x00MARK_CLOSE\x00", "</mark>")
+    return snippet
 
 
 def _get_or_create_index(vault_path: str) -> whoosh_index.Index:
@@ -80,6 +94,7 @@ def build_search_index(vault_path: str) -> dict[str, Any]:
                     )
                     count += 1
                 except Exception:
+                    logger.exception("Failed to index file: %s", path)
                     continue
 
     writer.commit()
@@ -138,7 +153,8 @@ def search(vault_path: str, query: str, limit: int = 20) -> list[dict[str, Any]]
         hits.formatter = HtmlFormatter(tagname="mark")
 
         for hit in hits:
-            snippet = hit.highlights("content", top=3) or ""
+            raw_snippet = hit.highlights("content", top=3) or ""
+            snippet = _sanitize_snippet(raw_snippet)
             results.append({
                 "path": hit["path"],
                 "title": hit["title"],
