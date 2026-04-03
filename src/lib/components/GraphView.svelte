@@ -43,7 +43,7 @@
     return folderColors[Math.abs(hash) % folderColors.length];
   }
 
-  async function loadAndRender() {
+  function loadAndRender(currentActiveId: string | null) {
     if (!container) return;
     graphError = null;
 
@@ -62,7 +62,7 @@
     const height = container.clientHeight;
 
     // Determine the active note for highlighting
-    const activeId = vaultStore.activeFilePath;
+    const activeId = currentActiveId;
     const connectedIds = new Set<string>();
     if (activeId) {
       connectedIds.add(activeId);
@@ -197,8 +197,10 @@
   }
 
   $effect(() => {
+    // Read activeFilePath here so Svelte tracks it as a dependency
+    const activeId = vaultStore.activeFilePath;
     if (container) {
-      loadAndRender();
+      loadAndRender(activeId);
     }
   });
 
