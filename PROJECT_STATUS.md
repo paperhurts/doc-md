@@ -3,7 +3,7 @@
 **Last updated**: 2026-04-03
 
 ## Current State
-Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate Python sidecar. All logic runs in frontend JS for mobile compatibility.
+Phases 1-9 complete. Only Phase 10 (Plugin System) remains. Architecture refactored to eliminate Python sidecar. All logic runs in frontend JS for mobile compatibility.
 
 ## Phase Completion
 
@@ -27,11 +27,13 @@ Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate
 - **Wiki links**: `[[autocomplete` suggestions, Ctrl+Click navigation in editor, click in preview, backlinks panel with context
 - **Search**: MiniSearch full-text search (Ctrl+Shift+F) with highlighted snippets
 - **Tags**: Tag parsing from body + frontmatter, tags panel with counts, click to filter notes
-- **Graph**: D3 force-directed graph, zoom/pan/drag, click to navigate, folder-based coloring, current note highlighting
+- **Graph**: D3 force-directed graph, zoom/pan/drag, click to navigate, current note highlighting with connected nodes
 - **Tabs**: Multi-file tabs with dirty indicator
 - **Daily notes**: Ctrl+D opens today's note (daily/YYYY-MM-DD.md), auto-creates with template
 - **Templates**: `_templates/` folder, template variables ({{date}}, {{title}}, {{time}}), new from template
 - **Command palette**: Ctrl+K, fuzzy search commands/files/templates, keyboard navigation
+- **Themes**: 5 selectable themes (Midnight, Dark TM, Editorial, Cyberpunk, Studio), persisted to localStorage
+- **Settings**: Ctrl+, settings panel — font sizes, tab size, auto-save delay, folder config, keyboard reference
 
 ## Architecture
 - **Tauri 2** (Rust) — file I/O, FS watcher, window management
@@ -51,6 +53,8 @@ Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate
 - Graph view: theme-aware colors, active note highlighting fixed
 - Header alignment: all panels on same 40px baseline
 - User documentation added to README
+- Settings panel: font sizes, tab size, auto-save delay, folder config, shortcuts ref
+- Graph highlight: fixed Windows UNC path mismatch
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature)

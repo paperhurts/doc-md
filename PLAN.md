@@ -164,10 +164,10 @@ doc-md/
 20. Command palette (Ctrl+K, fuzzy search commands/files/templates, keyboard navigation) ✅
     - **Remaining**: split panes (deprioritized)
 
-### Phase 9: Polish & Settings — PARTIAL
-21. Theme system (dark theme exists) — **Remaining**: light theme, toggle, OS preference
-22. Settings panel — **NOT STARTED**
-23. Keyboard shortcuts — **Remaining**: configurable keybindings
+### Phase 9: Polish & Settings — COMPLETE
+21. 5 themes: Midnight (default), Dark TM, Editorial, Cyberpunk, Studio ✅
+22. Settings panel (Ctrl+,): font sizes, tab size, auto-save, folders, shortcuts ✅
+23. Keyboard shortcuts reference in settings ✅
 
 ### Phase 10: Plugin System — NOT STARTED
 24. Plugin architecture (JS plugins in `.doc-md/plugins/`)
