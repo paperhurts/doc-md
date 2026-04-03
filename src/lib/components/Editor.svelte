@@ -7,10 +7,12 @@
     content = "",
     onchange,
     onsave,
+    onnavigate,
   }: {
     content: string;
     onchange?: (content: string) => void;
     onsave?: () => void;
+    onnavigate?: (noteName: string) => void;
   } = $props();
 
   let container: HTMLDivElement;
@@ -34,7 +36,7 @@
   $effect(() => {
     if (!container) return;
 
-    const extensions = createEditorExtensions(handleUpdate);
+    const extensions = createEditorExtensions(handleUpdate, onnavigate);
 
     const state = EditorState.create({
       doc: initialContent,
