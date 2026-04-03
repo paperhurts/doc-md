@@ -69,7 +69,10 @@
     const highlightColor = cssVar("--strong");
 
     // Determine the active note for highlighting
-    const activeId = currentActiveId;
+    // Normalize: strip Windows UNC prefix (\\?\) for comparison since
+    // activeFilePath comes from Rust canonicalize but node IDs don't
+    const rawActiveId = currentActiveId;
+    const activeId = rawActiveId?.replace(/^\\\\\?\\/, "") ?? null;
     const connectedIds = new Set<string>();
     if (activeId) {
       connectedIds.add(activeId);
