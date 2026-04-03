@@ -8,6 +8,7 @@ import {
   type CompletionResult,
 } from "@codemirror/autocomplete";
 import type { Extension } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
 import { linkIndex } from "../services/indexer";
 
 function wikilinkCompletions(context: CompletionContext): CompletionResult | null {
@@ -27,14 +28,24 @@ function wikilinkCompletions(context: CompletionContext): CompletionResult | nul
       const label = fileName.replace(/\.(md|markdown)$/, "");
       return {
         label,
-        // Only insert the name + closing brackets; from is set after [[
-        apply: `${label}]]`,
         detail: parts.slice(-2, -1).join("/"),
+        apply: (view: EditorView, completion: any, from: number, to: number) => {
+          // Check how many ]] already exist after the cursor
+          const after = view.state.doc.sliceString(to, Math.min(to + 4, view.state.doc.length));
+          let closingToConsume = 0;
+          if (after.startsWith("]]")) closingToConsume = 2;
+          else if (after.startsWith("]")) closingToConsume = 1;
+
+          view.dispatch({
+            changes: { from: match!.from, to: to + closingToConsume, insert: `[[${label}]]` },
+            selection: { anchor: match!.from + label.length + 4 }, // after ]]
+          });
+        },
       };
     });
 
   return {
-    from: match.from + 2, // start after the [[ so we don't duplicate it
+    from: match.from + 2, // position after [[
     options,
     filter: false,
   };
