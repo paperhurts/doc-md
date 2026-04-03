@@ -7,6 +7,7 @@
   let expanded = $state(false);
   let contextMenu = $state<{ x: number; y: number } | null>(null);
   let renaming = $state(false);
+  let renameCancelled = false;
   let renameValue = $state("");
   let renameInput: HTMLInputElement | undefined;
 
@@ -46,12 +47,21 @@
   function startRename() {
     contextMenu = null;
     renameValue = entry.name;
+    renameCancelled = false;
     renaming = true;
-    // Focus the input after it renders
-    setTimeout(() => renameInput?.focus(), 0);
+    setTimeout(() => {
+      renameInput?.focus();
+      // Select filename without extension for convenience
+      const dotIdx = renameValue.lastIndexOf(".");
+      renameInput?.setSelectionRange(0, dotIdx > 0 ? dotIdx : renameValue.length);
+    }, 0);
   }
 
   async function commitRename() {
+    if (!renaming || renameCancelled) {
+      renaming = false;
+      return;
+    }
     renaming = false;
     const newName = renameValue.trim();
     if (!newName || newName === entry.name) return;
@@ -64,7 +74,10 @@
 
   function handleRenameKeydown(e: KeyboardEvent) {
     if (e.key === "Enter") commitRename();
-    if (e.key === "Escape") { renaming = false; }
+    if (e.key === "Escape") {
+      renameCancelled = true;
+      renaming = false;
+    }
   }
 
   async function handleDelete() {
