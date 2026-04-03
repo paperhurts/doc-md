@@ -17,6 +17,7 @@ import {
   DAILY_NOTE_TEMPLATE,
   NEW_NOTE_TEMPLATE,
 } from "../services/templates";
+import { settingsStore } from "./settings.svelte";
 import { createDirectory } from "../services/tauri";
 import { searchIndex } from "../services/search";
 import type { VaultEntry, Backlink, NoteName } from "../types";
@@ -234,7 +235,8 @@ class VaultStore {
 
   async openDailyNote() {
     if (!this.vault) return;
-    const { filePath, fileName, title } = getDailyNotePath(this.vault.path);
+    const folder = settingsStore.settings.dailyNoteFolder;
+    const { filePath, fileName, title } = getDailyNotePath(this.vault.path, folder);
     try {
       // Try to open existing daily note
       const content = await readFile(filePath).catch(() => null);
@@ -244,7 +246,7 @@ class VaultStore {
       }
       // Create with daily note template
       const sep = this.vault.path.includes("\\") ? "\\" : "/";
-      const dailyDir = `${this.vault.path}${sep}daily`;
+      const dailyDir = `${this.vault.path}${sep}${folder}`;
       await createDirectory(dailyDir);
       const newContent = applyTemplate(DAILY_NOTE_TEMPLATE, getTemplateVars(title));
       await writeFile(filePath, newContent);
@@ -259,7 +261,7 @@ class VaultStore {
   async getTemplates(): Promise<{ name: string; path: string }[]> {
     if (!this.vault) return [];
     const sep = this.vault.path.includes("\\") ? "\\" : "/";
-    const templateDir = `${this.vault.path}${sep}_templates`;
+    const templateDir = `${this.vault.path}${sep}${settingsStore.settings.templateFolder}`;
     try {
       const entries = await listFiles(templateDir);
       return entries

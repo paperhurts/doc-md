@@ -1,11 +1,12 @@
 <script lang="ts">
   import { vaultStore } from "../stores/vault.svelte";
+  import { settingsStore } from "../stores/settings.svelte";
   import Editor from "./Editor.svelte";
   import MarkdownPreview from "./MarkdownPreview.svelte";
 
   const file = $derived(vaultStore.activeFile);
 
-  let showPreview = $state(true);
+  let showPreview = $state(settingsStore.settings.showPreviewByDefault);
   let saveTimeout: ReturnType<typeof setTimeout> | undefined;
 
   function handleChange(content: string) {
@@ -15,7 +16,7 @@
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
         vaultStore.saveFile(currentPath);
-      }, 1000);
+      }, settingsStore.settings.autoSaveDelay);
     }
   }
 

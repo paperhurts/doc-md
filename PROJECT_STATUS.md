@@ -17,7 +17,7 @@ Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate
 | 6. Graph View | **COMPLETE** | Local vs global toggle (stretch) |
 | 7. Daily Notes | **COMPLETE** | — |
 | 8. Command Palette | **COMPLETE** | — |
-| 9. Polish | **MOSTLY COMPLETE** | Settings panel, configurable keybindings |
+| 9. Polish | **COMPLETE** | — |
 | 10. Plugin System | **NOT STARTED** | — |
 
 ## What's been built

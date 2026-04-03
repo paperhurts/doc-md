@@ -83,6 +83,7 @@ doc-md/
 | Shortcut | Action |
 |---|---|
 | Ctrl+K | Command palette — quick access to all commands |
+| Ctrl+, | Settings panel |
 | Ctrl+S | Save current file |
 | Ctrl+D | Open today's daily note |
 | Ctrl+Shift+F | Search all notes |
