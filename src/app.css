@@ -150,17 +150,19 @@
 }
 
 /* --- CODEGIRL — Neon cyan/magenta on dark, terminal refined --- */
+/* Cyan = primary: H1, links, active states, interactive elements
+   Magenta = secondary: H2/H3, tags, inline code, bold, emphasis */
 [data-theme="codegirl"] {
   --bg-primary: #0d0d12;
   --bg-secondary: #08080c;
   --bg-surface: #161620;
   --text-primary: #e0dfe6;
   --text-secondary: #7a7a8e;
-  --accent: #00d4ff;
-  --accent-hover: #40e0ff;
-  --accent-subtle: rgba(0, 212, 255, 0.1);
-  --border: rgba(0, 212, 255, 0.1);
-  --border-strong: rgba(0, 212, 255, 0.2);
+  --accent: #00e5ff;
+  --accent-hover: #40efff;
+  --accent-subtle: rgba(0, 229, 255, 0.08);
+  --border: rgba(0, 229, 255, 0.08);
+  --border-strong: rgba(0, 229, 255, 0.18);
 
   --font-ui: 'Geist Sans', 'Inter', -apple-system, sans-serif;
   --font-heading: 'Geist Sans', 'Inter', -apple-system, sans-serif;
@@ -175,22 +177,29 @@
   --modal-backdrop: rgba(0, 0, 0, 0.7);
   --modal-blur: blur(10px);
 
-  --heading-1: #f0f0f5;
-  --heading-2: #e0dfe6;
-  --heading-3: #c8c7d0;
-  --strong: #ff3c8e;
-  --em: #ff6eaa;
-  --tag-bg: rgba(255, 60, 142, 0.1);
-  --tag-color: #ff3c8e;
-  --mark-bg: rgba(0, 212, 255, 0.2);
+  /* Cyan hierarchy: H1 bright, dimmer for lower levels */
+  --heading-1: #00e5ff;
+  --heading-2: #e040fb;
+  --heading-3: #ce93d8;
+  /* Magenta for emphasis and inline elements */
+  --strong: #e040fb;
+  --em: #ce93d8;
+  --tag-bg: rgba(224, 64, 251, 0.1);
+  --tag-color: #e040fb;
+  --mark-bg: rgba(0, 229, 255, 0.2);
 }
 
-/* Codegirl: magenta + cyan dual accent glow */
+/* Codegirl: subtle glow on interactive elements */
 [data-theme="codegirl"] button:hover {
-  text-shadow: 0 0 6px rgba(0, 212, 255, 0.4);
+  text-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
 }
 [data-theme="codegirl"] .cm-wikilink-syntax {
-  text-shadow: 0 0 4px rgba(0, 212, 255, 0.3);
+  text-shadow: 0 0 4px rgba(0, 229, 255, 0.3);
+}
+/* Codegirl: magenta glow on code in preview */
+[data-theme="codegirl"] .preview code {
+  color: #e040fb !important;
+  text-shadow: 0 0 3px rgba(224, 64, 251, 0.2);
 }
 
 /* ================================================================
