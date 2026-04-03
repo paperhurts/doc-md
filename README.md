@@ -16,6 +16,7 @@ Notes are stored as **plain markdown files** on disk. No proprietary formats, no
 - **Tabbed editing** — Multiple open files with dirty indicators
 - **Daily notes** — Ctrl+D opens today's note, auto-creates with template in `daily/` folder
 - **Templates** — `_templates/` folder with variable substitution (`{{date}}`, `{{title}}`, `{{time}}`)
+- **Formatting toolbar** — Select text to get a floating toolbar: Bold, Italic, Strike, Code, Heading, Link, Wikilink, Bullet, Checkbox, Blockquote
 - **Command palette** — Ctrl+K for quick access to all commands, file search, and template picker
 - **Auto-save** — 1-second debounced auto-save with Ctrl+S manual save
 - **Frontmatter** — YAML frontmatter parsing for tags and metadata
@@ -88,6 +89,12 @@ doc-md/
 | Ctrl+D | Open today's daily note |
 | Ctrl+Shift+F | Search all notes |
 | Ctrl+Shift+G | Graph view |
+| Ctrl+B | Bold selected text |
+| Ctrl+I | Italic selected text |
+| Ctrl+E | Inline code |
+| Ctrl+Shift+S | Strikethrough |
+| Ctrl+Shift+H | Cycle heading (H1→H2→H3→none) |
+| Ctrl+Shift+W | Wrap in wikilink |
 | Ctrl+Click | Navigate to `[[wikilink]]` target in editor |
 | Escape | Close modals, cancel rename |
 

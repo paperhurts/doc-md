@@ -34,6 +34,7 @@ Phases 1-9 complete. Only Phase 10 (Plugin System) remains. Architecture refacto
 - **Command palette**: Ctrl+K, fuzzy search commands/files/templates, keyboard navigation
 - **Themes**: 5 selectable themes (Midnight, Dark TM, Editorial, Cyberpunk, Studio), persisted to localStorage
 - **Settings**: Ctrl+, settings panel — font sizes, tab size, auto-save delay, folder config, keyboard reference
+- **Formatting toolbar**: Floating toolbar on text selection — bold, italic, strike, code, heading, link, wikilink, bullet, checkbox, blockquote + keyboard shortcuts
 
 ## Architecture
 - **Tauri 2** (Rust) — file I/O, FS watcher, window management
@@ -55,6 +56,7 @@ Phases 1-9 complete. Only Phase 10 (Plugin System) remains. Architecture refacto
 - User documentation added to README
 - Settings panel: font sizes, tab size, auto-save delay, folder config, shortcuts ref
 - Graph highlight: fixed Windows UNC path mismatch
+- Floating formatting toolbar with 10 actions + keyboard shortcuts
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature)
