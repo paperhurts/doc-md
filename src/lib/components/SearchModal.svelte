@@ -61,15 +61,15 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="fixed inset-0 z-50 flex items-start justify-center pt-24"
-    style="background: rgba(0,0,0,0.5);"
+    style="background: var(--modal-backdrop);"
     onclick={onclose}
     onkeydown={handleKeydown}
   >
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="w-full max-w-xl rounded-lg shadow-2xl"
-      style="background-color: var(--bg-secondary); border: 1px solid var(--border);"
+      class="w-full max-w-xl shadow-2xl"
+      style="background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg);"
       onclick={(e) => e.stopPropagation()}
     >
       <div class="p-3" style="border-bottom: 1px solid var(--border);">
@@ -129,7 +129,7 @@
 
 <style>
   :global(mark) {
-    background-color: rgba(137, 180, 250, 0.3);
+    background-color: var(--mark-bg);
     color: var(--text-primary);
     border-radius: 2px;
     padding: 0 2px;

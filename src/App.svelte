@@ -8,6 +8,7 @@
   import GraphView from "./lib/components/GraphView.svelte";
   import CommandPalette from "./lib/components/CommandPalette.svelte";
   import { vaultStore } from "./lib/stores/vault.svelte";
+  import { themeStore } from "./lib/stores/theme.svelte";
 
   let searchOpen = $state(false);
   let graphOpen = $state(false);
@@ -17,7 +18,10 @@
   $effect(() => {
     if (!initialized) {
       initialized = true;
-      untrack(() => { vaultStore.init(); });
+      untrack(() => {
+        themeStore.init();
+        vaultStore.init();
+      });
     }
   });
 

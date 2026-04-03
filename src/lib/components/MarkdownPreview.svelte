@@ -28,35 +28,39 @@
   .preview {
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-body);
     line-height: 1.7;
   }
 
   .preview :global(h1) {
+    font-family: var(--font-heading);
     font-size: 2em;
     font-weight: 700;
     margin: 0.8em 0 0.4em;
-    color: #f38ba8;
+    color: var(--heading-1);
     border-bottom: 1px solid var(--border);
     padding-bottom: 0.3em;
   }
   .preview :global(h2) {
+    font-family: var(--font-heading);
     font-size: 1.5em;
     font-weight: 700;
     margin: 0.8em 0 0.4em;
-    color: #fab387;
+    color: var(--heading-2);
     border-bottom: 1px solid var(--border);
     padding-bottom: 0.2em;
   }
   .preview :global(h3) {
+    font-family: var(--font-heading);
     font-size: 1.25em;
     font-weight: 600;
     margin: 0.6em 0 0.3em;
-    color: #f9e2af;
+    color: var(--heading-3);
   }
   .preview :global(h4),
   .preview :global(h5),
   .preview :global(h6) {
+    font-family: var(--font-heading);
     font-weight: 600;
     margin: 0.5em 0 0.3em;
   }
@@ -79,8 +83,8 @@
     cursor: pointer;
   }
   .preview :global(.md-tag) {
-    color: #cba6f7;
-    background: rgba(203, 166, 247, 0.1);
+    color: var(--tag-color);
+    background: var(--tag-bg);
     padding: 0 4px;
     border-radius: 3px;
     font-size: 0.9em;
@@ -89,15 +93,15 @@
   .preview :global(code) {
     background: var(--bg-surface);
     padding: 2px 6px;
-    border-radius: 4px;
-    font-family: "JetBrains Mono", "Fira Code", monospace;
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
     font-size: 0.88em;
-    color: #a6e3a1;
+    color: var(--accent);
   }
   .preview :global(pre) {
     background: var(--bg-surface);
     padding: 16px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     overflow-x: auto;
     margin: 0.8em 0;
   }
@@ -111,8 +115,8 @@
     margin: 0.8em 0;
     padding: 0.4em 1em;
     color: var(--text-secondary);
-    background: rgba(137, 180, 250, 0.05);
-    border-radius: 0 4px 4px 0;
+    background: var(--accent-subtle);
+    border-radius: 0 var(--radius) var(--radius) 0;
   }
 
   .preview :global(ul),
@@ -159,10 +163,10 @@
     border-radius: 4px;
   }
   .preview :global(strong) {
-    color: #f38ba8;
+    color: var(--strong);
   }
   .preview :global(em) {
-    color: #f5c2e7;
+    color: var(--em);
   }
   .preview :global(.math-block) {
     margin: 1em 0;
