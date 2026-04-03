@@ -4,6 +4,8 @@ import {
   listFiles,
   readFile,
   writeFile,
+  deleteFile,
+  renameFile,
   startWatching,
 } from "../services/tauri";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
@@ -84,6 +86,43 @@ class VaultStore {
     }
   }
 
+  async deleteNote(path: string) {
+    try {
+      await deleteFile(path);
+      // Close the file if it's open
+      this.openFiles = this.openFiles.filter((f) => f.path !== path);
+      if (this.activeFilePath === path) {
+        const lastOpen = this.openFiles[this.openFiles.length - 1];
+        this.activeFilePath = lastOpen?.path ?? null;
+      }
+      searchIndex.removeFile(path);
+      await this.refreshTree();
+      await this.buildIndex();
+    } catch (e) {
+      console.error("Failed to delete note:", e);
+    }
+  }
+
+  async renameNote(oldPath: string, newPath: string) {
+    try {
+      await renameFile(oldPath, newPath);
+      // Update open file reference
+      const openFile = this.openFiles.find((f) => f.path === oldPath);
+      if (openFile) {
+        const parts = newPath.replace(/\\/g, "/").split("/");
+        openFile.path = newPath;
+        openFile.name = parts[parts.length - 1] ?? openFile.name;
+      }
+      if (this.activeFilePath === oldPath) {
+        this.activeFilePath = newPath;
+      }
+      await this.refreshTree();
+      await this.buildIndex();
+    } catch (e) {
+      console.error("Failed to rename note:", e);
+    }
+  }
+
   private async startFileWatcher() {
     // Stop any existing watcher listener
     if (this.fsUnlisten) {
@@ -108,11 +147,9 @@ class VaultStore {
   }
 
   private handleFsChange(payload: { kind: string; paths: string[] }) {
-    // Accumulate events during debounce window
+    // Accumulate all events during debounce window
     for (const p of payload.paths) {
-      if (p.endsWith(".md") || p.endsWith(".markdown")) {
-        this.fsPendingPaths.add(p);
-      }
+      this.fsPendingPaths.add(p);
     }
     this.fsPendingKinds.add(payload.kind);
 
@@ -121,17 +158,24 @@ class VaultStore {
   }
 
   private async processFsChanges() {
-    const paths = [...this.fsPendingPaths];
+    const allPaths = [...this.fsPendingPaths];
     const kinds = [...this.fsPendingKinds];
     this.fsPendingPaths.clear();
     this.fsPendingKinds.clear();
 
-    if (paths.length === 0 && !kinds.some((k) => k === "create" || k === "remove")) return;
+    if (allPaths.length === 0) return;
 
-    console.log("[vault] fs-change:", kinds.join(","), paths.length, "markdown files");
+    const mdPaths = allPaths.filter(
+      (p) => p.endsWith(".md") || p.endsWith(".markdown"),
+    );
 
-    // Always refresh tree — Windows fires modify instead of create sometimes
+    console.log("[vault] fs-change:", kinds.join(","), allPaths.length, "paths,", mdPaths.length, "markdown");
+
+    // Always refresh tree — folder creates/renames/deletes matter too
     await this.refreshTree();
+
+    // Only re-index markdown files
+    const paths = mdPaths;
 
     // Re-index changed files
     const hasRemove = kinds.includes("remove");
