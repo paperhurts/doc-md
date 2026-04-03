@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated**: 2026-04-02
+**Last updated**: 2026-04-03
 
 ## Current State
 Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate Python sidecar. All logic runs in frontend JS for mobile compatibility.
@@ -17,8 +17,8 @@ Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate
 | 6. Graph View | **COMPLETE** | Local vs global toggle (stretch) |
 | 7. Daily Notes | **COMPLETE** | — |
 | 8. Command Palette | **COMPLETE** | — |
-| 9. Plugin System | **NOT STARTED** | — |
-| 10. Polish | **PARTIAL** | Light theme, settings panel, keybindings |
+| 9. Polish | **PARTIAL** | Light theme, settings panel, keybindings |
+| 10. Plugin System | **NOT STARTED** | — |
 
 ## What's been built
 - **File management**: Open vault, file tree with icons, create/rename/delete notes, FS watcher for live external changes
@@ -39,11 +39,14 @@ Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate
 - **No backend process** — all logic in frontend JS
 - **Target platforms**: Windows, macOS, iOS, Android
 
-## Recent Work (2026-04-02)
+## Recent Work (2026-04-03)
 - Code review: 11 issues fixed (PRs #15, #16)
 - Architecture refactor: eliminated Python sidecar (PR #18)
 - Phase 2 completed: FS watcher (#19), rename/delete UI + file icons (#22)
 - Phase 3-6 gaps filled: KaTeX, [[autocomplete, Ctrl+Click nav, tag filter, graph highlights (#24)
+- Phase 7-8 complete: daily notes, templates, command palette (#26, #27)
+- CI workflow added with GitHub Actions, main branch protected
+- Fixed: duplicate backlinks crash, layout overflow on large files
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature)

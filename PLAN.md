@@ -132,51 +132,46 @@ doc-md/
 2. Set up IPC between frontend and Rust
 3. Verify end-to-end communication
 
-### Phase 2: File Management & Vault — MOSTLY COMPLETE
+### Phase 2: File Management & Vault — COMPLETE
 4. Vault management (open, switch, persist last vault) ✅
-5. File explorer (tree view, create notes) ✅
-6. File system watcher — **NOT WIRED UP** (code exists in watcher.rs)
-   - **Remaining**: rename/delete UI, drag-and-drop, file icons
+5. File explorer (tree view, create/rename/delete, file icons) ✅
+6. File system watcher (live external change detection) ✅
 
-### Phase 3: Markdown Editor — MOSTLY COMPLETE
+### Phase 3: Markdown Editor — COMPLETE
 7. CodeMirror 6 integration (markdown highlighting, wikilink syntax, auto-save) ✅
-8. Live preview (wikilinks, tags, task lists, code blocks, tables) ✅
+8. Live preview (wikilinks, tags, task lists, code blocks, tables, KaTeX math) ✅
 9. Tab system (multi-file, dirty indicator) ✅
-   - **Remaining**: synchronized scroll, KaTeX math, vim mode
 
-### Phase 4: Wiki Links & Backlinks — MOSTLY COMPLETE
+### Phase 4: Wiki Links & Backlinks — COMPLETE
 10. Link extraction (wikilinks, aliases) ✅
-11. Link navigation (click in preview → open note) ✅
+11. Link navigation (click in preview, Ctrl+Click in editor, `[[` autocomplete) ✅
 12. Backlinks panel (context paragraphs, click to navigate) ✅
-    - **Remaining**: Ctrl+Click in editor, `[[` autocomplete, `[text](path.md)` links
 
-### Phase 5: Search, Tags & Frontmatter — MOSTLY COMPLETE
+### Phase 5: Search, Tags & Frontmatter — COMPLETE
 13. Full-text search (MiniSearch, Ctrl+Shift+F, snippets) ✅
 14. YAML frontmatter parsing ✅
-15. Tag system (body + frontmatter parsing, tags panel) ✅
-    - **Remaining**: tag click → filter, tag autocomplete, frontmatter UI display
+15. Tag system (body + frontmatter parsing, tags panel, click to filter) ✅
 
-### Phase 6: Graph View — MOSTLY COMPLETE
+### Phase 6: Graph View — COMPLETE
 16. Graph data computation ✅
-17. D3 force-directed graph (zoom, pan, drag, click to open) ✅
-    - **Remaining**: highlight current note, color by folder/tag, local vs global toggle
+17. D3 force-directed graph (zoom, pan, drag, click to open, current note highlight, folder coloring) ✅
 
-### Phase 7: Daily Notes & Templates — NOT STARTED
-18. Daily notes (configurable folder/format, Ctrl+D, template on create)
-19. Templates (template folder, variables like `{{date}}`, `{{title}}`, picker)
+### Phase 7: Daily Notes & Templates — COMPLETE
+18. Daily notes (Ctrl+D, daily/ folder, YYYY-MM-DD.md, template on create) ✅
+19. Templates (_templates/ folder, {{date}}/{{title}}/{{time}} variables, new from template) ✅
 
-### Phase 8: Split Panes & Command Palette — NOT STARTED
-20. Split panes (horizontal/vertical, resizable)
-21. Command palette (Ctrl+K, fuzzy search, recent files, all commands)
+### Phase 8: Command Palette — COMPLETE
+20. Command palette (Ctrl+K, fuzzy search commands/files/templates, keyboard navigation) ✅
+    - **Remaining**: split panes (deprioritized)
 
-### Phase 9: Plugin System — NOT STARTED
-22. Plugin architecture (JS plugins in `.doc-md/plugins/`)
-23. Plugin manager UI
+### Phase 9: Polish & Settings — PARTIAL
+21. Theme system (dark theme exists) — **Remaining**: light theme, toggle, OS preference
+22. Settings panel — **NOT STARTED**
+23. Keyboard shortcuts — **Remaining**: configurable keybindings
 
-### Phase 10: Polish & Settings — PARTIAL
-24. Theme system (dark theme exists) — **Remaining**: light theme, toggle, OS preference
-25. Settings panel — **NOT STARTED**
-26. Keyboard shortcuts — **Remaining**: configurable keybindings
+### Phase 10: Plugin System — NOT STARTED
+24. Plugin architecture (JS plugins in `.doc-md/plugins/`)
+25. Plugin manager UI
 
 ---
 
