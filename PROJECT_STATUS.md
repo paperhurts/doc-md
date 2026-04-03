@@ -17,7 +17,7 @@ Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate
 | 6. Graph View | **COMPLETE** | Local vs global toggle (stretch) |
 | 7. Daily Notes | **COMPLETE** | — |
 | 8. Command Palette | **COMPLETE** | — |
-| 9. Polish | **PARTIAL** | Light theme, settings panel, keybindings |
+| 9. Polish | **MOSTLY COMPLETE** | Settings panel, configurable keybindings |
 | 10. Plugin System | **NOT STARTED** | — |
 
 ## What's been built
@@ -47,6 +47,10 @@ Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate
 - Phase 7-8 complete: daily notes, templates, command palette (#26, #27)
 - CI workflow added with GitHub Actions, main branch protected
 - Fixed: duplicate backlinks crash, layout overflow on large files
+- Phase 9 themes: 5-theme system (Midnight, Dark TM, Editorial, Cyberpunk, Studio)
+- Graph view: theme-aware colors, active note highlighting fixed
+- Header alignment: all panels on same 40px baseline
+- User documentation added to README
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature)
