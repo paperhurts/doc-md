@@ -13,8 +13,8 @@
 
 {#if vaultStore.openFiles.length > 0}
   <div
-    class="flex shrink-0 overflow-x-auto"
-    style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border); height: 36px;"
+    class="flex h-10 shrink-0 items-center overflow-x-auto"
+    style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border);"
   >
     {#each vaultStore.openFiles as file (file.path)}
       <button

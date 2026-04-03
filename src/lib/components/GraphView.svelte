@@ -26,21 +26,21 @@
     target: SimNode | string;
   }
 
-  // Color palette for folder-based coloring
-  const folderColors = [
-    "#89b4fa", "#a6e3a1", "#fab387", "#f38ba8", "#cba6f7",
-    "#94e2d5", "#f9e2af", "#89dceb", "#f5c2e7", "#b4befe",
-  ];
+  /** Read a CSS variable's computed value (SVG attrs can't use var() directly). */
+  function cssVar(name: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
 
-  function getFolderColor(path: string): string {
+  function getFolderColor(path: string, accentColor: string): string {
     const parts = path.replace(/\\/g, "/").split("/");
-    // Use the parent folder name for coloring (or root if top-level)
     const folder = parts.length >= 2 ? parts[parts.length - 2] : "root";
     let hash = 0;
     for (let i = 0; i < folder.length; i++) {
       hash = ((hash << 5) - hash + folder.charCodeAt(i)) | 0;
     }
-    return folderColors[Math.abs(hash) % folderColors.length];
+    // Vary the hue based on folder, keeping saturation/lightness from accent
+    const hueOffset = (Math.abs(hash) % 8) * 45;
+    return `hsl(${hueOffset}, 60%, 65%)`;
   }
 
   function loadAndRender(currentActiveId: string | null) {
@@ -60,6 +60,13 @@
 
     const width = container.clientWidth;
     const height = container.clientHeight;
+
+    // Resolve CSS variables for SVG (SVG attrs can't use var() directly)
+    const accentColor = cssVar("--accent");
+    const bgColor = cssVar("--bg-primary");
+    const textColor = cssVar("--text-primary");
+    const textMuted = cssVar("--text-secondary");
+    const highlightColor = cssVar("--strong");
 
     // Determine the active note for highlighting
     const activeId = currentActiveId;
@@ -97,7 +104,7 @@
         }) as any
     );
 
-    // Links
+    // Links — use resolved CSS colors for SVG
     const link = g
       .append("g")
       .selectAll("line")
@@ -107,7 +114,7 @@
         const srcId = typeof d.source === "string" ? d.source : d.source.id;
         const tgtId = typeof d.target === "string" ? d.target : d.target.id;
         return (activeId && (srcId === activeId || tgtId === activeId))
-          ? "var(--accent)" : "var(--text-secondary)";
+          ? accentColor : textMuted;
       })
       .attr("stroke-opacity", (d: any) => {
         const srcId = typeof d.source === "string" ? d.source : d.source.id;
@@ -130,8 +137,8 @@
       .data(nodes)
       .join("circle")
       .attr("r", (d) => d.id === activeId ? radiusScale(d.links) + 3 : radiusScale(d.links))
-      .attr("fill", (d) => getFolderColor(d.id))
-      .attr("stroke", (d) => d.id === activeId ? "#f38ba8" : "var(--bg-primary)")
+      .attr("fill", (d) => getFolderColor(d.id, accentColor))
+      .attr("stroke", (d) => d.id === activeId ? highlightColor : bgColor)
       .attr("stroke-width", (d) => d.id === activeId ? 3 : 1.5)
       .attr("opacity", (d) => (!activeId || connectedIds.has(d.id)) ? 1 : 0.3)
       .attr("cursor", "pointer")
@@ -166,7 +173,7 @@
       .text((d) => d.label)
       .attr("font-size", (d) => d.id === activeId ? 12 : 10)
       .attr("font-weight", (d) => d.id === activeId ? "bold" : "normal")
-      .attr("fill", (d) => (!activeId || connectedIds.has(d.id)) ? "var(--text-primary)" : "var(--text-secondary)")
+      .attr("fill", (d) => (!activeId || connectedIds.has(d.id)) ? textColor : textMuted)
       .attr("dx", (d) => radiusScale(d.links) + 4)
       .attr("dy", 3)
       .attr("pointer-events", "none");
