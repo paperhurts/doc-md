@@ -3,39 +3,44 @@
 **Last updated**: 2026-04-02
 
 ## Current State
-Phases 1-6 are largely complete. The app is a functional markdown knowledge management tool with editing, search, backlinks, tags, and graph view. Architecture refactored to eliminate Python sidecar — all logic runs in frontend JS for mobile compatibility.
-
-## Recent Work (2026-04-02)
-- Full code review: 11 issues identified and fixed (PRs #15, #16)
-- **Architecture refactor** (PR #18): Eliminated Python sidecar entirely
-  - Ported parser, indexer, search to TypeScript (`src/lib/services/`)
-  - Replaced Whoosh with MiniSearch for full-text search
-  - Removed shell plugin, sidecar bridge, JSON-RPC protocol
-  - Net reduction: 1,240 lines deleted
-  - App launches significantly faster
+Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate Python sidecar. All logic runs in frontend JS for mobile compatibility.
 
 ## Phase Completion
 
-| Phase | Status | Key gaps |
-|-------|--------|----------|
+| Phase | Status | Remaining |
+|-------|--------|-----------|
 | 1. Scaffolding | **COMPLETE** | — |
-| 2. File Management | **MOSTLY COMPLETE** | FS watcher not wired up, rename/delete UI, drag-and-drop |
-| 3. Markdown Editor | **MOSTLY COMPLETE** | Synchronized scroll, KaTeX math, vim mode |
-| 4. Wiki Links | **MOSTLY COMPLETE** | Ctrl+Click editor nav, `[[` autocomplete |
-| 5. Search & Tags | **MOSTLY COMPLETE** | Tag click → filter, tag autocomplete |
-| 6. Graph View | **MOSTLY COMPLETE** | Highlight current note, color coding, local/global toggle |
+| 2. File Management | **COMPLETE** | — |
+| 3. Markdown Editor | **COMPLETE** | Synchronized scroll (stretch) |
+| 4. Wiki Links | **COMPLETE** | — |
+| 5. Search & Tags | **COMPLETE** | — |
+| 6. Graph View | **COMPLETE** | Local vs global toggle (stretch) |
 | 7. Daily Notes | **NOT STARTED** | — |
 | 8. Command Palette | **NOT STARTED** | — |
 | 9. Plugin System | **NOT STARTED** | — |
-| 10. Polish | **PARTIAL** | Light theme, settings panel, configurable keybindings |
+| 10. Polish | **PARTIAL** | Light theme, settings panel, keybindings |
+
+## What's been built
+- **File management**: Open vault, file tree with icons, create/rename/delete notes, FS watcher for live external changes
+- **Editor**: CodeMirror 6 with markdown highlighting, `[[wikilink]]` and `#tag` syntax, auto-save, KaTeX math (`$inline$` and `$$block$$`)
+- **Preview**: Live markdown preview with wikilinks, tags, task lists, code blocks, tables, math
+- **Wiki links**: `[[autocomplete` suggestions, Ctrl+Click navigation in editor, click in preview, backlinks panel with context
+- **Search**: MiniSearch full-text search (Ctrl+Shift+F) with highlighted snippets
+- **Tags**: Tag parsing from body + frontmatter, tags panel with counts, click to filter notes
+- **Graph**: D3 force-directed graph, zoom/pan/drag, click to navigate, folder-based coloring, current note highlighting
+- **Tabs**: Multi-file tabs with dirty indicator
 
 ## Architecture
 - **Tauri 2** (Rust) — file I/O, FS watcher, window management
-- **Svelte 5** (TypeScript) — UI, all indexing/search/parsing
+- **Svelte 5** (TypeScript) — UI, all indexing/search/parsing (MiniSearch)
 - **No backend process** — all logic in frontend JS
 - **Target platforms**: Windows, macOS, iOS, Android
 
-## Known Issues
-- FS watcher exists in `watcher.rs` but is never called (dead code)
-- All code review issues (#4-#14) resolved
-- Sidecar eliminated (#17) resolved
+## Recent Work (2026-04-02)
+- Code review: 11 issues fixed (PRs #15, #16)
+- Architecture refactor: eliminated Python sidecar (PR #18)
+- Phase 2 completed: FS watcher (#19), rename/delete UI + file icons (#22)
+- Phase 3-6 gaps filled: KaTeX, [[autocomplete, Ctrl+Click nav, tag filter, graph highlights (#24)
+
+## Open Issues
+- #21 — Cloud sync via Git/GitHub (future feature)

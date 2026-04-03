@@ -15,8 +15,12 @@ import type { Extension } from "@codemirror/state";
 
 import { docMdTheme, docMdHighlightStyle } from "./theme";
 import { wikilinkPlugin } from "./wikilink";
+import { wikilinkAutocomplete } from "./autocomplete";
 
-export function createEditorExtensions(onUpdate?: (content: string) => void): Extension[] {
+export function createEditorExtensions(
+  onUpdate?: (content: string) => void,
+  onNavigate?: (noteName: string) => void,
+): Extension[] {
   const extensions: Extension[] = [
     lineNumbers(),
     highlightActiveLine(),
@@ -30,6 +34,7 @@ export function createEditorExtensions(onUpdate?: (content: string) => void): Ex
     docMdTheme,
     docMdHighlightStyle,
     wikilinkPlugin,
+    wikilinkAutocomplete,
     keymap.of([
       ...defaultKeymap,
       ...historyKeymap,
@@ -45,6 +50,32 @@ export function createEditorExtensions(onUpdate?: (content: string) => void): Ex
         if (update.docChanged) {
           onUpdate(update.state.doc.toString());
         }
+      }),
+    );
+  }
+
+  // Ctrl+Click on wikilinks to navigate
+  if (onNavigate) {
+    extensions.push(
+      EditorView.domEventHandlers({
+        click(event, view) {
+          if (!(event.ctrlKey || event.metaKey)) return false;
+          const pos = view.posAtCoords({ x: event.clientX, y: event.clientY });
+          if (pos === null) return false;
+          const line = view.state.doc.lineAt(pos);
+          const WIKILINK = /\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g;
+          let match;
+          while ((match = WIKILINK.exec(line.text)) !== null) {
+            const from = line.from + match.index;
+            const to = from + match[0].length;
+            if (pos >= from && pos <= to) {
+              event.preventDefault();
+              onNavigate(match[1]);
+              return true;
+            }
+          }
+          return false;
+        },
       }),
     );
   }

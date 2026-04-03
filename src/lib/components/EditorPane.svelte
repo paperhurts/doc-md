@@ -45,7 +45,7 @@
 
     <div class="flex flex-1 overflow-hidden">
       <div class="overflow-hidden" style="width: {showPreview ? '50%' : '100%'};">
-        <Editor content={file.content} onchange={handleChange} onsave={handleSave} />
+        <Editor content={file.content} onchange={handleChange} onsave={handleSave} onnavigate={(name) => vaultStore.navigateToNote(name)} />
       </div>
 
       {#if showPreview}
