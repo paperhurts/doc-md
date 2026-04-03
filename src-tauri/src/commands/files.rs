@@ -1,6 +1,7 @@
+use super::vault::VaultState;
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct VaultEntry {
@@ -54,47 +55,72 @@ fn build_tree(dir: &Path, depth: usize) -> Result<Vec<VaultEntry>, String> {
 }
 
 #[tauri::command]
-pub fn list_files(vault_path: String) -> Result<Vec<VaultEntry>, String> {
-    let path = PathBuf::from(&vault_path);
-    if !path.is_dir() {
+pub async fn list_files(
+    vault_path: String,
+    vault_state: tauri::State<'_, VaultState>,
+) -> Result<Vec<VaultEntry>, String> {
+    let validated = vault_state.validate_path(&vault_path).await?;
+    if !validated.is_dir() {
         return Err(format!("Not a directory: {}", vault_path));
     }
-    build_tree(&path, 0)
+    build_tree(&validated, 0)
 }
 
 #[tauri::command]
-pub fn read_file(file_path: String) -> Result<String, String> {
-    fs::read_to_string(&file_path).map_err(|e| format!("Read error: {}", e))
+pub async fn read_file(
+    file_path: String,
+    vault_state: tauri::State<'_, VaultState>,
+) -> Result<String, String> {
+    let validated = vault_state.validate_path(&file_path).await?;
+    fs::read_to_string(&validated).map_err(|e| format!("Read error: {}", e))
 }
 
 #[tauri::command]
-pub fn write_file(file_path: String, content: String) -> Result<(), String> {
+pub async fn write_file(
+    file_path: String,
+    content: String,
+    vault_state: tauri::State<'_, VaultState>,
+) -> Result<(), String> {
+    let validated = vault_state.validate_path(&file_path).await?;
     // Ensure parent directory exists
-    if let Some(parent) = Path::new(&file_path).parent() {
+    if let Some(parent) = validated.parent() {
         fs::create_dir_all(parent).map_err(|e| format!("Create dir error: {}", e))?;
     }
-    fs::write(&file_path, content).map_err(|e| format!("Write error: {}", e))
+    fs::write(&validated, content).map_err(|e| format!("Write error: {}", e))
 }
 
 #[tauri::command]
-pub fn delete_file(file_path: String) -> Result<(), String> {
-    let path = Path::new(&file_path);
-    if path.is_dir() {
-        fs::remove_dir_all(path).map_err(|e| format!("Delete dir error: {}", e))
+pub async fn delete_file(
+    file_path: String,
+    vault_state: tauri::State<'_, VaultState>,
+) -> Result<(), String> {
+    let validated = vault_state.validate_path(&file_path).await?;
+    if validated.is_dir() {
+        fs::remove_dir_all(&validated).map_err(|e| format!("Delete dir error: {}", e))
     } else {
-        fs::remove_file(path).map_err(|e| format!("Delete file error: {}", e))
+        fs::remove_file(&validated).map_err(|e| format!("Delete file error: {}", e))
     }
 }
 
 #[tauri::command]
-pub fn rename_file(old_path: String, new_path: String) -> Result<(), String> {
-    if let Some(parent) = Path::new(&new_path).parent() {
+pub async fn rename_file(
+    old_path: String,
+    new_path: String,
+    vault_state: tauri::State<'_, VaultState>,
+) -> Result<(), String> {
+    let validated_old = vault_state.validate_path(&old_path).await?;
+    let validated_new = vault_state.validate_path(&new_path).await?;
+    if let Some(parent) = validated_new.parent() {
         fs::create_dir_all(parent).map_err(|e| format!("Create dir error: {}", e))?;
     }
-    fs::rename(&old_path, &new_path).map_err(|e| format!("Rename error: {}", e))
+    fs::rename(&validated_old, &validated_new).map_err(|e| format!("Rename error: {}", e))
 }
 
 #[tauri::command]
-pub fn create_directory(dir_path: String) -> Result<(), String> {
-    fs::create_dir_all(&dir_path).map_err(|e| format!("Create dir error: {}", e))
+pub async fn create_directory(
+    dir_path: String,
+    vault_state: tauri::State<'_, VaultState>,
+) -> Result<(), String> {
+    let validated = vault_state.validate_path(&dir_path).await?;
+    fs::create_dir_all(&validated).map_err(|e| format!("Create dir error: {}", e))
 }

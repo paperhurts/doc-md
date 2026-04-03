@@ -7,7 +7,7 @@ use commands::{
     set_current_vault, sidecar_ping, sidecar_request, write_file,
 };
 use commands::vault::VaultState;
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -24,6 +24,8 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 if let Err(e) = sidecar::start_sidecar(&handle).await {
                     eprintln!("Failed to start sidecar: {}", e);
+                    // Surface error to the frontend so the UI can inform the user
+                    let _ = handle.emit("sidecar-error", e.to_string());
                 }
             });
             Ok(())

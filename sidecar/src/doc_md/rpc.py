@@ -1,8 +1,11 @@
 """JSON-RPC 2.0 protocol handler over stdin/stdout."""
 
 import json
+import logging
 import sys
 from typing import Any, Callable
+
+logger = logging.getLogger(__name__)
 
 HandlerFn = Callable[..., Any]
 
@@ -42,7 +45,7 @@ class RpcServer:
                     else:
                         handler()
                 except Exception:
-                    pass
+                    logger.exception("Error handling notification '%s'", method)
             return None
 
         handler = self._handlers.get(method)
