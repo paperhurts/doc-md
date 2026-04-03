@@ -27,15 +27,16 @@ function wikilinkCompletions(context: CompletionContext): CompletionResult | nul
       const label = fileName.replace(/\.(md|markdown)$/, "");
       return {
         label,
-        apply: `[[${label}]]`,
-        detail: parts.slice(-2, -1).join("/"), // parent folder as detail
+        // Only insert the name + closing brackets; from is set after [[
+        apply: `${label}]]`,
+        detail: parts.slice(-2, -1).join("/"),
       };
     });
 
   return {
-    from: match.from,
+    from: match.from + 2, // start after the [[ so we don't duplicate it
     options,
-    filter: false, // we already filtered
+    filter: false,
   };
 }
 
