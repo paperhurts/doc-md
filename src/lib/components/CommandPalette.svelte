@@ -1,5 +1,6 @@
 <script lang="ts">
   import { vaultStore } from "../stores/vault.svelte";
+  import { themeStore } from "../stores/theme.svelte";
 
   let {
     open = false,
@@ -16,7 +17,7 @@
   let query = $state("");
   let selectedIndex = $state(0);
   let inputEl: HTMLInputElement;
-  let mode = $state<"commands" | "files" | "templates">("commands");
+  let mode = $state<"commands" | "files" | "templates" | "themes">("commands");
   let templates = $state<{ name: string; path: string }[]>([]);
 
   interface Command {
@@ -32,6 +33,7 @@
     { label: "Daily note", shortcut: "Ctrl+D", action: () => { onclose(); vaultStore.openDailyNote(); } },
     { label: "Search notes", shortcut: "Ctrl+Shift+F", action: () => onsearch() },
     { label: "Graph view", shortcut: "Ctrl+Shift+G", action: () => ongraph() },
+    { label: "Switch theme...", action: () => { mode = "themes"; query = ""; selectedIndex = 0; } },
     { label: "Toggle preview", action: () => { onclose(); /* handled by EditorPane internally */ } },
   ];
 
@@ -47,6 +49,20 @@
   }
 
   const filteredCommands = $derived.by(() => {
+    if (mode === "themes") {
+      const q = query.toLowerCase();
+      return themeStore.themes
+        .filter((t) => t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q))
+        .map((t) => ({
+          label: t.name,
+          detail: themeStore.current === t.id ? "active" : "",
+          shortcut: t.description,
+          action: () => {
+            themeStore.setTheme(t.id);
+            onclose();
+          },
+        }));
+    }
     if (mode === "files") {
       const q = query.toLowerCase();
       return vaultStore.noteNames
@@ -124,15 +140,15 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="fixed inset-0 z-50 flex items-start justify-center pt-20"
-    style="background: rgba(0,0,0,0.5);"
+    style="background: var(--modal-backdrop);"
     onclick={onclose}
     onkeydown={handleKeydown}
   >
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="w-full max-w-lg rounded-lg shadow-2xl"
-      style="background-color: var(--bg-secondary); border: 1px solid var(--border);"
+      class="w-full max-w-lg shadow-2xl"
+      style="background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg);"
       onclick={(e) => e.stopPropagation()}
     >
       <div class="p-3" style="border-bottom: 1px solid var(--border);">
@@ -151,7 +167,7 @@
             bind:value={query}
             onkeydown={handleKeydown}
             type="text"
-            placeholder={mode === "files" ? "Search files..." : mode === "templates" ? "Choose template..." : "Type a command..."}
+            placeholder={mode === "files" ? "Search files..." : mode === "templates" ? "Choose template..." : mode === "themes" ? "Choose theme..." : "Type a command..."}
             class="w-full rounded px-3 py-2 text-sm outline-none"
             style="background-color: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border);"
           />

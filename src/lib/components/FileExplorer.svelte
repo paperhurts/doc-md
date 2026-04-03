@@ -29,7 +29,7 @@
   style="width: 260px; background-color: var(--bg-secondary); border-right: 1px solid var(--border);"
 >
   <div
-    class="flex items-center justify-between px-3 py-2"
+    class="flex h-10 shrink-0 items-center justify-between px-3"
     style="border-bottom: 1px solid var(--border);"
   >
     <span class="truncate text-xs font-semibold uppercase tracking-wider" style="color: var(--text-secondary);">
