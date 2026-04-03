@@ -4,7 +4,9 @@ import {
   listFiles,
   readFile,
   writeFile,
+  startWatching,
 } from "../services/tauri";
+import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { linkIndex } from "../services/indexer";
 import { searchIndex } from "../services/search";
 import type { VaultEntry, Backlink, NoteName } from "../types";
@@ -29,6 +31,9 @@ class VaultStore {
   backlinks = $state<Backlink[]>([]);
   noteNames = $state<NoteName[]>([]);
   error = $state<string | null>(null);
+
+  private fsUnlisten: UnlistenFn | null = null;
+  private fsDebounce: ReturnType<typeof setTimeout> | undefined;
 
   get activeFile(): OpenFile | undefined {
     return this.openFiles.find((f) => f.path === this.activeFilePath);
@@ -56,6 +61,7 @@ class VaultStore {
         this.vault = saved;
         await this.refreshTree();
         await this.buildIndex();
+        await this.startFileWatcher();
       }
     } catch (e) {
       console.error("[vault] init error:", e);
@@ -70,9 +76,76 @@ class VaultStore {
       this.activeFilePath = null;
       await this.refreshTree();
       await this.buildIndex();
+      await this.startFileWatcher();
     } catch (e) {
       console.error("Failed to open vault:", e);
     }
+  }
+
+  private async startFileWatcher() {
+    // Stop any existing watcher listener
+    if (this.fsUnlisten) {
+      this.fsUnlisten();
+      this.fsUnlisten = null;
+    }
+    if (!this.vault) return;
+
+    try {
+      await startWatching(this.vault.path);
+
+      this.fsUnlisten = await listen<{ kind: string; paths: string[] }>(
+        "fs-change",
+        (event) => {
+          this.handleFsChange(event.payload);
+        },
+      );
+      console.log("[vault] file watcher started");
+    } catch (e) {
+      console.error("[vault] failed to start watcher:", e);
+    }
+  }
+
+  private handleFsChange(payload: { kind: string; paths: string[] }) {
+    // Debounce: FS watchers fire many events for a single save
+    clearTimeout(this.fsDebounce);
+    this.fsDebounce = setTimeout(async () => {
+      const mdPaths = payload.paths.filter(
+        (p) => p.endsWith(".md") || p.endsWith(".markdown"),
+      );
+      if (mdPaths.length === 0) return;
+
+      console.log("[vault] fs-change:", payload.kind, mdPaths.length, "markdown files");
+
+      // Refresh tree for creates/deletes
+      if (payload.kind === "create" || payload.kind === "remove") {
+        await this.refreshTree();
+      }
+
+      // Re-index changed files
+      for (const filePath of mdPaths) {
+        if (payload.kind === "remove") {
+          searchIndex.removeFile(filePath);
+        } else {
+          try {
+            const content = await readFile(filePath);
+            await linkIndex.indexFile(filePath, content);
+            const parts = filePath.replace(/\\/g, "/").split("/");
+            searchIndex.updateFile(filePath, parts[parts.length - 1] ?? "", content);
+
+            // Update open file content if it was changed externally
+            const openFile = this.openFiles.find((f) => f.path === filePath);
+            if (openFile && !openFile.dirty) {
+              openFile.content = content;
+            }
+          } catch {
+            // File may have been deleted between event and read
+          }
+        }
+      }
+
+      this.noteNames = linkIndex.getAllNoteNames();
+      this.refreshBacklinks();
+    }, 300);
   }
 
   async createNote(name: string) {
