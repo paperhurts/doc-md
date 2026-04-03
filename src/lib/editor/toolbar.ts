@@ -172,9 +172,7 @@ export function createSelectionPlugin(
 ): Extension {
   return ViewPlugin.fromClass(
     class {
-      constructor(_view: EditorView) {
-        // Required by ViewPlugin — initializes on editor creation
-      }
+      constructor(_view: EditorView) {}
       update(update: ViewUpdate) {
         if (!update.selectionSet && !update.docChanged && !update.focusChanged) return;
 
@@ -190,18 +188,25 @@ export function createSelectionPlugin(
           return;
         }
 
-        const coordsFrom = view.coordsAtPos(from);
-        const coordsTo = view.coordsAtPos(to);
-        if (!coordsFrom || !coordsTo) {
-          cb({ show: false, x: 0, y: 0, selectedText: "", from, to });
-          return;
-        }
+        // Defer coordsAtPos to after the update cycle — CM forbids layout reads during update
+        requestAnimationFrame(() => {
+          try {
+            const coordsFrom = view.coordsAtPos(from);
+            const coordsTo = view.coordsAtPos(to);
+            if (!coordsFrom || !coordsTo) {
+              cb({ show: false, x: 0, y: 0, selectedText: "", from, to });
+              return;
+            }
 
-        const x = (coordsFrom.left + coordsTo.right) / 2;
-        const y = Math.min(coordsFrom.top, coordsTo.top);
-        const selectedText = view.state.sliceDoc(from, to);
+            const x = (coordsFrom.left + coordsTo.right) / 2;
+            const y = Math.min(coordsFrom.top, coordsTo.top);
+            const selectedText = view.state.sliceDoc(from, to);
 
-        cb({ show: true, x, y, selectedText, from, to });
+            cb({ show: true, x, y, selectedText, from, to });
+          } catch {
+            cb({ show: false, x: 0, y: 0, selectedText: "", from: 0, to: 0 });
+          }
+        });
       }
     },
   );
