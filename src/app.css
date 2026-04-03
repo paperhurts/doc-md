@@ -31,11 +31,11 @@
   --modal-backdrop: rgba(0, 0, 0, 0.6);
   --modal-blur: blur(12px);
 
-  --heading-1: #e879f9;
-  --heading-2: #c084fc;
-  --heading-3: #a78bfa;
-  --strong: #e879f9;
-  --em: #f0abfc;
+  --heading-1: #f0f0f3;
+  --heading-2: #e4e4e7;
+  --heading-3: #d4d4d8;
+  --strong: #f0f0f3;
+  --em: #d4d4d8;
   --tag-bg: rgba(167, 139, 250, 0.12);
   --tag-color: #c4b5fd;
   --mark-bg: rgba(167, 139, 250, 0.25);
@@ -147,6 +147,50 @@
   --tag-bg: rgba(192, 86, 33, 0.1);
   --tag-color: #c05621;
   --mark-bg: rgba(192, 86, 33, 0.15);
+}
+
+/* --- CODEGIRL — Neon cyan/magenta on dark, terminal refined --- */
+[data-theme="codegirl"] {
+  --bg-primary: #0d0d12;
+  --bg-secondary: #08080c;
+  --bg-surface: #161620;
+  --text-primary: #e0dfe6;
+  --text-secondary: #7a7a8e;
+  --accent: #00d4ff;
+  --accent-hover: #40e0ff;
+  --accent-subtle: rgba(0, 212, 255, 0.1);
+  --border: rgba(0, 212, 255, 0.1);
+  --border-strong: rgba(0, 212, 255, 0.2);
+
+  --font-ui: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-heading: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-body: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+  --font-editor: 'Geist Mono', 'JetBrains Mono', monospace;
+
+  --radius: 4px;
+  --radius-lg: 8px;
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --modal-backdrop: rgba(0, 0, 0, 0.7);
+  --modal-blur: blur(10px);
+
+  --heading-1: #f0f0f5;
+  --heading-2: #e0dfe6;
+  --heading-3: #c8c7d0;
+  --strong: #ff3c8e;
+  --em: #ff6eaa;
+  --tag-bg: rgba(255, 60, 142, 0.1);
+  --tag-color: #ff3c8e;
+  --mark-bg: rgba(0, 212, 255, 0.2);
+}
+
+/* Codegirl: magenta + cyan dual accent glow */
+[data-theme="codegirl"] button:hover {
+  text-shadow: 0 0 6px rgba(0, 212, 255, 0.4);
+}
+[data-theme="codegirl"] .cm-wikilink-syntax {
+  text-shadow: 0 0 4px rgba(0, 212, 255, 0.3);
 }
 
 /* ================================================================
