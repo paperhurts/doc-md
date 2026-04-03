@@ -125,13 +125,15 @@ class VaultStore {
   async openFile(path: string, name: string) {
     const existing = this.openFiles.find((f) => f.path === path);
     if (existing) {
-      this.setActiveFile(path);
+      this.activeFilePath = path;
+      this.refreshBacklinks();
       return;
     }
 
     const content = await readFile(path);
     this.openFiles.push({ path, name, content, dirty: false });
-    this.setActiveFile(path);
+    this.activeFilePath = path;
+    this.refreshBacklinks();
   }
 
   async navigateToNote(noteName: string) {
