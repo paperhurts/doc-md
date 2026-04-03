@@ -35,7 +35,9 @@
     });
   }
 
+  // Re-run when noteNames changes (signals index was rebuilt or file was saved)
   $effect(() => {
+    const _ = vaultStore.noteNames.length;
     if (vaultStore.vault) {
       refreshTags();
     }
