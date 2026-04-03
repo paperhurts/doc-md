@@ -82,12 +82,67 @@ doc-md/
 
 | Shortcut | Action |
 |---|---|
+| Ctrl+K | Command palette — quick access to all commands |
 | Ctrl+S | Save current file |
-| Ctrl+Shift+F | Toggle search modal |
-| Ctrl+Shift+G | Toggle graph view |
-| Ctrl+K | Command palette |
 | Ctrl+D | Open today's daily note |
-| Ctrl+Click | Navigate to wikilink target in editor |
+| Ctrl+Shift+F | Search all notes |
+| Ctrl+Shift+G | Graph view |
+| Ctrl+Click | Navigate to `[[wikilink]]` target in editor |
+| Escape | Close modals, cancel rename |
+
+## Writing Notes
+
+### Wiki Links
+Link between notes with `[[note-name]]` or `[[note-name|display text]]`. Type `[[` in the editor to get autocomplete suggestions. Click a link in the preview pane or Ctrl+Click in the editor to navigate.
+
+### Tags
+Add tags anywhere in your note with `#tagname` (must have a space before the `#`). Tags also work in YAML frontmatter:
+```yaml
+---
+tags: [project, ideas]
+---
+```
+Click a tag in the Tags panel (bottom of sidebar) to see all notes with that tag.
+
+### Backlinks
+The right panel shows all notes that link **to** the current note. If `note-a.md` contains `[[note-b]]`, then opening `note-b.md` will show `note-a` in the backlinks panel with surrounding context.
+
+### Graph View
+The graph (Ctrl+Shift+G) visualizes connections between notes:
+- **Active note**: highlighted in a distinct color with larger size
+- **Connected notes**: full opacity (notes that link to/from the active note)
+- **Unconnected notes**: faded to 25% opacity
+- Click any node to open that note. Scroll to zoom, drag to rearrange.
+
+### Daily Notes
+Press Ctrl+D to open today's note (`daily/YYYY-MM-DD.md`). If it doesn't exist, it's created from a template. The `daily/` folder is created automatically.
+
+### Templates
+Create `.md` files in a `_templates/` folder in your vault. Use template variables:
+- `{{date}}` — today's date (YYYY-MM-DD)
+- `{{title}}` — the note's name
+- `{{time}}` — current time (HH:MM)
+
+Use Ctrl+K → "New from template" to create a note from a template.
+
+### Math
+KaTeX math is supported:
+- Inline: `$E = mc^2$`
+- Block: `$$\int_0^1 x^2 dx$$` (on its own lines)
+
+## Themes
+
+5 built-in themes, switchable via Ctrl+K → "Switch theme":
+
+| Theme | Style |
+|---|---|
+| **Midnight** (default) | Sleek dark with lavender accents |
+| **Dark TM** | Neon cyan/magenta dual accent on dark |
+| **Editorial** | Stark white, serif typography, minimal color |
+| **Cyberpunk** | Neon green terminal with glow + scanlines |
+| **Studio** | Warm amber/cream with soft shadows |
+
+Your theme choice is saved and persists across restarts.
 
 ## License
 
