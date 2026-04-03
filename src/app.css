@@ -202,6 +202,46 @@
   text-shadow: 0 0 3px rgba(224, 64, 251, 0.2);
 }
 
+/* --- ALL-AMERICAN — Hot dog themed. You're welcome. --- */
+[data-theme="allamerican"] {
+  --bg-primary: #f5e6c8;
+  --bg-secondary: #ecdbb0;
+  --bg-surface: #e0cea0;
+  --text-primary: #3b2507;
+  --text-secondary: #7a5c2e;
+  --accent: #d4a017;
+  --accent-hover: #e6b422;
+  --accent-subtle: rgba(212, 160, 23, 0.12);
+  --border: #d4bc82;
+  --border-strong: #c4a55e;
+
+  --font-ui: 'DM Sans', -apple-system, sans-serif;
+  --font-heading: 'DM Sans', -apple-system, sans-serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+  --font-editor: 'Fira Code', 'JetBrains Mono', monospace;
+
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 2px 8px rgba(59, 37, 7, 0.1);
+  --shadow-lg: 0 12px 36px rgba(59, 37, 7, 0.15);
+  --modal-backdrop: rgba(59, 37, 7, 0.35);
+  --modal-blur: blur(6px);
+
+  --heading-1: #c41e3a;
+  --heading-2: #d4a017;
+  --heading-3: #c41e3a;
+  --strong: #c41e3a;
+  --em: #d4a017;
+  --tag-bg: rgba(46, 125, 50, 0.12);
+  --tag-color: #2e7d32;
+  --mark-bg: rgba(212, 160, 23, 0.25);
+}
+
+[data-theme="allamerican"] header {
+  background: linear-gradient(135deg, #ecdbb0, #e0cea0) !important;
+}
+
 /* ================================================================
    BASE STYLES
    ================================================================ */
