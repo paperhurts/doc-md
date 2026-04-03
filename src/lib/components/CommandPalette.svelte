@@ -7,11 +7,13 @@
     onclose,
     onsearch,
     ongraph,
+    onsettings,
   }: {
     open: boolean;
     onclose: () => void;
     onsearch: () => void;
     ongraph: () => void;
+    onsettings: () => void;
   } = $props();
 
   let query = $state("");
@@ -34,7 +36,7 @@
     { label: "Search notes", shortcut: "Ctrl+Shift+F", action: () => onsearch() },
     { label: "Graph view", shortcut: "Ctrl+Shift+G", action: () => ongraph() },
     { label: "Switch theme...", action: () => { mode = "themes"; query = ""; selectedIndex = 0; } },
-    { label: "Toggle preview", action: () => { onclose(); /* handled by EditorPane internally */ } },
+    { label: "Settings", shortcut: "Ctrl+,", action: () => onsettings() },
   ];
 
   async function loadTemplates() {

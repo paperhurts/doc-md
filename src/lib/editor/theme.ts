@@ -7,7 +7,7 @@ export const docMdTheme = EditorView.theme(
     "&": {
       backgroundColor: "var(--bg-primary)",
       color: "var(--text-primary)",
-      fontSize: "14px",
+      fontSize: "var(--editor-font-size, 14px)",
       height: "100%",
     },
     ".cm-content": {

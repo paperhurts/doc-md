@@ -7,12 +7,15 @@
   import SearchModal from "./lib/components/SearchModal.svelte";
   import GraphView from "./lib/components/GraphView.svelte";
   import CommandPalette from "./lib/components/CommandPalette.svelte";
+  import SettingsPanel from "./lib/components/SettingsPanel.svelte";
   import { vaultStore } from "./lib/stores/vault.svelte";
   import { themeStore } from "./lib/stores/theme.svelte";
+  import { settingsStore } from "./lib/stores/settings.svelte";
 
   let searchOpen = $state(false);
   let graphOpen = $state(false);
   let paletteOpen = $state(false);
+  let settingsOpen = $state(false);
   let initialized = false;
 
   $effect(() => {
@@ -20,6 +23,7 @@
       initialized = true;
       untrack(() => {
         themeStore.init();
+        settingsStore.init();
         vaultStore.init();
       });
     }
@@ -41,6 +45,10 @@
     if ((e.ctrlKey || e.metaKey) && e.key === "d") {
       e.preventDefault();
       vaultStore.openDailyNote();
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === ",") {
+      e.preventDefault();
+      settingsOpen = !settingsOpen;
     }
   }
 </script>
@@ -95,7 +103,8 @@
 </main>
 
 <SearchModal open={searchOpen} onclose={() => (searchOpen = false)} />
-<CommandPalette open={paletteOpen} onclose={() => (paletteOpen = false)} onsearch={() => { paletteOpen = false; searchOpen = true; }} ongraph={() => { paletteOpen = false; graphOpen = true; }} />
+<CommandPalette open={paletteOpen} onclose={() => (paletteOpen = false)} onsearch={() => { paletteOpen = false; searchOpen = true; }} ongraph={() => { paletteOpen = false; graphOpen = true; }} onsettings={() => { paletteOpen = false; settingsOpen = true; }} />
+<SettingsPanel open={settingsOpen} onclose={() => (settingsOpen = false)} />
 
 {#if graphOpen}
   <GraphView onclose={() => (graphOpen = false)} />
