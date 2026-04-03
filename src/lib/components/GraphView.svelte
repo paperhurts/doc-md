@@ -60,9 +60,11 @@
 
     // Determine the active note for highlighting
     // Normalize: strip Windows UNC prefix (\\?\) for comparison since
-    // activeFilePath comes from Rust canonicalize but node IDs don't
-    const rawActiveId = currentActiveId;
-    const activeId = rawActiveId?.replace(/^\\\\\?\\/, "") ?? null;
+    // activeFilePath may come from Rust canonicalize but node IDs don't
+    let activeId = currentActiveId;
+    if (activeId && activeId.startsWith("\\\\?\\")) {
+      activeId = activeId.slice(4);
+    }
     const connectedIds = new Set<string>();
     if (activeId) {
       connectedIds.add(activeId);
