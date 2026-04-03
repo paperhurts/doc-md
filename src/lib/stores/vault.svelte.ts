@@ -34,6 +34,7 @@ class VaultStore {
   activeFilePath = $state<string | null>(null);
   backlinks = $state<Backlink[]>([]);
   noteNames = $state<NoteName[]>([]);
+  error = $state<string | null>(null);
 
   get activeFile(): OpenFile | undefined {
     return this.openFiles.find((f) => f.path === this.activeFilePath);
@@ -103,8 +104,9 @@ class VaultStore {
       await indexVault(this.vault.path);
       await buildSearchIndex(this.vault.path);
       this.noteNames = await getAllNoteNames();
-    } catch {
-      // Sidecar not available
+    } catch (e) {
+      console.error("[vault] buildIndex error:", e);
+      this.error = "Failed to build index. Search and backlinks may be unavailable.";
     }
   }
 
@@ -166,8 +168,8 @@ class VaultStore {
         }
         this.noteNames = await getAllNoteNames();
         await this.refreshBacklinks();
-      } catch {
-        // Sidecar not available
+      } catch (e) {
+        console.error("[vault] saveFile re-index error:", e);
       }
     }
   }
@@ -179,7 +181,8 @@ class VaultStore {
     }
     try {
       this.backlinks = await getBacklinks(this.activeFileName);
-    } catch {
+    } catch (e) {
+      console.error("[vault] refreshBacklinks error:", e);
       this.backlinks = [];
     }
   }

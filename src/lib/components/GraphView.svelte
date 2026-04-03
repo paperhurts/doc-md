@@ -13,6 +13,7 @@
   let container: HTMLDivElement | undefined = $state();
   let svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | undefined;
   let simulation: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined;
+  let graphError = $state<string | null>(null);
 
   interface SimNode extends d3.SimulationNodeDatum {
     id: string;
@@ -27,11 +28,14 @@
 
   async function loadAndRender() {
     if (!container) return;
+    graphError = null;
 
     let data: GraphData;
     try {
       data = await getGraphData();
-    } catch {
+    } catch (e) {
+      graphError = "Failed to load graph data. The sidecar may not be running.";
+      console.error("[graph] load error:", e);
       return;
     }
 
@@ -210,5 +214,11 @@
   <div
     bind:this={container}
     class="flex-1 overflow-hidden"
-  ></div>
+  >
+    {#if graphError}
+      <div class="flex h-full items-center justify-center">
+        <p class="text-sm" style="color: var(--text-secondary);">{graphError}</p>
+      </div>
+    {/if}
+  </div>
 </div>

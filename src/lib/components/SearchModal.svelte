@@ -7,6 +7,7 @@
   let query = $state("");
   let results = $state<SearchResult[]>([]);
   let searching = $state(false);
+  let searchError = $state<string | null>(null);
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
   let inputEl: HTMLInputElement;
 
@@ -30,10 +31,13 @@
   async function doSearch() {
     if (!vaultStore.vault || !query.trim()) return;
     searching = true;
+    searchError = null;
     try {
       results = await searchVault(vaultStore.vault.path, query);
-    } catch {
+    } catch (e) {
       results = [];
+      searchError = "Search failed. The search index may not be available.";
+      console.error("[search] error:", e);
     }
     searching = false;
   }
@@ -84,6 +88,10 @@
         {#if searching}
           <p class="px-3 py-4 text-center text-sm" style="color: var(--text-secondary);">
             Searching...
+          </p>
+        {:else if searchError}
+          <p class="px-3 py-4 text-center text-sm" style="color: #f38ba8;">
+            {searchError}
           </p>
         {:else if query && results.length === 0}
           <p class="px-3 py-4 text-center text-sm" style="color: var(--text-secondary);">
