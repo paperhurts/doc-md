@@ -1,10 +1,3 @@
-export interface Note {
-  path: string;
-  name: string;
-  content: string;
-  frontmatter?: Record<string, unknown>;
-}
-
 export interface VaultEntry {
   name: string;
   path: string;
@@ -26,11 +19,4 @@ export interface GraphEdge {
 export interface GraphData {
   nodes: GraphNode[];
   edges: GraphEdge[];
-}
-
-export interface SearchResult {
-  path: string;
-  title: string;
-  snippet: string;
-  score: number;
 }
