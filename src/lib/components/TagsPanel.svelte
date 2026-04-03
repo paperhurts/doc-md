@@ -1,6 +1,6 @@
 <script lang="ts">
   import { vaultStore } from "../stores/vault.svelte";
-  import { getAllTags } from "../services/tauri";
+  import { linkIndex } from "../services/indexer";
 
   let tags = $state<[string, number][]>([]);
   let expanded = $state(false);
@@ -8,7 +8,7 @@
 
   async function refreshTags() {
     try {
-      const tagMap = await getAllTags();
+      const tagMap = linkIndex.getAllTags();
       tags = Object.entries(tagMap).sort((a, b) => b[1] - a[1]);
       tagsError = null;
     } catch (e) {
