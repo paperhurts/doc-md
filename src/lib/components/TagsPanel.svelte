@@ -5,6 +5,8 @@
   let tags = $state<[string, number][]>([]);
   let expanded = $state(false);
   let tagsError = $state<string | null>(null);
+  let selectedTag = $state<string | null>(null);
+  let tagFiles = $state<{ path: string; name: string }[]>([]);
 
   async function refreshTags() {
     try {
@@ -16,6 +18,21 @@
       tagsError = "Failed to load tags";
       console.error("[tags] error:", e);
     }
+  }
+
+  function selectTag(tag: string) {
+    if (selectedTag === tag) {
+      selectedTag = null;
+      tagFiles = [];
+      return;
+    }
+    selectedTag = tag;
+    const paths = linkIndex.allTags.get(tag) ?? [];
+    tagFiles = paths.map((p) => {
+      const parts = p.replace(/\\/g, "/").split("/");
+      const fileName = parts[parts.length - 1] ?? "";
+      return { path: p, name: fileName.replace(/\.(md|markdown)$/, "") };
+    });
   }
 
   $effect(() => {
@@ -39,23 +56,41 @@
   </button>
 
   {#if expanded}
-    <div class="flex flex-wrap gap-1 px-3 pb-3">
+    <div class="flex flex-wrap gap-1 px-3 pb-2">
       {#if tagsError}
         <p class="py-2 text-xs" style="color: #f38ba8;">{tagsError}</p>
       {:else}
         {#each tags as [tag, count] (tag)}
-          <span
+          <button
             class="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs"
-            style="background: rgba(203, 166, 247, 0.1); color: #cba6f7;"
+            style="background: {selectedTag === tag ? 'rgba(203, 166, 247, 0.3)' : 'rgba(203, 166, 247, 0.1)'}; color: #cba6f7; cursor: pointer;"
+            onclick={() => selectTag(tag)}
           >
             #{tag}
             <span style="opacity: 0.6;">{count}</span>
-          </span>
+          </button>
         {/each}
         {#if tags.length === 0}
           <p class="py-2 text-xs" style="color: var(--text-secondary);">No tags found</p>
         {/if}
       {/if}
     </div>
+
+    {#if selectedTag && tagFiles.length > 0}
+      <div class="px-3 pb-3">
+        <p class="mb-1 text-xs" style="color: var(--text-secondary);">
+          Notes tagged #{selectedTag}:
+        </p>
+        {#each tagFiles as file (file.path)}
+          <button
+            class="block w-full rounded px-2 py-1 text-left text-xs hover:opacity-80"
+            style="color: var(--accent);"
+            onclick={() => vaultStore.openFile(file.path, file.name + ".md")}
+          >
+            {file.name}
+          </button>
+        {/each}
+      </div>
+    {/if}
   {/if}
 </div>

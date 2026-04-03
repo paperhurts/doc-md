@@ -26,6 +26,23 @@
     target: SimNode | string;
   }
 
+  // Color palette for folder-based coloring
+  const folderColors = [
+    "#89b4fa", "#a6e3a1", "#fab387", "#f38ba8", "#cba6f7",
+    "#94e2d5", "#f9e2af", "#89dceb", "#f5c2e7", "#b4befe",
+  ];
+
+  function getFolderColor(path: string): string {
+    const parts = path.replace(/\\/g, "/").split("/");
+    // Use the parent folder name for coloring (or root if top-level)
+    const folder = parts.length >= 2 ? parts[parts.length - 2] : "root";
+    let hash = 0;
+    for (let i = 0; i < folder.length; i++) {
+      hash = ((hash << 5) - hash + folder.charCodeAt(i)) | 0;
+    }
+    return folderColors[Math.abs(hash) % folderColors.length];
+  }
+
   async function loadAndRender() {
     if (!container) return;
     graphError = null;
@@ -34,7 +51,7 @@
     try {
       data = linkIndex.getGraphData();
     } catch (e) {
-      graphError = "Failed to load graph data. The sidecar may not be running.";
+      graphError = "Failed to load graph data.";
       console.error("[graph] load error:", e);
       return;
     }
@@ -43,6 +60,17 @@
 
     const width = container.clientWidth;
     const height = container.clientHeight;
+
+    // Determine the active note for highlighting
+    const activeId = vaultStore.activeFilePath;
+    const connectedIds = new Set<string>();
+    if (activeId) {
+      connectedIds.add(activeId);
+      for (const edge of data.edges) {
+        if (edge.source === activeId) connectedIds.add(edge.target);
+        if (edge.target === activeId) connectedIds.add(edge.source);
+      }
+    }
 
     // Clear previous
     d3.select(container).selectAll("*").remove();
@@ -53,8 +81,6 @@
       target: e.target,
     }));
 
-    const nodeMap = new Map(nodes.map((n) => [n.id, n]));
-
     svg = d3
       .select(container)
       .append("svg")
@@ -62,7 +88,6 @@
       .attr("height", height)
       .attr("viewBox", [0, 0, width, height]);
 
-    // Zoom behavior
     const g = svg.append("g");
     svg.call(
       d3.zoom<SVGSVGElement, unknown>()
@@ -72,28 +97,28 @@
         }) as any
     );
 
-    // Arrow marker
-    svg.append("defs").append("marker")
-      .attr("id", "arrowhead")
-      .attr("viewBox", "0 -5 10 10")
-      .attr("refX", 20)
-      .attr("refY", 0)
-      .attr("markerWidth", 6)
-      .attr("markerHeight", 6)
-      .attr("orient", "auto")
-      .append("path")
-      .attr("d", "M0,-5L10,0L0,5")
-      .attr("fill", "var(--text-secondary)");
-
     // Links
     const link = g
       .append("g")
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke", "var(--text-secondary)")
-      .attr("stroke-opacity", 0.3)
-      .attr("stroke-width", 1);
+      .attr("stroke", (d: any) => {
+        const srcId = typeof d.source === "string" ? d.source : d.source.id;
+        const tgtId = typeof d.target === "string" ? d.target : d.target.id;
+        return (activeId && (srcId === activeId || tgtId === activeId))
+          ? "var(--accent)" : "var(--text-secondary)";
+      })
+      .attr("stroke-opacity", (d: any) => {
+        const srcId = typeof d.source === "string" ? d.source : d.source.id;
+        const tgtId = typeof d.target === "string" ? d.target : d.target.id;
+        return (activeId && (srcId === activeId || tgtId === activeId)) ? 0.8 : 0.2;
+      })
+      .attr("stroke-width", (d: any) => {
+        const srcId = typeof d.source === "string" ? d.source : d.source.id;
+        const tgtId = typeof d.target === "string" ? d.target : d.target.id;
+        return (activeId && (srcId === activeId || tgtId === activeId)) ? 2 : 1;
+      });
 
     // Nodes
     const maxLinks = Math.max(1, ...nodes.map((n) => n.links));
@@ -104,10 +129,11 @@
       .selectAll("circle")
       .data(nodes)
       .join("circle")
-      .attr("r", (d) => radiusScale(d.links))
-      .attr("fill", "var(--accent)")
-      .attr("stroke", "var(--bg-primary)")
-      .attr("stroke-width", 1.5)
+      .attr("r", (d) => d.id === activeId ? radiusScale(d.links) + 3 : radiusScale(d.links))
+      .attr("fill", (d) => getFolderColor(d.id))
+      .attr("stroke", (d) => d.id === activeId ? "#f38ba8" : "var(--bg-primary)")
+      .attr("stroke-width", (d) => d.id === activeId ? 3 : 1.5)
+      .attr("opacity", (d) => (!activeId || connectedIds.has(d.id)) ? 1 : 0.3)
       .attr("cursor", "pointer")
       .on("click", (_event, d) => {
         vaultStore.navigateToNote(d.label);
@@ -138,8 +164,9 @@
       .data(nodes)
       .join("text")
       .text((d) => d.label)
-      .attr("font-size", 10)
-      .attr("fill", "var(--text-primary)")
+      .attr("font-size", (d) => d.id === activeId ? 12 : 10)
+      .attr("font-weight", (d) => d.id === activeId ? "bold" : "normal")
+      .attr("fill", (d) => (!activeId || connectedIds.has(d.id)) ? "var(--text-primary)" : "var(--text-secondary)")
       .attr("dx", (d) => radiusScale(d.links) + 4)
       .attr("dy", 3)
       .attr("pointer-events", "none");
@@ -199,7 +226,7 @@
     <span class="text-sm font-semibold" style="color: var(--accent);">Graph View</span>
     <div class="flex items-center gap-3">
       <span class="text-xs" style="color: var(--text-secondary);">
-        Scroll to zoom · Drag nodes · Click to open
+        Scroll to zoom · Drag nodes · Click to open · Ctrl+Click in editor
       </span>
       <button
         class="rounded px-2 py-0.5 text-xs"
