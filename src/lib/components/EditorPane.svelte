@@ -28,7 +28,7 @@
   }
 </script>
 
-<div class="flex h-full flex-col" style="background-color: var(--bg-primary);">
+<div class="flex min-h-0 flex-1 flex-col" style="background-color: var(--bg-primary);">
   {#if file}
     <div
       class="flex items-center justify-end gap-2 px-3 py-1"
@@ -43,14 +43,14 @@
       </button>
     </div>
 
-    <div class="flex flex-1 overflow-hidden">
-      <div class="overflow-hidden" style="width: {showPreview ? '50%' : '100%'};">
+    <div class="flex min-h-0 flex-1 overflow-hidden">
+      <div class="h-full overflow-hidden" style="width: {showPreview ? '50%' : '100%'};">
         <Editor content={file.content} onchange={handleChange} onsave={handleSave} onnavigate={(name) => vaultStore.navigateToNote(name)} />
       </div>
 
       {#if showPreview}
         <div
-          class="overflow-hidden"
+          class="h-full overflow-hidden"
           style="width: 50%; border-left: 1px solid var(--border);"
         >
           <MarkdownPreview content={file.content} />

@@ -15,8 +15,8 @@ Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate
 | 4. Wiki Links | **COMPLETE** | — |
 | 5. Search & Tags | **COMPLETE** | — |
 | 6. Graph View | **COMPLETE** | Local vs global toggle (stretch) |
-| 7. Daily Notes | **NOT STARTED** | — |
-| 8. Command Palette | **NOT STARTED** | — |
+| 7. Daily Notes | **COMPLETE** | — |
+| 8. Command Palette | **COMPLETE** | — |
 | 9. Plugin System | **NOT STARTED** | — |
 | 10. Polish | **PARTIAL** | Light theme, settings panel, keybindings |
 
@@ -29,6 +29,9 @@ Phases 1-6 are complete or nearly complete. Architecture refactored to eliminate
 - **Tags**: Tag parsing from body + frontmatter, tags panel with counts, click to filter notes
 - **Graph**: D3 force-directed graph, zoom/pan/drag, click to navigate, folder-based coloring, current note highlighting
 - **Tabs**: Multi-file tabs with dirty indicator
+- **Daily notes**: Ctrl+D opens today's note (daily/YYYY-MM-DD.md), auto-creates with template
+- **Templates**: `_templates/` folder, template variables ({{date}}, {{title}}, {{time}}), new from template
+- **Command palette**: Ctrl+K, fuzzy search commands/files/templates, keyboard navigation
 
 ## Architecture
 - **Tauri 2** (Rust) — file I/O, FS watcher, window management
