@@ -34,6 +34,8 @@ class VaultStore {
 
   private fsUnlisten: UnlistenFn | null = null;
   private fsDebounce: ReturnType<typeof setTimeout> | undefined;
+  private fsPendingPaths = new Set<string>();
+  private fsPendingKinds = new Set<string>();
 
   get activeFile(): OpenFile | undefined {
     return this.openFiles.find((f) => f.path === this.activeFilePath);
@@ -106,46 +108,53 @@ class VaultStore {
   }
 
   private handleFsChange(payload: { kind: string; paths: string[] }) {
-    // Debounce: FS watchers fire many events for a single save
+    // Accumulate events during debounce window
+    for (const p of payload.paths) {
+      if (p.endsWith(".md") || p.endsWith(".markdown")) {
+        this.fsPendingPaths.add(p);
+      }
+    }
+    this.fsPendingKinds.add(payload.kind);
+
     clearTimeout(this.fsDebounce);
-    this.fsDebounce = setTimeout(async () => {
-      const mdPaths = payload.paths.filter(
-        (p) => p.endsWith(".md") || p.endsWith(".markdown"),
-      );
-      if (mdPaths.length === 0) return;
+    this.fsDebounce = setTimeout(() => this.processFsChanges(), 500);
+  }
 
-      console.log("[vault] fs-change:", payload.kind, mdPaths.length, "markdown files");
+  private async processFsChanges() {
+    const paths = [...this.fsPendingPaths];
+    const kinds = [...this.fsPendingKinds];
+    this.fsPendingPaths.clear();
+    this.fsPendingKinds.clear();
 
-      // Refresh tree for creates/deletes
-      if (payload.kind === "create" || payload.kind === "remove") {
-        await this.refreshTree();
-      }
+    if (paths.length === 0 && !kinds.some((k) => k === "create" || k === "remove")) return;
 
-      // Re-index changed files
-      for (const filePath of mdPaths) {
-        if (payload.kind === "remove") {
-          searchIndex.removeFile(filePath);
-        } else {
-          try {
-            const content = await readFile(filePath);
-            await linkIndex.indexFile(filePath, content);
-            const parts = filePath.replace(/\\/g, "/").split("/");
-            searchIndex.updateFile(filePath, parts[parts.length - 1] ?? "", content);
+    console.log("[vault] fs-change:", kinds.join(","), paths.length, "markdown files");
 
-            // Update open file content if it was changed externally
-            const openFile = this.openFiles.find((f) => f.path === filePath);
-            if (openFile && !openFile.dirty) {
-              openFile.content = content;
-            }
-          } catch {
-            // File may have been deleted between event and read
-          }
+    // Always refresh tree — Windows fires modify instead of create sometimes
+    await this.refreshTree();
+
+    // Re-index changed files
+    const hasRemove = kinds.includes("remove");
+    for (const filePath of paths) {
+      try {
+        const content = await readFile(filePath);
+        await linkIndex.indexFile(filePath, content);
+        const parts = filePath.replace(/\\/g, "/").split("/");
+        searchIndex.updateFile(filePath, parts[parts.length - 1] ?? "", content);
+
+        // Update open file content if changed externally
+        const openFile = this.openFiles.find((f) => f.path === filePath);
+        if (openFile && !openFile.dirty) {
+          openFile.content = content;
         }
+      } catch {
+        // File was likely deleted — remove from search index
+        searchIndex.removeFile(filePath);
       }
+    }
 
-      this.noteNames = linkIndex.getAllNoteNames();
-      this.refreshBacklinks();
-    }, 300);
+    this.noteNames = linkIndex.getAllNoteNames();
+    this.refreshBacklinks();
   }
 
   async createNote(name: string) {
