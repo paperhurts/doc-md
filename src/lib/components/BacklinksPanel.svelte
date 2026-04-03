@@ -8,7 +8,7 @@
     style="width: 280px; background-color: var(--bg-secondary); border-left: 1px solid var(--border);"
   >
     <div
-      class="px-3 py-2"
+      class="flex h-10 shrink-0 items-center px-3"
       style="border-bottom: 1px solid var(--border);"
     >
       <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-secondary);">
