@@ -242,18 +242,19 @@
   background: linear-gradient(135deg, #071020, #132244) !important;
 }
 
-/* --- HOT DOG STAND — Windows 3.1. Pure chaos. --- */
+/* --- HOT DOG STAND — Windows 3.1. Authentic. --- */
+/* Red/yellow windows, white menu bars, black borders/accents */
 [data-theme="hotdogstand"] {
-  --bg-primary: #ff0000;
-  --bg-secondary: #cc0000;
-  --bg-surface: #dd0000;
-  --text-primary: #ffff00;
-  --text-secondary: #ffcc00;
-  --accent: #ffff00;
-  --accent-hover: #ffffff;
-  --accent-subtle: rgba(255, 255, 0, 0.2);
-  --border: #ffff00;
-  --border-strong: #ffffff;
+  --bg-primary: #ffff00;
+  --bg-secondary: #c0c0c0;
+  --bg-surface: #ff0000;
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --accent: #ff0000;
+  --accent-hover: #cc0000;
+  --accent-subtle: rgba(255, 0, 0, 0.15);
+  --border: #000000;
+  --border-strong: #000000;
 
   --font-ui: 'Share Tech Mono', 'Courier New', monospace;
   --font-heading: 'Share Tech Mono', 'Courier New', monospace;
@@ -268,50 +269,63 @@
   --modal-backdrop: rgba(0, 0, 0, 0.5);
   --modal-blur: none;
 
-  --heading-1: #ffffff;
-  --heading-2: #ffff00;
-  --heading-3: #ffffff;
-  --strong: #ffffff;
-  --em: #ffff00;
-  --tag-bg: #0000aa;
+  --heading-1: #ff0000;
+  --heading-2: #000000;
+  --heading-3: #ff0000;
+  --strong: #ff0000;
+  --em: #cc0000;
+  --tag-bg: #ff0000;
   --tag-color: #ffffff;
-  --mark-bg: rgba(255, 255, 255, 0.3);
+  --mark-bg: rgba(255, 0, 0, 0.25);
 }
 
+/* Hot Dog Stand: white/gray menu bar header, red sidebar, yellow editor */
 [data-theme="hotdogstand"] header {
-  background: #cc0000 !important;
-  border-bottom: 2px solid #ffff00 !important;
+  background: #c0c0c0 !important;
+  color: #000000 !important;
+  border-bottom: 2px solid #000000 !important;
+}
+[data-theme="hotdogstand"] header span,
+[data-theme="hotdogstand"] header button {
+  color: #000000 !important;
 }
 [data-theme="hotdogstand"] aside {
-  background: #cc0000 !important;
+  background: #ff0000 !important;
+}
+[data-theme="hotdogstand"] aside span,
+[data-theme="hotdogstand"] aside button {
+  color: #ffffff !important;
+}
+[data-theme="hotdogstand"] .preview {
+  background: #ffff00 !important;
+  color: #000000 !important;
 }
 [data-theme="hotdogstand"] .preview code {
-  color: #ffffff !important;
-  background: #0000aa !important;
-}
-[data-theme="hotdogstand"] .preview blockquote {
-  border-left-color: #ffff00 !important;
-  background: #dd0000 !important;
+  color: #000000 !important;
+  background: #c0c0c0 !important;
 }
 [data-theme="hotdogstand"] .preview pre {
-  background: #0000aa !important;
-  color: #ffffff !important;
+  background: #c0c0c0 !important;
+  color: #000000 !important;
 }
-[data-theme="hotdogstand"] input,
+[data-theme="hotdogstand"] .preview blockquote {
+  border-left-color: #ff0000 !important;
+  background: #ffff00 !important;
+}
 [data-theme="hotdogstand"] .cm-editor {
-  background: #0000aa !important;
-  color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
 }
 [data-theme="hotdogstand"] .cm-gutters {
-  background: #cc0000 !important;
-  color: #ffff00 !important;
-  border-right: 2px solid #ffff00 !important;
+  background: #c0c0c0 !important;
+  color: #000000 !important;
+  border-right: 2px solid #000000 !important;
 }
 [data-theme="hotdogstand"] .cm-activeLine {
-  background: rgba(255, 255, 0, 0.1) !important;
+  background: rgba(255, 0, 0, 0.08) !important;
 }
 [data-theme="hotdogstand"] .cm-cursor {
-  border-left-color: #ffff00 !important;
+  border-left-color: #ff0000 !important;
 }
 
 /* ================================================================
