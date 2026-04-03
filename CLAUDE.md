@@ -40,8 +40,7 @@
 - Never mark a task complete without proving it works
 - Diff behavior between main and your changes when relevant
 - Ask yourself: "Would a staff engineer approve this?"
-- Run tests, check logs, demonstrate correctness
-- After code review fixes: run `npm run dev` for both frontend and backend, not just tests.  Vitest and ts-node have different TypeScript strictness — tests passing does NOT mean the server starts.
+- Write tests, run tests, check logs, demonstrate correctness
 
 ## Code Quality
 - Simplicity first — make every change as simple as possible, impact minimal code
@@ -69,13 +68,13 @@
 - When user mentions wanting something: create a GitHub issue immediately
 - Issues should have: clear title, context, and acceptance criteria
 - Label issues: `bug`, `feature`, `enhancement`, `refactor`
-- Figure out where it fits in dependency graph and update `IMPLEMENTATION_ROADMAP.md` accordingly
+- Figure out where it fits in dependency graph and update `PLAN.md` accordingly
 - NOTHING lives only in conversation. 
 
 ## Context Management
 - Before starting a new wave or large task: check /context and report remaining capacity
 - If below 30% free, recommend starting a fresh session before beginning new work
-- Compaction is fine — all state is in PROJECT_STATUS.md, GitHub issues, and IMPLEMENTATION_ROADMAP.md
+- Compaction is fine — all state is in PROJECT_STATUS.md, GitHub issues, and PLAN.md
 - CLAUDE.md is for behavioral rules only. Reference data (tech stack, scraper status, 
   environment setup, plugin list) lives in docs/ and PROJECT_STATUS.md. 
   Read those at session start per Session Protocol; 
