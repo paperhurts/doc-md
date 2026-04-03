@@ -34,3 +34,12 @@ export async function renameFile(oldPath: string, newPath: string): Promise<void
 export async function createDirectory(dirPath: string): Promise<void> {
   return await invoke("create_directory", { dirPath });
 }
+
+// Watcher commands
+export async function startWatching(vaultPath: string): Promise<void> {
+  return await invoke("start_watching", { vaultPath });
+}
+
+export async function stopWatching(): Promise<void> {
+  return await invoke("stop_watching");
+}
