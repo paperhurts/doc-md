@@ -16,10 +16,12 @@ import type { Extension } from "@codemirror/state";
 import { docMdTheme, docMdHighlightStyle } from "./theme";
 import { wikilinkPlugin } from "./wikilink";
 import { wikilinkAutocomplete } from "./autocomplete";
+import { createSelectionPlugin, createFormattingKeymap, type SelectionInfo } from "./toolbar";
 
 export function createEditorExtensions(
   onUpdate?: (content: string) => void,
   onNavigate?: (noteName: string) => void,
+  onSelectionChange?: (info: SelectionInfo) => void,
 ): Extension[] {
   const extensions: Extension[] = [
     lineNumbers(),
@@ -78,6 +80,12 @@ export function createEditorExtensions(
         },
       }),
     );
+  }
+
+  // Selection tracking + formatting keyboard shortcuts
+  if (onSelectionChange) {
+    extensions.push(createSelectionPlugin(onSelectionChange));
+    extensions.push(createFormattingKeymap());
   }
 
   return extensions;
