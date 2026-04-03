@@ -152,7 +152,7 @@
 /* --- CODEGIRL — Neon cyan/magenta on dark, terminal refined --- */
 /* Cyan = primary: H1, links, active states, interactive elements
    Magenta = secondary: H2/H3, tags, inline code, bold, emphasis */
-[data-theme="codegirl"] {
+[data-theme="darktm"] {
   --bg-primary: #0d0d12;
   --bg-secondary: #08080c;
   --bg-surface: #161620;
@@ -190,14 +190,14 @@
 }
 
 /* Codegirl: subtle glow on interactive elements */
-[data-theme="codegirl"] button:hover {
+[data-theme="darktm"] button:hover {
   text-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
 }
-[data-theme="codegirl"] .cm-wikilink-syntax {
+[data-theme="darktm"] .cm-wikilink-syntax {
   text-shadow: 0 0 4px rgba(0, 229, 255, 0.3);
 }
 /* Codegirl: magenta glow on code in preview */
-[data-theme="codegirl"] .preview code {
+[data-theme="darktm"] .preview code {
   color: #e040fb !important;
   text-shadow: 0 0 3px rgba(224, 64, 251, 0.2);
 }
