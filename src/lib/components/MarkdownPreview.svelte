@@ -1,6 +1,7 @@
 <script lang="ts">
   import { renderMarkdown } from "../editor/markdown";
   import { vaultStore } from "../stores/vault.svelte";
+  import "katex/dist/katex.min.css";
 
   let { content = "" }: { content: string } = $props();
 
@@ -162,5 +163,13 @@
   }
   .preview :global(em) {
     color: #f5c2e7;
+  }
+  .preview :global(.math-block) {
+    margin: 1em 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .preview :global(.math-error) {
+    color: #f38ba8;
   }
 </style>
