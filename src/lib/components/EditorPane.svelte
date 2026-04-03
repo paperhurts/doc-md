@@ -55,7 +55,7 @@
           onchange={handleChange}
           onsave={handleSave}
           onnavigate={(name) => vaultStore.navigateToNote(name)}
-          onselectionchange={(info) => { selectionInfo = info; }}
+          onselectionchange={(info) => { console.log("[toolbar] selection:", info.show, info.x, info.y); selectionInfo = info; }}
           onformatready={(handler) => { formatHandler = handler; }}
         />
       </div>
