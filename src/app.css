@@ -202,18 +202,18 @@
   text-shadow: 0 0 3px rgba(224, 64, 251, 0.2);
 }
 
-/* --- ALL-AMERICAN — Hot dog themed. You're welcome. --- */
+/* --- ALL-AMERICAN — This is a hot dog, not paper. --- */
 [data-theme="allamerican"] {
-  --bg-primary: #f5e6c8;
-  --bg-secondary: #ecdbb0;
-  --bg-surface: #e0cea0;
-  --text-primary: #3b2507;
-  --text-secondary: #7a5c2e;
-  --accent: #d4a017;
-  --accent-hover: #e6b422;
-  --accent-subtle: rgba(212, 160, 23, 0.12);
-  --border: #d4bc82;
-  --border-strong: #c4a55e;
+  --bg-primary: #2a1a0e;
+  --bg-secondary: #1e1208;
+  --bg-surface: #3d2816;
+  --text-primary: #ffd54f;
+  --text-secondary: #c49a3c;
+  --accent: #ffc107;
+  --accent-hover: #ffca28;
+  --accent-subtle: rgba(255, 193, 7, 0.15);
+  --border: rgba(255, 193, 7, 0.2);
+  --border-strong: rgba(255, 193, 7, 0.35);
 
   --font-ui: 'DM Sans', -apple-system, sans-serif;
   --font-heading: 'DM Sans', -apple-system, sans-serif;
@@ -223,23 +223,31 @@
 
   --radius: 8px;
   --radius-lg: 12px;
-  --shadow: 0 2px 8px rgba(59, 37, 7, 0.1);
-  --shadow-lg: 0 12px 36px rgba(59, 37, 7, 0.15);
-  --modal-backdrop: rgba(59, 37, 7, 0.35);
-  --modal-blur: blur(6px);
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --modal-backdrop: rgba(0, 0, 0, 0.6);
+  --modal-blur: blur(8px);
 
-  --heading-1: #c41e3a;
-  --heading-2: #d4a017;
-  --heading-3: #c41e3a;
-  --strong: #c41e3a;
-  --em: #d4a017;
-  --tag-bg: rgba(46, 125, 50, 0.12);
-  --tag-color: #2e7d32;
-  --mark-bg: rgba(212, 160, 23, 0.25);
+  --heading-1: #ff1744;
+  --heading-2: #ffc107;
+  --heading-3: #ff5252;
+  --strong: #ff1744;
+  --em: #ff8a80;
+  --tag-bg: rgba(76, 175, 80, 0.2);
+  --tag-color: #69f0ae;
+  --mark-bg: rgba(255, 193, 7, 0.3);
 }
 
+/* All-American: mustard & ketchup gradient header, neon relish glow on tags */
 [data-theme="allamerican"] header {
-  background: linear-gradient(135deg, #ecdbb0, #e0cea0) !important;
+  background: linear-gradient(135deg, #3d2816, #1e1208) !important;
+  border-bottom-color: rgba(255, 193, 7, 0.3) !important;
+}
+[data-theme="allamerican"] button:hover {
+  text-shadow: 0 0 6px rgba(255, 193, 7, 0.4);
+}
+[data-theme="allamerican"] .preview code {
+  color: #69f0ae !important;
 }
 
 /* ================================================================
