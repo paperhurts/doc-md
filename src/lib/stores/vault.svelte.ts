@@ -317,10 +317,17 @@ class VaultStore {
       return;
     }
 
-    const content = await readFile(path);
-    this.openFiles.push({ path, name, content, dirty: false });
-    this.activeFilePath = path;
-    this.refreshBacklinks();
+    try {
+      const content = await readFile(path);
+      // Guard against duplicate push (could happen if called twice rapidly)
+      if (!this.openFiles.some((f) => f.path === path)) {
+        this.openFiles.push({ path, name, content, dirty: false });
+      }
+      this.activeFilePath = path;
+      this.refreshBacklinks();
+    } catch (e) {
+      console.error("[vault] openFile error:", e);
+    }
   }
 
   async navigateToNote(noteName: string) {

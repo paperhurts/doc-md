@@ -41,18 +41,18 @@
   --mark-bg: rgba(167, 139, 250, 0.25);
 }
 
-/* --- EDITORIAL — Refined light with serif typography --- */
+/* --- EDITORIAL — Stark white, beautiful typography, barely any color --- */
 [data-theme="editorial"] {
-  --bg-primary: #faf8f5;
-  --bg-secondary: #f0ece4;
-  --bg-surface: #e8e2d8;
-  --text-primary: #2c2c2c;
-  --text-secondary: #6b6b6b;
-  --accent: #c0392b;
-  --accent-hover: #a93226;
-  --accent-subtle: rgba(192, 57, 43, 0.08);
-  --border: #d4cfc6;
-  --border-strong: #b8b0a4;
+  --bg-primary: #fafafa;
+  --bg-secondary: #f5f5f5;
+  --bg-surface: #eeeeee;
+  --text-primary: #1a1a1a;
+  --text-secondary: #888888;
+  --accent: #1a1a1a;
+  --accent-hover: #444444;
+  --accent-subtle: rgba(0, 0, 0, 0.04);
+  --border: #e0e0e0;
+  --border-strong: #cccccc;
 
   --font-ui: 'Source Serif 4', Georgia, serif;
   --font-heading: 'Playfair Display', Georgia, serif;
@@ -60,21 +60,21 @@
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --font-editor: 'JetBrains Mono', 'Fira Code', monospace;
 
-  --radius: 2px;
-  --radius-lg: 4px;
+  --radius: 1px;
+  --radius-lg: 2px;
   --shadow: none;
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --modal-backdrop: rgba(44, 44, 44, 0.35);
+  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --modal-backdrop: rgba(0, 0, 0, 0.2);
   --modal-blur: none;
 
-  --heading-1: #8b1a10;
-  --heading-2: #a0522d;
-  --heading-3: #6b4226;
-  --strong: #c0392b;
-  --em: #8b5e3c;
-  --tag-bg: rgba(192, 57, 43, 0.08);
-  --tag-color: #c0392b;
-  --mark-bg: rgba(192, 57, 43, 0.15);
+  --heading-1: #1a1a1a;
+  --heading-2: #333333;
+  --heading-3: #555555;
+  --strong: #1a1a1a;
+  --em: #555555;
+  --tag-bg: rgba(0, 0, 0, 0.05);
+  --tag-color: #555555;
+  --mark-bg: rgba(0, 0, 0, 0.08);
 }
 
 /* --- CYBERPUNK — Neon terminal with glow effects --- */
@@ -113,18 +113,18 @@
   --mark-bg: rgba(0, 229, 255, 0.2);
 }
 
-/* --- STUDIO — Warm and cozy with soft shadows --- */
+/* --- STUDIO — Warm amber/cream, rounded, soft shadows, terracotta pops --- */
 [data-theme="studio"] {
-  --bg-primary: #fdf6ec;
-  --bg-secondary: #f5ead6;
-  --bg-surface: #ecdcc4;
-  --text-primary: #3d3229;
-  --text-secondary: #7a6b5d;
-  --accent: #c05621;
-  --accent-hover: #dd6b20;
-  --accent-subtle: rgba(192, 86, 33, 0.08);
-  --border: #ddd0bc;
-  --border-strong: #c9b89e;
+  --bg-primary: #faf1e4;
+  --bg-secondary: #f2e4cf;
+  --bg-surface: #e8d5b8;
+  --text-primary: #2d2218;
+  --text-secondary: #6b5744;
+  --accent: #d4580a;
+  --accent-hover: #e8690f;
+  --accent-subtle: rgba(212, 88, 10, 0.1);
+  --border: #dcc8a8;
+  --border-strong: #c4a87a;
 
   --font-ui: 'DM Sans', -apple-system, sans-serif;
   --font-heading: 'Lora', Georgia, serif;
@@ -132,21 +132,21 @@
   --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
   --font-editor: 'Fira Code', 'JetBrains Mono', monospace;
 
-  --radius: 10px;
-  --radius-lg: 14px;
-  --shadow: 0 2px 8px rgba(80, 50, 20, 0.08);
-  --shadow-lg: 0 12px 40px rgba(80, 50, 20, 0.12);
-  --modal-backdrop: rgba(61, 50, 41, 0.35);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 2px 10px rgba(60, 35, 10, 0.12), 0 1px 3px rgba(60, 35, 10, 0.08);
+  --shadow-lg: 0 16px 48px rgba(60, 35, 10, 0.18), 0 4px 12px rgba(60, 35, 10, 0.1);
+  --modal-backdrop: rgba(45, 34, 24, 0.4);
   --modal-blur: blur(8px);
 
-  --heading-1: #9c4221;
-  --heading-2: #c05621;
-  --heading-3: #b7791f;
-  --strong: #c05621;
-  --em: #975a16;
-  --tag-bg: rgba(192, 86, 33, 0.1);
-  --tag-color: #c05621;
-  --mark-bg: rgba(192, 86, 33, 0.15);
+  --heading-1: #b83c06;
+  --heading-2: #d4580a;
+  --heading-3: #a86e1c;
+  --strong: #d4580a;
+  --em: #a86e1c;
+  --tag-bg: rgba(212, 88, 10, 0.12);
+  --tag-color: #d4580a;
+  --mark-bg: rgba(212, 88, 10, 0.18);
 }
 
 /* --- CODEGIRL — Neon cyan/magenta on dark, terminal refined --- */
@@ -280,9 +280,13 @@ body {
   z-index: 9999;
 }
 
-/* Studio: warm gradient on header area */
+/* Studio: warm gradient on header + visible shadows on surfaces */
 [data-theme="studio"] header {
-  background: linear-gradient(135deg, #f5ead6, #ecdcc4) !important;
+  background: linear-gradient(135deg, #f2e4cf, #e8d5b8) !important;
+}
+[data-theme="studio"] .preview pre,
+[data-theme="studio"] .preview blockquote {
+  box-shadow: 0 2px 8px rgba(60, 35, 10, 0.1);
 }
 
 /* Midnight: glass effect on surfaces */
