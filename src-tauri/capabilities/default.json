@@ -4,9 +4,6 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "shell:allow-stdin-write",
-    "shell:allow-spawn",
-    "shell:default",
     "dialog:default",
     "dialog:allow-open"
   ]

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { untrack } from "svelte";
-  import { listen } from "@tauri-apps/api/event";
   import FileExplorer from "./lib/components/FileExplorer.svelte";
   import TabBar from "./lib/components/TabBar.svelte";
   import EditorPane from "./lib/components/EditorPane.svelte";
@@ -11,7 +10,6 @@
 
   let searchOpen = $state(false);
   let graphOpen = $state(false);
-  let sidecarError = $state<string | null>(null);
   let initialized = false;
 
   $effect(() => {
@@ -19,13 +17,6 @@
       initialized = true;
       untrack(() => { vaultStore.init(); });
     }
-  });
-
-  $effect(() => {
-    const unlisten = listen<string>("sidecar-error", (event) => {
-      sidecarError = event.payload;
-    });
-    return () => { unlisten.then(fn => fn()); };
   });
 
   function handleKeydown(e: KeyboardEvent) {
@@ -70,22 +61,6 @@
       </span>
     </div>
   </header>
-
-  {#if sidecarError}
-    <div
-      class="flex items-center justify-between px-4 py-2 text-xs"
-      style="background-color: #f38ba8; color: #1e1e2e;"
-    >
-      <span>Sidecar failed to start: {sidecarError}. Search, backlinks, and graph are unavailable.</span>
-      <button
-        class="ml-4 rounded px-2 py-0.5"
-        style="background-color: rgba(0,0,0,0.15);"
-        onclick={() => sidecarError = null}
-      >
-        Dismiss
-      </button>
-    </div>
-  {/if}
 
   <div class="flex flex-1 overflow-hidden">
     <FileExplorer />

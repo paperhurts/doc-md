@@ -2,7 +2,7 @@
   import { onDestroy } from "svelte";
   import * as d3 from "d3";
   import type { GraphData, GraphNode, GraphEdge } from "../types";
-  import { getGraphData } from "../services/tauri";
+  import { linkIndex } from "../services/indexer";
   import { vaultStore } from "../stores/vault.svelte";
 
   interface Props {
@@ -32,7 +32,7 @@
 
     let data: GraphData;
     try {
-      data = await getGraphData();
+      data = linkIndex.getGraphData();
     } catch (e) {
       graphError = "Failed to load graph data. The sidecar may not be running.";
       console.error("[graph] load error:", e);
