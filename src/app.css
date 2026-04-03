@@ -202,8 +202,48 @@
   text-shadow: 0 0 3px rgba(224, 64, 251, 0.2);
 }
 
-/* --- ALL-AMERICAN — Windows 3.1 Hot Dog Stand. Pure chaos. --- */
+/* --- ALL-AMERICAN — Red, white & blue like the flag --- */
 [data-theme="allamerican"] {
+  --bg-primary: #0a1628;
+  --bg-secondary: #071020;
+  --bg-surface: #132244;
+  --text-primary: #f0f0f5;
+  --text-secondary: #8899bb;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-subtle: rgba(59, 130, 246, 0.12);
+  --border: rgba(59, 130, 246, 0.15);
+  --border-strong: rgba(59, 130, 246, 0.3);
+
+  --font-ui: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-heading: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-body: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+  --font-editor: 'Geist Mono', 'JetBrains Mono', monospace;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --modal-backdrop: rgba(0, 0, 0, 0.6);
+  --modal-blur: blur(12px);
+
+  --heading-1: #ef4444;
+  --heading-2: #f0f0f5;
+  --heading-3: #3b82f6;
+  --strong: #ef4444;
+  --em: #93c5fd;
+  --tag-bg: rgba(239, 68, 68, 0.12);
+  --tag-color: #ef4444;
+  --mark-bg: rgba(59, 130, 246, 0.25);
+}
+
+[data-theme="allamerican"] header {
+  background: linear-gradient(135deg, #071020, #132244) !important;
+}
+
+/* --- HOT DOG STAND — Windows 3.1. Pure chaos. --- */
+[data-theme="hotdogstand"] {
   --bg-primary: #ff0000;
   --bg-secondary: #cc0000;
   --bg-surface: #dd0000;
@@ -238,40 +278,39 @@
   --mark-bg: rgba(255, 255, 255, 0.3);
 }
 
-/* All-American: the full Hot Dog Stand experience */
-[data-theme="allamerican"] header {
+[data-theme="hotdogstand"] header {
   background: #cc0000 !important;
   border-bottom: 2px solid #ffff00 !important;
 }
-[data-theme="allamerican"] aside {
+[data-theme="hotdogstand"] aside {
   background: #cc0000 !important;
 }
-[data-theme="allamerican"] .preview code {
+[data-theme="hotdogstand"] .preview code {
   color: #ffffff !important;
   background: #0000aa !important;
 }
-[data-theme="allamerican"] .preview blockquote {
+[data-theme="hotdogstand"] .preview blockquote {
   border-left-color: #ffff00 !important;
   background: #dd0000 !important;
 }
-[data-theme="allamerican"] .preview pre {
+[data-theme="hotdogstand"] .preview pre {
   background: #0000aa !important;
   color: #ffffff !important;
 }
-[data-theme="allamerican"] input,
-[data-theme="allamerican"] .cm-editor {
+[data-theme="hotdogstand"] input,
+[data-theme="hotdogstand"] .cm-editor {
   background: #0000aa !important;
   color: #ffffff !important;
 }
-[data-theme="allamerican"] .cm-gutters {
+[data-theme="hotdogstand"] .cm-gutters {
   background: #cc0000 !important;
   color: #ffff00 !important;
   border-right: 2px solid #ffff00 !important;
 }
-[data-theme="allamerican"] .cm-activeLine {
+[data-theme="hotdogstand"] .cm-activeLine {
   background: rgba(255, 255, 0, 0.1) !important;
 }
-[data-theme="allamerican"] .cm-cursor {
+[data-theme="hotdogstand"] .cm-cursor {
   border-left-color: #ffff00 !important;
 }
 

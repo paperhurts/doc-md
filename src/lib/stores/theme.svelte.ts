@@ -10,7 +10,8 @@ const THEMES: ThemeInfo[] = [
   { id: "editorial", name: "Editorial", description: "Refined light with serif typography" },
   { id: "cyberpunk", name: "Cyberpunk", description: "Neon terminal with glow effects" },
   { id: "studio", name: "Studio", description: "Warm and cozy with soft shadows" },
-  { id: "allamerican", name: "All-American", description: "Windows 3.1 Hot Dog Stand" },
+  { id: "allamerican", name: "All-American", description: "Red, white & blue" },
+  { id: "hotdogstand", name: "Hot Dog Stand", description: "Windows 3.1 — pure chaos" },
 ];
 
 const STORAGE_KEY = "doc-md-theme";
