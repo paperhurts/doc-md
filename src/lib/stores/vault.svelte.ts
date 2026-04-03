@@ -24,7 +24,8 @@ import type { VaultEntry, Backlink, NoteName } from "../types";
 
 /** Strip Windows UNC prefix (\\?\) that Rust's canonicalize adds. */
 function normalizePath(p: string): string {
-  return p.replace(/^\\\\\?\\/, "");
+  if (p.startsWith("\\\\?\\")) return p.slice(4);
+  return p;
 }
 
 interface VaultConfig {
