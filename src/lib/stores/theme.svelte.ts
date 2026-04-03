@@ -6,7 +6,7 @@ export interface ThemeInfo {
 
 const THEMES: ThemeInfo[] = [
   { id: "midnight", name: "Midnight", description: "Sleek dark with near-white headings" },
-  { id: "codegirl", name: "Dark TM", description: "Neon cyan/magenta on dark" },
+  { id: "darktm", name: "Dark TM", description: "Neon cyan/magenta on dark" },
   { id: "editorial", name: "Editorial", description: "Refined light with serif typography" },
   { id: "cyberpunk", name: "Cyberpunk", description: "Neon terminal with glow effects" },
   { id: "studio", name: "Studio", description: "Warm and cozy with soft shadows" },
