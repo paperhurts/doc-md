@@ -65,8 +65,6 @@
     if (activeId && activeId.startsWith("\\\\?\\")) {
       activeId = activeId.slice(4);
     }
-    const matchesNode = activeId ? data.nodes.some((n) => n.id === activeId) : false;
-    console.log("[graph] activeId:", activeId, "matches:", matchesNode);
     const connectedIds = new Set<string>();
     if (activeId) {
       connectedIds.add(activeId);
