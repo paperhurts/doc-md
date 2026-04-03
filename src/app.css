@@ -180,12 +180,12 @@
   /* Cyan hierarchy: H1 bright, dimmer for lower levels */
   --heading-1: #00e5ff;
   --heading-2: #e040fb;
-  --heading-3: #ce93d8;
+  --heading-3: #00e5ff;
   /* Magenta for emphasis and inline elements */
-  --strong: #e040fb;
-  --em: #ce93d8;
+  --strong: #00e5ff;
+  --em: #00e5ff;
   --tag-bg: rgba(224, 64, 251, 0.1);
-  --tag-color: #e040fb;
+  --tag-color: #00e5ff;
   --mark-bg: rgba(0, 229, 255, 0.2);
 }
 
