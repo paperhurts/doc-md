@@ -4,32 +4,11 @@ import {
   type DecorationSet,
   type EditorView,
   type ViewUpdate,
-  WidgetType,
 } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/state";
 
 const WIKILINK_RE = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 const TAG_RE = /(?:^|\s)(#[a-zA-Z][\w/-]*)/g;
-
-class WikilinkWidget extends WidgetType {
-  constructor(
-    readonly text: string,
-    readonly alias: string | undefined,
-  ) {
-    super();
-  }
-
-  toDOM(): HTMLElement {
-    const span = document.createElement("span");
-    span.className = "cm-wikilink";
-    span.textContent = this.alias ?? this.text;
-    span.style.color = "var(--accent)";
-    span.style.cursor = "pointer";
-    span.style.textDecoration = "underline";
-    span.style.textDecorationStyle = "dotted";
-    return span;
-  }
-}
 
 function buildDecorations(view: EditorView): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();

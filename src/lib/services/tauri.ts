@@ -1,5 +1,21 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { VaultEntry } from "../types";
+import type { VaultEntry, GraphData } from "../types";
+
+// Runtime validation helpers for IPC boundary data
+function validate<T>(data: unknown, requiredFields: string[], label: string): T {
+  if (typeof data !== "object" || data === null) {
+    throw new Error(`${label}: expected object, got ${typeof data}`);
+  }
+  for (const f of requiredFields) {
+    if (!(f in data)) throw new Error(`${label}: missing field '${f}'`);
+  }
+  return data as T;
+}
+
+function validateArray<T>(data: unknown, requiredFields: string[], label: string): T[] {
+  if (!Array.isArray(data)) throw new Error(`${label}: expected array, got ${typeof data}`);
+  return data.map((item, i) => validate<T>(item, requiredFields, `${label}[${i}]`));
+}
 
 export async function sidecarPing(): Promise<string> {
   return await invoke<string>("sidecar_ping");
@@ -62,7 +78,8 @@ export interface Backlink {
 }
 
 export async function getBacklinks(noteName: string): Promise<Backlink[]> {
-  return (await sidecarRequest("get_backlinks", { note_name: noteName })) as Backlink[];
+  const result = await sidecarRequest("get_backlinks", { note_name: noteName });
+  return validateArray<Backlink>(result, ["path", "name", "contexts"], "Backlink");
 }
 
 export interface ForwardLink {
@@ -72,7 +89,8 @@ export interface ForwardLink {
 }
 
 export async function getForwardLinks(filePath: string): Promise<ForwardLink[]> {
-  return (await sidecarRequest("get_forward_links", { file_path: filePath })) as ForwardLink[];
+  const result = await sidecarRequest("get_forward_links", { file_path: filePath });
+  return validateArray<ForwardLink>(result, ["target", "resolved_path", "exists"], "ForwardLink");
 }
 
 export interface NoteName {
@@ -81,7 +99,8 @@ export interface NoteName {
 }
 
 export async function getAllNoteNames(): Promise<NoteName[]> {
-  return (await sidecarRequest("get_all_note_names")) as NoteName[];
+  const result = await sidecarRequest("get_all_note_names");
+  return validateArray<NoteName>(result, ["name", "path"], "NoteName");
 }
 
 export async function getAllTags(): Promise<Record<string, number>> {
@@ -105,8 +124,9 @@ export interface SearchResult {
 }
 
 // Graph commands
-export async function getGraphData(): Promise<import("../types").GraphData> {
-  return (await sidecarRequest("get_graph_data")) as import("../types").GraphData;
+export async function getGraphData(): Promise<GraphData> {
+  const result = await sidecarRequest("get_graph_data");
+  return validate<GraphData>(result, ["nodes", "edges"], "GraphData");
 }
 
 export async function searchVault(
@@ -114,5 +134,6 @@ export async function searchVault(
   query: string,
   limit: number = 20,
 ): Promise<SearchResult[]> {
-  return (await sidecarRequest("search", { vault_path: vaultPath, query, limit })) as SearchResult[];
+  const result = await sidecarRequest("search", { vault_path: vaultPath, query, limit });
+  return validateArray<SearchResult>(result, ["path", "title", "snippet", "score"], "SearchResult");
 }
