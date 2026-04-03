@@ -3,8 +3,12 @@
   import { settingsStore } from "../stores/settings.svelte";
   import Editor from "./Editor.svelte";
   import MarkdownPreview from "./MarkdownPreview.svelte";
+  import FormattingToolbar from "./FormattingToolbar.svelte";
+  import type { SelectionInfo, FormatAction } from "../editor/toolbar";
 
   const file = $derived(vaultStore.activeFile);
+  let selectionInfo = $state<SelectionInfo | null>(null);
+  let formatHandler = $state<((action: FormatAction) => void) | undefined>(undefined);
 
   let showPreview = $state(settingsStore.settings.showPreviewByDefault);
   let saveTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -46,7 +50,14 @@
 
     <div class="flex min-h-0 flex-1 overflow-hidden">
       <div class="h-full overflow-hidden" style="width: {showPreview ? '50%' : '100%'};">
-        <Editor content={file.content} onchange={handleChange} onsave={handleSave} onnavigate={(name) => vaultStore.navigateToNote(name)} />
+        <Editor
+          content={file.content}
+          onchange={handleChange}
+          onsave={handleSave}
+          onnavigate={(name) => vaultStore.navigateToNote(name)}
+          onselectionchange={(info) => { selectionInfo = info; }}
+          onformatready={(handler) => { formatHandler = handler; }}
+        />
       </div>
 
       {#if showPreview}
@@ -58,6 +69,7 @@
         </div>
       {/if}
     </div>
+    <FormattingToolbar {selectionInfo} onformat={formatHandler} />
   {:else}
     <div class="flex flex-1 items-center justify-center">
       <div class="text-center">

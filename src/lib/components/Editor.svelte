@@ -2,17 +2,22 @@
   import { EditorView } from "@codemirror/view";
   import { EditorState } from "@codemirror/state";
   import { createEditorExtensions } from "../editor/setup";
+  import { applyFormat, type SelectionInfo, type FormatAction } from "../editor/toolbar";
 
   let {
     content = "",
     onchange,
     onsave,
     onnavigate,
+    onselectionchange,
+    onformatready,
   }: {
     content: string;
     onchange?: (content: string) => void;
     onsave?: () => void;
     onnavigate?: (noteName: string) => void;
+    onselectionchange?: (info: SelectionInfo) => void;
+    onformatready?: (handler: (action: FormatAction) => void) => void;
   } = $props();
 
   let container: HTMLDivElement;
@@ -36,7 +41,7 @@
   $effect(() => {
     if (!container) return;
 
-    const extensions = createEditorExtensions(handleUpdate, onnavigate);
+    const extensions = createEditorExtensions(handleUpdate, onnavigate, onselectionchange);
 
     const state = EditorState.create({
       doc: initialContent,
@@ -46,6 +51,11 @@
     view = new EditorView({
       state,
       parent: container,
+    });
+
+    // Expose format handler so parent can dispatch commands without accessing view
+    onformatready?.((action: FormatAction) => {
+      if (view) applyFormat(view, action);
     });
 
     return () => {
