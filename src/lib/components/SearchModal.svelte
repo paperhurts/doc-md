@@ -1,6 +1,7 @@
 <script lang="ts">
   import { vaultStore } from "../stores/vault.svelte";
-  import { searchVault, type SearchResult } from "../services/tauri";
+  import { searchIndex } from "../services/search";
+  import type { SearchResult } from "../types";
 
   let { open = false, onclose }: { open: boolean; onclose: () => void } = $props();
 
@@ -33,7 +34,7 @@
     searching = true;
     searchError = null;
     try {
-      results = await searchVault(vaultStore.vault.path, query);
+      results = searchIndex.search(query);
     } catch (e) {
       results = [];
       searchError = "Search failed. The search index may not be available.";

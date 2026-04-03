@@ -4,16 +4,10 @@ import {
   listFiles,
   readFile,
   writeFile,
-  indexVault,
-  indexFile,
-  getBacklinks,
-  getAllNoteNames,
-  buildSearchIndex,
-  updateSearchIndex,
-  type Backlink,
-  type NoteName,
 } from "../services/tauri";
-import type { VaultEntry } from "../types";
+import { linkIndex } from "../services/indexer";
+import { searchIndex } from "../services/search";
+import type { VaultEntry, Backlink, NoteName } from "../types";
 
 interface VaultConfig {
   path: string;
@@ -108,9 +102,20 @@ class VaultStore {
   async buildIndex() {
     if (!this.vault) return;
     try {
-      await indexVault(this.vault.path);
-      await buildSearchIndex(this.vault.path);
-      this.noteNames = await getAllNoteNames();
+      // Build link index from the file tree (reads all files via Rust IPC)
+      const result = await linkIndex.indexVault(this.tree);
+      console.log("[vault] indexed:", result);
+
+      this.noteNames = linkIndex.getAllNoteNames();
+
+      // Build search index from the cached content
+      const files: { path: string; name: string; content: string }[] = [];
+      for (const [path, content] of linkIndex["contentCache"]) {
+        const parts = path.replace(/\\/g, "/").split("/");
+        files.push({ path, name: parts[parts.length - 1] ?? "", content });
+      }
+      searchIndex.buildIndex(files);
+      console.log("[vault] search index built:", files.length, "files");
     } catch (e) {
       console.error("[vault] buildIndex error:", e);
       this.error = "Failed to build index. Search and backlinks may be unavailable.";
@@ -120,17 +125,18 @@ class VaultStore {
   async openFile(path: string, name: string) {
     const existing = this.openFiles.find((f) => f.path === path);
     if (existing) {
-      this.setActiveFile(path);
+      this.activeFilePath = path;
+      this.refreshBacklinks();
       return;
     }
 
     const content = await readFile(path);
     this.openFiles.push({ path, name, content, dirty: false });
-    this.setActiveFile(path);
+    this.activeFilePath = path;
+    this.refreshBacklinks();
   }
 
   async navigateToNote(noteName: string) {
-    // Find the note by name in the index
     const match = this.noteNames.find(
       (n) => n.name === noteName.toLowerCase(),
     );
@@ -163,13 +169,12 @@ class VaultStore {
     if (file) {
       await writeFile(path, file.content);
       file.dirty = false;
-      // Re-index the saved file
+      // Re-index the saved file locally
       try {
-        await indexFile(path);
-        if (this.vault) {
-          await updateSearchIndex(this.vault.path, path);
-        }
-        this.noteNames = await getAllNoteNames();
+        await linkIndex.indexFile(path, file.content);
+        const parts = path.replace(/\\/g, "/").split("/");
+        searchIndex.updateFile(path, parts[parts.length - 1] ?? "", file.content);
+        this.noteNames = linkIndex.getAllNoteNames();
         await this.refreshBacklinks();
       } catch (e) {
         console.error("[vault] saveFile re-index error:", e);
@@ -177,13 +182,13 @@ class VaultStore {
     }
   }
 
-  async refreshBacklinks() {
+  refreshBacklinks() {
     if (!this.activeFilePath) {
       this.backlinks = [];
       return;
     }
     try {
-      this.backlinks = await getBacklinks(this.activeFileName);
+      this.backlinks = linkIndex.getBacklinks(this.activeFileName);
     } catch (e) {
       console.error("[vault] refreshBacklinks error:", e);
       this.backlinks = [];
