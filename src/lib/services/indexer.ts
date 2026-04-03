@@ -134,7 +134,7 @@ export class LinkIndex {
   }
 
   getBacklinks(noteName: string): Backlink[] {
-    const sourcePaths = this.backlinks.get(noteName.toLowerCase()) ?? [];
+    const sourcePaths = [...new Set(this.backlinks.get(noteName.toLowerCase()) ?? [])];
     return sourcePaths.map((srcPath) => {
       const content = this.contentCache.get(srcPath) ?? "";
       const contexts = extractLinkContext(content, noteName);

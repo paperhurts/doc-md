@@ -6,10 +6,12 @@
   import BacklinksPanel from "./lib/components/BacklinksPanel.svelte";
   import SearchModal from "./lib/components/SearchModal.svelte";
   import GraphView from "./lib/components/GraphView.svelte";
+  import CommandPalette from "./lib/components/CommandPalette.svelte";
   import { vaultStore } from "./lib/stores/vault.svelte";
 
   let searchOpen = $state(false);
   let graphOpen = $state(false);
+  let paletteOpen = $state(false);
   let initialized = false;
 
   $effect(() => {
@@ -28,6 +30,14 @@
       e.preventDefault();
       graphOpen = !graphOpen;
     }
+    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      e.preventDefault();
+      paletteOpen = !paletteOpen;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === "d") {
+      e.preventDefault();
+      vaultStore.openDailyNote();
+    }
   }
 </script>
 
@@ -35,11 +45,19 @@
 
 <main class="flex h-full flex-col">
   <header
-    class="flex h-10 items-center justify-between border-b px-4"
+    class="flex h-10 shrink-0 items-center justify-between border-b px-4"
     style="border-color: var(--border); background-color: var(--bg-secondary);"
   >
     <span class="text-sm font-semibold" style="color: var(--accent);">doc-md</span>
     <div class="flex items-center gap-3">
+      <button
+        class="rounded px-2 py-0.5 text-xs hover:opacity-80"
+        style="color: var(--text-secondary); border: 1px solid var(--border);"
+        onclick={() => (paletteOpen = true)}
+        title="Command palette (Ctrl+K)"
+      >
+        Commands
+      </button>
       <button
         class="rounded px-2 py-0.5 text-xs hover:opacity-80"
         style="color: var(--text-secondary); border: 1px solid var(--border);"
@@ -73,6 +91,7 @@
 </main>
 
 <SearchModal open={searchOpen} onclose={() => (searchOpen = false)} />
+<CommandPalette open={paletteOpen} onclose={() => (paletteOpen = false)} onsearch={() => { paletteOpen = false; searchOpen = true; }} ongraph={() => { paletteOpen = false; graphOpen = true; }} />
 
 {#if graphOpen}
   <GraphView onclose={() => (graphOpen = false)} />

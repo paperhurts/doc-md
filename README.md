@@ -14,6 +14,9 @@ Notes are stored as **plain markdown files** on disk. No proprietary formats, no
 - **Math rendering** — KaTeX support for `$inline$` and `$$block$$` LaTeX math
 - **File explorer** — Tree view sidebar with create, rename, delete, and live external change detection
 - **Tabbed editing** — Multiple open files with dirty indicators
+- **Daily notes** — Ctrl+D opens today's note, auto-creates with template in `daily/` folder
+- **Templates** — `_templates/` folder with variable substitution (`{{date}}`, `{{title}}`, `{{time}}`)
+- **Command palette** — Ctrl+K for quick access to all commands, file search, and template picker
 - **Auto-save** — 1-second debounced auto-save with Ctrl+S manual save
 - **Frontmatter** — YAML frontmatter parsing for tags and metadata
 - **Dark theme** — Catppuccin Mocha color scheme
@@ -82,6 +85,8 @@ doc-md/
 | Ctrl+S | Save current file |
 | Ctrl+Shift+F | Toggle search modal |
 | Ctrl+Shift+G | Toggle graph view |
+| Ctrl+K | Command palette |
+| Ctrl+D | Open today's daily note |
 | Ctrl+Click | Navigate to wikilink target in editor |
 
 ## License

@@ -10,6 +10,14 @@ import {
 } from "../services/tauri";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { linkIndex } from "../services/indexer";
+import {
+  getDailyNotePath,
+  applyTemplate,
+  getTemplateVars,
+  DAILY_NOTE_TEMPLATE,
+  NEW_NOTE_TEMPLATE,
+} from "../services/templates";
+import { createDirectory } from "../services/tauri";
 import { searchIndex } from "../services/search";
 import type { VaultEntry, Backlink, NoteName } from "../types";
 
@@ -201,17 +209,70 @@ class VaultStore {
     this.refreshBacklinks();
   }
 
-  async createNote(name: string) {
+  async createNote(name: string, template?: string) {
     if (!this.vault) return;
     const fileName = name.endsWith(".md") ? name : `${name}.md`;
     const sep = this.vault.path.includes("\\") ? "\\" : "/";
     const filePath = `${this.vault.path}${sep}${fileName}`;
+    const title = name.replace(/\.md$/, "");
+    const content = template
+      ? applyTemplate(template, getTemplateVars(title))
+      : applyTemplate(NEW_NOTE_TEMPLATE, getTemplateVars(title));
     try {
-      await writeFile(filePath, `# ${name.replace(/\.md$/, "")}\n\n`);
+      await writeFile(filePath, content);
       await this.refreshTree();
       await this.openFile(filePath, fileName);
     } catch (e) {
       console.error("Failed to create note:", e);
+    }
+  }
+
+  async openDailyNote() {
+    if (!this.vault) return;
+    const { filePath, fileName, title } = getDailyNotePath(this.vault.path);
+    try {
+      // Try to open existing daily note
+      const content = await readFile(filePath).catch(() => null);
+      if (content !== null) {
+        await this.openFile(filePath, fileName);
+        return;
+      }
+      // Create with daily note template
+      const sep = this.vault.path.includes("\\") ? "\\" : "/";
+      const dailyDir = `${this.vault.path}${sep}daily`;
+      await createDirectory(dailyDir);
+      const newContent = applyTemplate(DAILY_NOTE_TEMPLATE, getTemplateVars(title));
+      await writeFile(filePath, newContent);
+      await this.refreshTree();
+      await this.openFile(filePath, fileName);
+    } catch (e) {
+      console.error("Failed to open daily note:", e);
+    }
+  }
+
+  /** List template files from _templates/ folder in the vault. */
+  async getTemplates(): Promise<{ name: string; path: string }[]> {
+    if (!this.vault) return [];
+    const sep = this.vault.path.includes("\\") ? "\\" : "/";
+    const templateDir = `${this.vault.path}${sep}_templates`;
+    try {
+      const entries = await listFiles(templateDir);
+      return entries
+        .filter((e) => !e.is_dir && (e.name.endsWith(".md") || e.name.endsWith(".markdown")))
+        .map((e) => ({ name: e.name.replace(/\.(md|markdown)$/, ""), path: e.path }));
+    } catch {
+      return []; // No _templates folder
+    }
+  }
+
+  /** Create a new note from a template file. */
+  async createFromTemplate(templatePath: string, noteName: string) {
+    if (!this.vault) return;
+    try {
+      const templateContent = await readFile(templatePath);
+      await this.createNote(noteName, templateContent);
+    } catch (e) {
+      console.error("Failed to create from template:", e);
     }
   }
 
