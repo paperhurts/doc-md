@@ -21,6 +21,11 @@ import { createDirectory } from "../services/tauri";
 import { searchIndex } from "../services/search";
 import type { VaultEntry, Backlink, NoteName } from "../types";
 
+/** Strip Windows UNC prefix (\\?\) that Rust's canonicalize adds. */
+function normalizePath(p: string): string {
+  return p.replace(/^\\\\\?\\/, "");
+}
+
 interface VaultConfig {
   path: string;
   name: string;
@@ -310,6 +315,7 @@ class VaultStore {
   }
 
   async openFile(path: string, name: string) {
+    path = normalizePath(path);
     const existing = this.openFiles.find((f) => f.path === path);
     if (existing) {
       this.activeFilePath = path;
@@ -317,10 +323,16 @@ class VaultStore {
       return;
     }
 
-    const content = await readFile(path);
-    this.openFiles.push({ path, name, content, dirty: false });
-    this.activeFilePath = path;
-    this.refreshBacklinks();
+    try {
+      const content = await readFile(path);
+      if (!this.openFiles.some((f) => f.path === path)) {
+        this.openFiles.push({ path, name, content, dirty: false });
+      }
+      this.activeFilePath = path;
+      this.refreshBacklinks();
+    } catch (e) {
+      console.error("[vault] openFile error:", e);
+    }
   }
 
   async navigateToNote(noteName: string) {

@@ -1,15 +1,210 @@
 @import "tailwindcss";
 
-:root {
-  --bg-primary: #1e1e2e;
-  --bg-secondary: #181825;
-  --bg-surface: #313244;
-  --text-primary: #cdd6f4;
-  --text-secondary: #a6adc8;
-  --accent: #89b4fa;
-  --accent-hover: #74c7ec;
-  --border: #45475a;
+/* ================================================================
+   THEME SYSTEM — 4 themes, CSS variable driven
+   ================================================================ */
+
+/* --- MIDNIGHT (default) — Sleek dark, Obsidian-killer --- */
+:root,
+[data-theme="midnight"] {
+  --bg-primary: #111116;
+  --bg-secondary: #0c0c10;
+  --bg-surface: #1c1c24;
+  --text-primary: #e4e4e7;
+  --text-secondary: #9ca3af;
+  --accent: #a78bfa;
+  --accent-hover: #c4b5fd;
+  --accent-subtle: rgba(167, 139, 250, 0.12);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+
+  --font-ui: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-heading: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-body: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+  --font-editor: 'Geist Mono', 'JetBrains Mono', monospace;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --modal-backdrop: rgba(0, 0, 0, 0.6);
+  --modal-blur: blur(12px);
+
+  --heading-1: #f0f0f3;
+  --heading-2: #e4e4e7;
+  --heading-3: #d4d4d8;
+  --strong: #f0f0f3;
+  --em: #d4d4d8;
+  --tag-bg: rgba(167, 139, 250, 0.12);
+  --tag-color: #c4b5fd;
+  --mark-bg: rgba(167, 139, 250, 0.25);
 }
+
+/* --- EDITORIAL — Stark white, beautiful typography, barely any color --- */
+[data-theme="editorial"] {
+  --bg-primary: #fafafa;
+  --bg-secondary: #f5f5f5;
+  --bg-surface: #eeeeee;
+  --text-primary: #1a1a1a;
+  --text-secondary: #888888;
+  --accent: #1a1a1a;
+  --accent-hover: #444444;
+  --accent-subtle: rgba(0, 0, 0, 0.04);
+  --border: #e0e0e0;
+  --border-strong: #cccccc;
+
+  --font-ui: 'Source Serif 4', Georgia, serif;
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-editor: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --radius: 1px;
+  --radius-lg: 2px;
+  --shadow: none;
+  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --modal-backdrop: rgba(0, 0, 0, 0.2);
+  --modal-blur: none;
+
+  --heading-1: #1a1a1a;
+  --heading-2: #333333;
+  --heading-3: #555555;
+  --strong: #1a1a1a;
+  --em: #555555;
+  --tag-bg: rgba(0, 0, 0, 0.05);
+  --tag-color: #555555;
+  --mark-bg: rgba(0, 0, 0, 0.08);
+}
+
+/* --- CYBERPUNK — Neon terminal with glow effects --- */
+[data-theme="cyberpunk"] {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #050505;
+  --bg-surface: #141414;
+  --text-primary: #00ff41;
+  --text-secondary: #00cc33;
+  --accent: #00e5ff;
+  --accent-hover: #40efff;
+  --accent-subtle: rgba(0, 229, 255, 0.1);
+  --border: rgba(0, 255, 65, 0.15);
+  --border-strong: rgba(0, 255, 65, 0.3);
+
+  --font-ui: 'Share Tech Mono', 'Courier New', monospace;
+  --font-heading: 'Share Tech Mono', 'Courier New', monospace;
+  --font-body: 'Share Tech Mono', 'Courier New', monospace;
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+  --font-editor: 'Share Tech Mono', 'Courier New', monospace;
+
+  --radius: 0px;
+  --radius-lg: 0px;
+  --shadow: 0 0 8px rgba(0, 255, 65, 0.15);
+  --shadow-lg: 0 0 24px rgba(0, 229, 255, 0.2);
+  --modal-backdrop: rgba(0, 0, 0, 0.8);
+  --modal-blur: none;
+
+  --heading-1: #00e5ff;
+  --heading-2: #00ff41;
+  --heading-3: #ffea00;
+  --strong: #ff0055;
+  --em: #ff6ec7;
+  --tag-bg: rgba(0, 229, 255, 0.1);
+  --tag-color: #00e5ff;
+  --mark-bg: rgba(0, 229, 255, 0.2);
+}
+
+/* --- STUDIO — Warm amber/cream, rounded, soft shadows, terracotta pops --- */
+[data-theme="studio"] {
+  --bg-primary: #faf1e4;
+  --bg-secondary: #f2e4cf;
+  --bg-surface: #e8d5b8;
+  --text-primary: #2d2218;
+  --text-secondary: #6b5744;
+  --accent: #d4580a;
+  --accent-hover: #e8690f;
+  --accent-subtle: rgba(212, 88, 10, 0.1);
+  --border: #dcc8a8;
+  --border-strong: #c4a87a;
+
+  --font-ui: 'DM Sans', -apple-system, sans-serif;
+  --font-heading: 'Lora', Georgia, serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+  --font-editor: 'Fira Code', 'JetBrains Mono', monospace;
+
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 2px 10px rgba(60, 35, 10, 0.12), 0 1px 3px rgba(60, 35, 10, 0.08);
+  --shadow-lg: 0 16px 48px rgba(60, 35, 10, 0.18), 0 4px 12px rgba(60, 35, 10, 0.1);
+  --modal-backdrop: rgba(45, 34, 24, 0.4);
+  --modal-blur: blur(8px);
+
+  --heading-1: #b83c06;
+  --heading-2: #d4580a;
+  --heading-3: #a86e1c;
+  --strong: #d4580a;
+  --em: #a86e1c;
+  --tag-bg: rgba(212, 88, 10, 0.12);
+  --tag-color: #d4580a;
+  --mark-bg: rgba(212, 88, 10, 0.18);
+}
+
+/* --- CODEGIRL — Neon cyan/magenta on dark, terminal refined --- */
+/* Cyan = primary: H1, links, active states, interactive elements
+   Magenta = secondary: H2/H3, tags, inline code, bold, emphasis */
+[data-theme="darktm"] {
+  --bg-primary: #0d0d12;
+  --bg-secondary: #08080c;
+  --bg-surface: #161620;
+  --text-primary: #e0dfe6;
+  --text-secondary: #7a7a8e;
+  --accent: #00e5ff;
+  --accent-hover: #40efff;
+  --accent-subtle: rgba(0, 229, 255, 0.08);
+  --border: rgba(0, 229, 255, 0.08);
+  --border-strong: rgba(0, 229, 255, 0.18);
+
+  --font-ui: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-heading: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-body: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+  --font-editor: 'Geist Mono', 'JetBrains Mono', monospace;
+
+  --radius: 4px;
+  --radius-lg: 8px;
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --modal-backdrop: rgba(0, 0, 0, 0.7);
+  --modal-blur: blur(10px);
+
+  /* Cyan hierarchy: H1 bright, dimmer for lower levels */
+  --heading-1: #00e5ff;
+  --heading-2: #e040fb;
+  --heading-3: #ce93d8;
+  /* Magenta for emphasis and inline elements */
+  --strong: #e040fb;
+  --em: #ce93d8;
+  --tag-bg: rgba(224, 64, 251, 0.1);
+  --tag-color: #e040fb;
+  --mark-bg: rgba(0, 229, 255, 0.2);
+}
+
+/* Codegirl: subtle glow on interactive elements */
+[data-theme="darktm"] button:hover {
+  text-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+}
+[data-theme="darktm"] .cm-wikilink-syntax {
+  text-shadow: 0 0 4px rgba(0, 229, 255, 0.3);
+}
+/* Codegirl: magenta glow on code in preview */
+[data-theme="darktm"] .preview code {
+  color: #e040fb !important;
+  text-shadow: 0 0 3px rgba(224, 64, 251, 0.2);
+}
+
+/* ================================================================
+   BASE STYLES
+   ================================================================ */
 
 html,
 body,
@@ -20,8 +215,82 @@ body,
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, sans-serif;
+  font-family: var(--font-ui);
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Smooth transitions on theme switch */
+*,
+*::before,
+*::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease, box-shadow 0.2s ease;
+}
+/* Exclude editor internals from transitions (causes jank) */
+.cm-editor *,
+.cm-editor *::before,
+.cm-editor *::after {
+  transition: none;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ================================================================
+   THEME-SPECIFIC EFFECTS
+   ================================================================ */
+
+/* Cyberpunk: accent glow on interactive elements */
+[data-theme="cyberpunk"] button:hover,
+[data-theme="cyberpunk"] a:hover {
+  text-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent);
+}
+
+[data-theme="cyberpunk"] input:focus {
+  box-shadow: 0 0 0 1px var(--accent), 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+/* Cyberpunk: scanline overlay on the app */
+[data-theme="cyberpunk"] #app::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 65, 0.015) 2px,
+    rgba(0, 255, 65, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Studio: warm gradient on header + visible shadows on surfaces */
+[data-theme="studio"] header {
+  background: linear-gradient(135deg, #f2e4cf, #e8d5b8) !important;
+}
+[data-theme="studio"] .preview pre,
+[data-theme="studio"] .preview blockquote {
+  box-shadow: 0 2px 8px rgba(60, 35, 10, 0.1);
+}
+
+/* Midnight: glass effect on surfaces */
+[data-theme="midnight"] .glass {
+  backdrop-filter: blur(12px);
+  background: rgba(28, 28, 36, 0.8) !important;
 }

@@ -65,7 +65,7 @@
         {#each tags as [tag, count] (tag)}
           <button
             class="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs"
-            style="background: {selectedTag === tag ? 'rgba(203, 166, 247, 0.3)' : 'rgba(203, 166, 247, 0.1)'}; color: #cba6f7; cursor: pointer;"
+            style="background: {selectedTag === tag ? 'var(--accent-subtle)' : 'var(--tag-bg)'}; color: var(--tag-color); cursor: pointer; border-radius: var(--radius);"
             onclick={() => selectTag(tag)}
           >
             #{tag}
