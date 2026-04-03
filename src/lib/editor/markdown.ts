@@ -9,21 +9,20 @@ function wikilinkPlugin(md: MarkdownIt) {
     ((tokens, idx) => md.utils.escapeHtml(tokens[idx].content));
 
   md.renderer.rules.text = (tokens, idx, options, env, self) => {
-    let text = tokens[idx].content;
+    // Escape HTML first to prevent XSS — escapeHtml only touches & < > "
+    // so [ ] | # are preserved for wikilink and tag regex matching
+    let text = md.utils.escapeHtml(tokens[idx].content);
 
-    // Replace wiki links
+    // Replace wiki links (captured groups are already escaped)
     text = text.replace(WIKILINK_RE, (_match, target: string, alias?: string) => {
       const display = alias ?? target;
-      const escaped = md.utils.escapeHtml(target);
-      const escapedDisplay = md.utils.escapeHtml(display);
-      return `<a class="wikilink" href="#" data-target="${escaped}">${escapedDisplay}</a>`;
+      return `<a class="wikilink" href="#" data-target="${target}">${display}</a>`;
     });
 
-    // Replace tags
+    // Replace tags (captured groups are already escaped)
     text = text.replace(TAG_RE, (match, tag: string) => {
       const prefix = match.startsWith(" ") ? " " : "";
-      const escaped = md.utils.escapeHtml(tag);
-      return `${prefix}<span class="md-tag">${escaped}</span>`;
+      return `${prefix}<span class="md-tag">${tag}</span>`;
     });
 
     return text;

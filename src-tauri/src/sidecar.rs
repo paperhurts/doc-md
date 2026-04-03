@@ -64,25 +64,38 @@ impl SidecarState {
 
         let (tx, rx) = oneshot::channel();
 
-        // Write to the sidecar first, only register the pending sender on success.
-        // This avoids leaking the sender in the pending map if the write fails.
-        {
-            let mut child_lock = self.child.lock().await;
-            if let Some(ref mut child) = *child_lock {
-                child
-                    .write(request_line.as_bytes())
-                    .map_err(|e| format!("Write error: {}", e))?;
-            } else {
-                return Err("Sidecar not running".to_string());
-            }
-        }
-
+        // Register pending sender BEFORE writing, so a fast response is never missed.
+        // If the write fails, we clean up the pending entry.
         {
             let mut pending = self.pending.lock().await;
             pending.insert(id, tx);
         }
 
-        rx.await.map_err(|_| "Response channel closed".to_string())?
+        {
+            let mut child_lock = self.child.lock().await;
+            if let Some(ref mut child) = *child_lock {
+                if let Err(e) = child.write(request_line.as_bytes()) {
+                    let mut pending = self.pending.lock().await;
+                    pending.remove(&id);
+                    return Err(format!("Write error: {}", e));
+                }
+            } else {
+                let mut pending = self.pending.lock().await;
+                pending.remove(&id);
+                return Err("Sidecar not running".to_string());
+            }
+        }
+
+        // Await response with a 30-second timeout to prevent indefinite hangs
+        match tokio::time::timeout(std::time::Duration::from_secs(30), rx).await {
+            Ok(Ok(result)) => result,
+            Ok(Err(_)) => Err("Response channel closed".to_string()),
+            Err(_) => {
+                let mut pending = self.pending.lock().await;
+                pending.remove(&id);
+                Err("Sidecar request timed out after 30s".to_string())
+            }
+        }
     }
 
     pub async fn handle_response(&self, line: &str) {

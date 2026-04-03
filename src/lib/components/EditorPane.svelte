@@ -10,10 +10,11 @@
 
   function handleChange(content: string) {
     if (file) {
-      vaultStore.updateContent(file.path, content);
+      const currentPath = file.path;
+      vaultStore.updateContent(currentPath, content);
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
-        if (file) vaultStore.saveFile(file.path);
+        vaultStore.saveFile(currentPath);
       }, 1000);
     }
   }
@@ -61,7 +62,7 @@
       <div class="text-center">
         <p class="mb-1 text-lg" style="color: var(--text-secondary);">No file open</p>
         <p class="text-xs" style="color: var(--text-secondary);">
-          Select a file from the sidebar, or press Ctrl+K to search
+          Select a file from the sidebar, or press Ctrl+Shift+F to search
         </p>
       </div>
     </div>
