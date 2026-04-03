@@ -202,52 +202,77 @@
   text-shadow: 0 0 3px rgba(224, 64, 251, 0.2);
 }
 
-/* --- ALL-AMERICAN — This is a hot dog, not paper. --- */
+/* --- ALL-AMERICAN — Windows 3.1 Hot Dog Stand. Pure chaos. --- */
 [data-theme="allamerican"] {
-  --bg-primary: #2a1a0e;
-  --bg-secondary: #1e1208;
-  --bg-surface: #3d2816;
-  --text-primary: #ffd54f;
-  --text-secondary: #c49a3c;
-  --accent: #ffc107;
-  --accent-hover: #ffca28;
-  --accent-subtle: rgba(255, 193, 7, 0.15);
-  --border: rgba(255, 193, 7, 0.2);
-  --border-strong: rgba(255, 193, 7, 0.35);
+  --bg-primary: #ff0000;
+  --bg-secondary: #cc0000;
+  --bg-surface: #dd0000;
+  --text-primary: #ffff00;
+  --text-secondary: #ffcc00;
+  --accent: #ffff00;
+  --accent-hover: #ffffff;
+  --accent-subtle: rgba(255, 255, 0, 0.2);
+  --border: #ffff00;
+  --border-strong: #ffffff;
 
-  --font-ui: 'DM Sans', -apple-system, sans-serif;
-  --font-heading: 'DM Sans', -apple-system, sans-serif;
-  --font-body: 'DM Sans', -apple-system, sans-serif;
-  --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
-  --font-editor: 'Fira Code', 'JetBrains Mono', monospace;
+  --font-ui: 'Share Tech Mono', 'Courier New', monospace;
+  --font-heading: 'Share Tech Mono', 'Courier New', monospace;
+  --font-body: 'Share Tech Mono', 'Courier New', monospace;
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+  --font-editor: 'Share Tech Mono', 'Courier New', monospace;
 
-  --radius: 8px;
-  --radius-lg: 12px;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
-  --modal-backdrop: rgba(0, 0, 0, 0.6);
-  --modal-blur: blur(8px);
+  --radius: 0px;
+  --radius-lg: 0px;
+  --shadow: 2px 2px 0 #000000;
+  --shadow-lg: 3px 3px 0 #000000;
+  --modal-backdrop: rgba(0, 0, 0, 0.5);
+  --modal-blur: none;
 
-  --heading-1: #ff1744;
-  --heading-2: #ffc107;
-  --heading-3: #ff5252;
-  --strong: #ff1744;
-  --em: #ff8a80;
-  --tag-bg: rgba(76, 175, 80, 0.2);
-  --tag-color: #69f0ae;
-  --mark-bg: rgba(255, 193, 7, 0.3);
+  --heading-1: #ffffff;
+  --heading-2: #ffff00;
+  --heading-3: #ffffff;
+  --strong: #ffffff;
+  --em: #ffff00;
+  --tag-bg: #0000aa;
+  --tag-color: #ffffff;
+  --mark-bg: rgba(255, 255, 255, 0.3);
 }
 
-/* All-American: mustard & ketchup gradient header, neon relish glow on tags */
+/* All-American: the full Hot Dog Stand experience */
 [data-theme="allamerican"] header {
-  background: linear-gradient(135deg, #3d2816, #1e1208) !important;
-  border-bottom-color: rgba(255, 193, 7, 0.3) !important;
+  background: #cc0000 !important;
+  border-bottom: 2px solid #ffff00 !important;
 }
-[data-theme="allamerican"] button:hover {
-  text-shadow: 0 0 6px rgba(255, 193, 7, 0.4);
+[data-theme="allamerican"] aside {
+  background: #cc0000 !important;
 }
 [data-theme="allamerican"] .preview code {
-  color: #69f0ae !important;
+  color: #ffffff !important;
+  background: #0000aa !important;
+}
+[data-theme="allamerican"] .preview blockquote {
+  border-left-color: #ffff00 !important;
+  background: #dd0000 !important;
+}
+[data-theme="allamerican"] .preview pre {
+  background: #0000aa !important;
+  color: #ffffff !important;
+}
+[data-theme="allamerican"] input,
+[data-theme="allamerican"] .cm-editor {
+  background: #0000aa !important;
+  color: #ffffff !important;
+}
+[data-theme="allamerican"] .cm-gutters {
+  background: #cc0000 !important;
+  color: #ffff00 !important;
+  border-right: 2px solid #ffff00 !important;
+}
+[data-theme="allamerican"] .cm-activeLine {
+  background: rgba(255, 255, 0, 0.1) !important;
+}
+[data-theme="allamerican"] .cm-cursor {
+  border-left-color: #ffff00 !important;
 }
 
 /* ================================================================
