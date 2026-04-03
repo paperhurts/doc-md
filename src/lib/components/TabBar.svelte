@@ -13,7 +13,7 @@
 
 {#if vaultStore.openFiles.length > 0}
   <div
-    class="flex overflow-x-auto"
+    class="flex shrink-0 overflow-x-auto"
     style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border); height: 36px;"
   >
     {#each vaultStore.openFiles as file (file.path)}

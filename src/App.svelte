@@ -45,7 +45,7 @@
 
 <main class="flex h-full flex-col">
   <header
-    class="flex h-10 items-center justify-between border-b px-4"
+    class="flex h-10 shrink-0 items-center justify-between border-b px-4"
     style="border-color: var(--border); background-color: var(--bg-secondary);"
   >
     <span class="text-sm font-semibold" style="color: var(--accent);">doc-md</span>
