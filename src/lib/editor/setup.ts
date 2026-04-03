@@ -32,6 +32,7 @@ export function createEditorExtensions(
     bracketMatching(),
     closeBrackets(),
     highlightSelectionMatches(),
+    EditorView.lineWrapping,
     markdown({ base: markdownLanguage, codeLanguages: languages }),
     docMdTheme,
     docMdHighlightStyle,
