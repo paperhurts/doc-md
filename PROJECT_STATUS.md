@@ -1,6 +1,7 @@
 # Project Status
 
 **Last updated**: 2026-04-03
+**Release**: v0.1.0
 
 ## Current State
 Phases 1-9 complete. Only Phase 10 (Plugin System) remains. Architecture refactored to eliminate Python sidecar. All logic runs in frontend JS for mobile compatibility.
