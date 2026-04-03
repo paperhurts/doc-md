@@ -2,7 +2,7 @@
   import { vaultStore } from "../stores/vault.svelte";
 
   function activateTab(path: string) {
-    vaultStore.activeFilePath = path;
+    vaultStore.setActiveFile(path);
   }
 
   function closeTab(e: MouseEvent, path: string) {
