@@ -40,6 +40,13 @@ class VaultStore {
     return this.openFiles.find((f) => f.path === this.activeFilePath);
   }
 
+  setActiveFile(path: string) {
+    if (this.openFiles.some((f) => f.path === path)) {
+      this.activeFilePath = path;
+      this.refreshBacklinks();
+    }
+  }
+
   get activeFileName(): string {
     if (!this.activeFilePath) return "";
     const parts = this.activeFilePath.replace(/\\/g, "/").split("/");
@@ -113,15 +120,13 @@ class VaultStore {
   async openFile(path: string, name: string) {
     const existing = this.openFiles.find((f) => f.path === path);
     if (existing) {
-      this.activeFilePath = path;
-      await this.refreshBacklinks();
+      this.setActiveFile(path);
       return;
     }
 
     const content = await readFile(path);
     this.openFiles.push({ path, name, content, dirty: false });
-    this.activeFilePath = path;
-    await this.refreshBacklinks();
+    this.setActiveFile(path);
   }
 
   async navigateToNote(noteName: string) {
@@ -139,10 +144,8 @@ class VaultStore {
   closeFile(path: string) {
     this.openFiles = this.openFiles.filter((f) => f.path !== path);
     if (this.activeFilePath === path) {
-      this.activeFilePath =
-        this.openFiles.length > 0
-          ? this.openFiles[this.openFiles.length - 1].path
-          : null;
+      const lastOpen = this.openFiles[this.openFiles.length - 1];
+      this.activeFilePath = lastOpen?.path ?? null;
       this.refreshBacklinks();
     }
   }

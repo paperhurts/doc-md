@@ -3,7 +3,10 @@
 import tempfile
 from pathlib import Path
 
+import pytest
+
 from doc_md.indexer import (
+    _index,
     index_vault,
     index_file,
     get_backlinks,
@@ -12,6 +15,14 @@ from doc_md.indexer import (
     get_all_tags,
     get_graph_data,
 )
+
+
+@pytest.fixture(autouse=True)
+def clean_index():
+    """Reset index state between tests."""
+    _index.clear()
+    yield
+    _index.clear()
 
 
 def _make_vault(dir: Path, notes: dict[str, str]) -> None:
