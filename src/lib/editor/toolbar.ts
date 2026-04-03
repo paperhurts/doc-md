@@ -172,6 +172,9 @@ export function createSelectionPlugin(
 ): Extension {
   return ViewPlugin.fromClass(
     class {
+      constructor(_view: EditorView) {
+        // Required by ViewPlugin — initializes on editor creation
+      }
       update(update: ViewUpdate) {
         if (!update.selectionSet && !update.docChanged && !update.focusChanged) return;
 
