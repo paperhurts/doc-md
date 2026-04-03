@@ -4,6 +4,8 @@ import {
   listFiles,
   readFile,
   writeFile,
+  deleteFile,
+  renameFile,
   startWatching,
 } from "../services/tauri";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
@@ -81,6 +83,43 @@ class VaultStore {
       await this.startFileWatcher();
     } catch (e) {
       console.error("Failed to open vault:", e);
+    }
+  }
+
+  async deleteNote(path: string) {
+    try {
+      await deleteFile(path);
+      // Close the file if it's open
+      this.openFiles = this.openFiles.filter((f) => f.path !== path);
+      if (this.activeFilePath === path) {
+        const lastOpen = this.openFiles[this.openFiles.length - 1];
+        this.activeFilePath = lastOpen?.path ?? null;
+      }
+      searchIndex.removeFile(path);
+      await this.refreshTree();
+      await this.buildIndex();
+    } catch (e) {
+      console.error("Failed to delete note:", e);
+    }
+  }
+
+  async renameNote(oldPath: string, newPath: string) {
+    try {
+      await renameFile(oldPath, newPath);
+      // Update open file reference
+      const openFile = this.openFiles.find((f) => f.path === oldPath);
+      if (openFile) {
+        const parts = newPath.replace(/\\/g, "/").split("/");
+        openFile.path = newPath;
+        openFile.name = parts[parts.length - 1] ?? openFile.name;
+      }
+      if (this.activeFilePath === oldPath) {
+        this.activeFilePath = newPath;
+      }
+      await this.refreshTree();
+      await this.buildIndex();
+    } catch (e) {
+      console.error("Failed to rename note:", e);
     }
   }
 
