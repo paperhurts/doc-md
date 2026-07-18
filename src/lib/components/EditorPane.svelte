@@ -6,6 +6,8 @@
   import FormattingToolbar from "./FormattingToolbar.svelte";
   import type { SelectionInfo, FormatAction } from "../editor/toolbar";
   import { savePastedImage } from "../services/images";
+  import { isKanbanContent } from "../services/kanban";
+  import KanbanBoard from "./KanbanBoard.svelte";
 
   const file = $derived(vaultStore.activeFile);
   let selectionInfo = $state<SelectionInfo | null>(null);
@@ -18,6 +20,19 @@
   ];
   const viewMode = $derived(settingsStore.settings.viewMode);
   let saveTimeout: ReturnType<typeof setTimeout> | undefined;
+
+  // Kanban notes (frontmatter kanban: true) open as a board by default
+  const isKanban = $derived(file ? isKanbanContent(file.content) : false);
+  let boardView = $state(true);
+  let lastPath: string | null = null;
+  $effect(() => {
+    const path = file?.path ?? null;
+    if (path !== lastPath) {
+      lastPath = path;
+      boardView = true;
+    }
+  });
+  const showBoard = $derived(isKanban && boardView);
 
   function setMode(mode: ViewMode) {
     settingsStore.update({ viewMode: mode });
@@ -76,11 +91,21 @@
       class="flex items-center justify-end gap-2 px-3 py-1"
       style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border);"
     >
+      {#if isKanban}
+        <button
+          class="rounded px-2 py-0.5 text-xs"
+          style="color: {showBoard ? 'var(--accent)' : 'var(--text-secondary)'}; background-color: {showBoard ? 'var(--bg-surface)' : 'transparent'};"
+          onclick={() => (boardView = true)}
+          title="Kanban board view"
+        >
+          Board
+        </button>
+      {/if}
       {#each MODES as mode (mode.id)}
         <button
           class="rounded px-2 py-0.5 text-xs"
-          style="color: {viewMode === mode.id ? 'var(--accent)' : 'var(--text-secondary)'}; background-color: {viewMode === mode.id ? 'var(--bg-surface)' : 'transparent'};"
-          onclick={() => setMode(mode.id)}
+          style="color: {!showBoard && viewMode === mode.id ? 'var(--accent)' : 'var(--text-secondary)'}; background-color: {!showBoard && viewMode === mode.id ? 'var(--bg-surface)' : 'transparent'};"
+          onclick={() => { boardView = false; setMode(mode.id); }}
           title="{mode.title} (Ctrl+E cycles)"
         >
           {mode.label}
@@ -88,33 +113,37 @@
       {/each}
     </div>
 
-    <div class="flex min-h-0 flex-1 overflow-hidden">
-      <div
-        class="h-full overflow-hidden"
-        style="width: {viewMode === 'split' ? '50%' : '100%'};"
-      >
-        <Editor
-          content={file.content}
-          livePreview={viewMode === "preview"}
-          onchange={handleChange}
-          onsave={handleSave}
-          onnavigate={(name) => vaultStore.navigateToNote(name)}
-          onselectionchange={(info) => { selectionInfo = info; }}
-          onformatready={(handler) => { formatHandler = handler; }}
-          onpasteimage={handlePasteImage}
-        />
-      </div>
-
-      {#if viewMode === "split"}
+    {#if showBoard}
+      <KanbanBoard content={file.content} onchange={handleChange} />
+    {:else}
+      <div class="flex min-h-0 flex-1 overflow-hidden">
         <div
           class="h-full overflow-hidden"
-          style="width: 50%; border-left: 1px solid var(--border);"
+          style="width: {viewMode === 'split' ? '50%' : '100%'};"
         >
-          <MarkdownPreview content={file.content} />
+          <Editor
+            content={file.content}
+            livePreview={viewMode === "preview"}
+            onchange={handleChange}
+            onsave={handleSave}
+            onnavigate={(name) => vaultStore.navigateToNote(name)}
+            onselectionchange={(info) => { selectionInfo = info; }}
+            onformatready={(handler) => { formatHandler = handler; }}
+            onpasteimage={handlePasteImage}
+          />
         </div>
-      {/if}
-    </div>
-    <FormattingToolbar {selectionInfo} onformat={formatHandler} />
+
+        {#if viewMode === "split"}
+          <div
+            class="h-full overflow-hidden"
+            style="width: 50%; border-left: 1px solid var(--border);"
+          >
+            <MarkdownPreview content={file.content} />
+          </div>
+        {/if}
+      </div>
+      <FormattingToolbar {selectionInfo} onformat={formatHandler} />
+    {/if}
   {:else}
     <div class="flex flex-1 items-center justify-center">
       <div class="text-center">
