@@ -1,6 +1,6 @@
 <script lang="ts">
   import { vaultStore } from "../stores/vault.svelte";
-  import { settingsStore } from "../stores/settings.svelte";
+  import { settingsStore, type ViewMode } from "../stores/settings.svelte";
   import Editor from "./Editor.svelte";
   import MarkdownPreview from "./MarkdownPreview.svelte";
   import FormattingToolbar from "./FormattingToolbar.svelte";
@@ -10,8 +10,30 @@
   let selectionInfo = $state<SelectionInfo | null>(null);
   let formatHandler = $state<((action: FormatAction) => void) | undefined>(undefined);
 
-  let showPreview = $state(settingsStore.settings.showPreviewByDefault);
+  const MODES: { id: ViewMode; label: string; title: string }[] = [
+    { id: "source", label: "MD", title: "Markdown source only" },
+    { id: "split", label: "Split", title: "Source + rendered preview" },
+    { id: "preview", label: "Preview", title: "Edit formatted text (live preview)" },
+  ];
+  const viewMode = $derived(settingsStore.settings.viewMode);
   let saveTimeout: ReturnType<typeof setTimeout> | undefined;
+
+  function setMode(mode: ViewMode) {
+    settingsStore.update({ viewMode: mode });
+  }
+
+  function cycleMode() {
+    const order: ViewMode[] = ["source", "split", "preview"];
+    const next = order[(order.indexOf(viewMode) + 1) % order.length];
+    setMode(next);
+  }
+
+  function handleWindowKeydown(e: KeyboardEvent) {
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "e") {
+      e.preventDefault();
+      cycleMode();
+    }
+  }
 
   function handleChange(content: string) {
     if (file) {
@@ -27,11 +49,9 @@
   function handleSave() {
     if (file) vaultStore.saveFile(file.path);
   }
-
-  function togglePreview() {
-    showPreview = !showPreview;
-  }
 </script>
+
+<svelte:window onkeydown={handleWindowKeydown} />
 
 <div class="flex min-h-0 flex-1 flex-col" style="background-color: var(--bg-primary);">
   {#if file}
@@ -39,19 +59,26 @@
       class="flex items-center justify-end gap-2 px-3 py-1"
       style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border);"
     >
-      <button
-        class="rounded px-2 py-0.5 text-xs"
-        style="color: {showPreview ? 'var(--accent)' : 'var(--text-secondary)'}; background-color: {showPreview ? 'var(--bg-surface)' : 'transparent'};"
-        onclick={togglePreview}
-      >
-        Preview
-      </button>
+      {#each MODES as mode (mode.id)}
+        <button
+          class="rounded px-2 py-0.5 text-xs"
+          style="color: {viewMode === mode.id ? 'var(--accent)' : 'var(--text-secondary)'}; background-color: {viewMode === mode.id ? 'var(--bg-surface)' : 'transparent'};"
+          onclick={() => setMode(mode.id)}
+          title="{mode.title} (Ctrl+E cycles)"
+        >
+          {mode.label}
+        </button>
+      {/each}
     </div>
 
     <div class="flex min-h-0 flex-1 overflow-hidden">
-      <div class="h-full overflow-hidden" style="width: {showPreview ? '50%' : '100%'};">
+      <div
+        class="h-full overflow-hidden"
+        style="width: {viewMode === 'split' ? '50%' : '100%'};"
+      >
         <Editor
           content={file.content}
+          livePreview={viewMode === "preview"}
           onchange={handleChange}
           onsave={handleSave}
           onnavigate={(name) => vaultStore.navigateToNote(name)}
@@ -60,7 +87,7 @@
         />
       </div>
 
-      {#if showPreview}
+      {#if viewMode === "split"}
         <div
           class="h-full overflow-hidden"
           style="width: 50%; border-left: 1px solid var(--border);"
