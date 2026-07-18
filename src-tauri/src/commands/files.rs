@@ -89,6 +89,52 @@ pub async fn write_file(
     fs::write(&validated, content).map_err(|e| format!("Write error: {}", e))
 }
 
+/// Decode standard base64 (with padding) without pulling in a crate.
+/// Pasted images arrive base64-encoded from the webview.
+pub fn decode_base64(input: &str) -> Result<Vec<u8>, String> {
+    const ALPHABET: &[u8; 64] =
+        b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut rev = [255u8; 256];
+    for (i, &c) in ALPHABET.iter().enumerate() {
+        rev[c as usize] = i as u8;
+    }
+    let bytes: Vec<u8> = input.bytes().filter(|b| !b" \t\r\n".contains(b)).collect();
+    let trimmed: &[u8] = match bytes.iter().position(|&b| b == b'=') {
+        Some(p) => &bytes[..p],
+        None => &bytes,
+    };
+    let mut out = Vec::with_capacity(trimmed.len() * 3 / 4);
+    let mut acc: u32 = 0;
+    let mut acc_bits: u32 = 0;
+    for &b in trimmed {
+        let v = rev[b as usize];
+        if v == 255 {
+            return Err(format!("Invalid base64 character: {}", b as char));
+        }
+        acc = (acc << 6) | v as u32;
+        acc_bits += 6;
+        if acc_bits >= 8 {
+            acc_bits -= 8;
+            out.push((acc >> acc_bits) as u8);
+        }
+    }
+    Ok(out)
+}
+
+#[tauri::command]
+pub async fn write_binary_file(
+    file_path: String,
+    contents_base64: String,
+    vault_state: tauri::State<'_, VaultState>,
+) -> Result<(), String> {
+    let validated = vault_state.validate_path(&file_path).await?;
+    let bytes = decode_base64(&contents_base64)?;
+    if let Some(parent) = validated.parent() {
+        fs::create_dir_all(parent).map_err(|e| format!("Create dir error: {}", e))?;
+    }
+    fs::write(&validated, bytes).map_err(|e| format!("Write error: {}", e))
+}
+
 #[tauri::command]
 pub async fn delete_file(
     file_path: String,
@@ -123,4 +169,48 @@ pub async fn create_directory(
 ) -> Result<(), String> {
     let validated = vault_state.validate_path(&dir_path).await?;
     fs::create_dir_all(&validated).map_err(|e| format!("Create dir error: {}", e))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::decode_base64;
+
+    #[test]
+    fn decodes_simple_ascii() {
+        assert_eq!(decode_base64("aGVsbG8=").unwrap(), b"hello");
+    }
+
+    #[test]
+    fn decodes_no_padding_needed() {
+        assert_eq!(decode_base64("Zm9vYmFy").unwrap(), b"foobar");
+    }
+
+    #[test]
+    fn decodes_double_padding() {
+        assert_eq!(decode_base64("Zg==").unwrap(), b"f");
+    }
+
+    #[test]
+    fn decodes_binary_png_header() {
+        // \x89PNG\r\n\x1a\n
+        assert_eq!(
+            decode_base64("iVBORw0KGgo=").unwrap(),
+            [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
+        );
+    }
+
+    #[test]
+    fn ignores_whitespace() {
+        assert_eq!(decode_base64("aGVs\nbG8=").unwrap(), b"hello");
+    }
+
+    #[test]
+    fn rejects_invalid_characters() {
+        assert!(decode_base64("aGV$bG8=").is_err());
+    }
+
+    #[test]
+    fn empty_input_gives_empty_output() {
+        assert_eq!(decode_base64("").unwrap(), Vec::<u8>::new());
+    }
 }

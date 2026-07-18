@@ -117,6 +117,29 @@ function mathPlugin(md: MarkdownIt) {
   });
 }
 
+/** Rewrite vault-relative image srcs via env.resolveImage (set per render). */
+function imagePlugin(md: MarkdownIt) {
+  const defaultRender =
+    md.renderer.rules.image ||
+    ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
+
+  md.renderer.rules.image = (tokens, idx, options, env, self) => {
+    const token = tokens[idx];
+    const src = token.attrGet("src");
+    const resolve = (env as RenderEnv | undefined)?.resolveImage;
+    if (src && resolve) {
+      const resolved = resolve(src);
+      if (resolved) token.attrSet("src", resolved);
+    }
+    return defaultRender(tokens, idx, options, env, self);
+  };
+}
+
+export interface RenderEnv {
+  /** Map a markdown image src (possibly vault-relative) to a displayable URL. */
+  resolveImage?: (src: string) => string | null;
+}
+
 const md = new MarkdownIt({
   html: false,
   linkify: true,
@@ -124,8 +147,9 @@ const md = new MarkdownIt({
 })
   .use(wikilinkPlugin)
   .use(taskListPlugin)
-  .use(mathPlugin);
+  .use(mathPlugin)
+  .use(imagePlugin);
 
-export function renderMarkdown(source: string): string {
-  return md.render(source);
+export function renderMarkdown(source: string, env?: RenderEnv): string {
+  return md.render(source, env ?? {});
 }

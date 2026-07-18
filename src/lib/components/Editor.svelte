@@ -13,6 +13,7 @@
     onnavigate,
     onselectionchange,
     onformatready,
+    onpasteimage,
   }: {
     content: string;
     livePreview?: boolean;
@@ -21,6 +22,7 @@
     onnavigate?: (noteName: string) => void;
     onselectionchange?: (info: SelectionInfo) => void;
     onformatready?: (handler: (action: FormatAction) => void) => void;
+    onpasteimage?: (blob: File) => Promise<string | null>;
   } = $props();
 
   const modeCompartment = new Compartment();
@@ -47,7 +49,7 @@
     if (!container) return;
 
     const extensions = [
-      ...createEditorExtensions(handleUpdate, onnavigate, onselectionchange),
+      ...createEditorExtensions(handleUpdate, onnavigate, onselectionchange, onpasteimage),
       modeCompartment.of(livePreview ? livePreviewExtensions() : []),
     ];
 
