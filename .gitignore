@@ -41,6 +41,9 @@ htmlcov/
 # Search index (generated at runtime in vault)
 .doc-md/
 
+# Screenshot verification output (evaluated locally, never committed)
+.verify/
+
 # IDE
 .idea/
 .vscode/

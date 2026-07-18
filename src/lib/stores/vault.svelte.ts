@@ -8,7 +8,7 @@ import {
   renameFile,
   startWatching,
 } from "../services/tauri";
-import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+import { listenEvent, type Unlisten } from "../services/events";
 import { linkIndex } from "../services/indexer";
 import {
   getDailyNotePath,
@@ -49,7 +49,7 @@ class VaultStore {
   noteNames = $state<NoteName[]>([]);
   error = $state<string | null>(null);
 
-  private fsUnlisten: UnlistenFn | null = null;
+  private fsUnlisten: Unlisten | null = null;
   private fsDebounce: ReturnType<typeof setTimeout> | undefined;
   private fsPendingPaths = new Set<string>();
   private fsPendingKinds = new Set<string>();
@@ -149,10 +149,10 @@ class VaultStore {
     try {
       await startWatching(this.vault.path);
 
-      this.fsUnlisten = await listen<{ kind: string; paths: string[] }>(
+      this.fsUnlisten = await listenEvent<{ kind: string; paths: string[] }>(
         "fs-change",
-        (event) => {
-          this.handleFsChange(event.payload);
+        (payload) => {
+          this.handleFsChange(payload);
         },
       );
       console.log("[vault] file watcher started");
