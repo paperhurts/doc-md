@@ -11,6 +11,7 @@
   import { vaultStore } from "./lib/stores/vault.svelte";
   import { themeStore } from "./lib/stores/theme.svelte";
   import { settingsStore } from "./lib/stores/settings.svelte";
+  import { initCloseToTray } from "./lib/services/appWindow";
 
   let searchOpen = $state(false);
   let graphOpen = $state(false);
@@ -25,6 +26,7 @@
         themeStore.init();
         settingsStore.init();
         vaultStore.init();
+        initCloseToTray();
       });
     }
   });

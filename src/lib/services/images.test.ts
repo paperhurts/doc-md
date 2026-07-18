@@ -70,6 +70,24 @@ describe("image paste", () => {
     }
   });
 
+  it("rejects unsafe URL schemes and asset.localhost", () => {
+    expect(resolveImageSrc("file:///C:/Windows/secret.png", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("asset://localhost/C%3A/secret.png", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("https://asset.localhost/C%3A/secret.png", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("javascript:alert(1)", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("data:text/html,<script>", MOCK_VAULT_PATH)).toBeNull();
+  });
+
+  it("rejects path traversal and absolute paths", () => {
+    expect(resolveImageSrc("../outside.png", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("attachments/../../outside.png", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("..%2Foutside.png", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("/etc/passwd", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("\\\\server\\share\\x.png", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("C:/Windows/secret.png", MOCK_VAULT_PATH)).toBeNull();
+    expect(resolveImageSrc("./x.png", MOCK_VAULT_PATH)).toBeNull();
+  });
+
   it("returns null for unresolvable relative paths", () => {
     expect(resolveImageSrc("attachments/missing.png", MOCK_VAULT_PATH)).toBeNull();
     expect(resolveImageSrc("a.png", "")).toBeNull();
