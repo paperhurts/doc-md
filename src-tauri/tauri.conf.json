@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/nickel-org/nickel.rs/master/tauri.schema.json",
   "productName": "doc-md",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "identifier": "com.docmd.app",
   "build": {
     "frontendDist": "../dist",
