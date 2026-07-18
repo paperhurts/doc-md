@@ -44,6 +44,9 @@ htmlcov/
 # Screenshot verification output (evaluated locally, never committed)
 .verify/
 
+# Playwright MCP session artifacts
+.playwright-mcp/
+
 # IDE
 .idea/
 .vscode/
