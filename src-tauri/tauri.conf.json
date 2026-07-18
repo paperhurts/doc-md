@@ -27,5 +27,19 @@
       }
     }
   },
-  "plugins": {}
+  "plugins": {},
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "category": "Productivity",
+    "shortDescription": "Local-first markdown knowledge management",
+    "longDescription": "doc-md is a local-first markdown knowledge management app: wiki links, live preview editing, kanban boards, sticky notes, graph view, and full-text search over plain markdown files."
+  }
 }
