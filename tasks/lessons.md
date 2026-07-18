@@ -18,6 +18,11 @@ Persistent learnings from corrections. Review at session start.
 - Use dialogStore (src/lib/stores/dialogs.svelte.ts) + DialogHost instead; it's async: `await dialogStore.prompt(...)/confirm(...)/alert(...)`
 - When adding any new UI flow, grep for prompt(/alert(/confirm( before calling it done
 
+## 2026-07-18: Don't git-checkout under a running Vite dev server
+- Switching branches while the user's `cargo tauri dev` served the tree split Vite's HMR module graph: the dialog store loaded as two instances (one importer had a `?t=` timestamped URL), so the palette set state on one instance while DialogHost rendered the other — clicks silently did nothing
+- Symptom pattern: feature works on a fresh server but not in the long-running one, no console errors
+- Rule: if the user has a dev server running, either ask before branch churn or tell them a dev-server restart is required afterward — a webview Ctrl+R is NOT enough (the server graph itself is stale)
+
 ## 2026-07-18: Background Bash on Windows can orphan child processes
 - TaskStop on a `npm run dev` shell killed the shell but the child node/vite kept port 5420, breaking the user's later `cargo tauri dev`
 - After stopping a background dev server, verify the port is actually free (Get-NetTCPConnection) and kill the child if needed
