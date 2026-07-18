@@ -34,6 +34,10 @@ cargo tauri dev
 - Take any screenshot to clipboard (Win+Shift+S).
 - In a note (any mode), Ctrl+V → expect `![](attachments/pasted-….png)` inserted, file appears in the tree, image renders in Split preview.
 
+### 2b. In-app dialogs (#41 — the "localhost:5420 says" popup you reported) (30 s)
+- Ctrl+K → "New note" → expect a themed in-app modal (no browser "localhost says" chrome).
+- Same for delete confirmations (right-click a file → Delete) and kanban column delete.
+
 ### 3. Kanban (3 min)
 - Ctrl+K → "New kanban board" → name it. Board opens with To Do / Doing / Done.
 - Add cards (+ Add card), drag one between columns, double-click to edit, toggle its checkbox.

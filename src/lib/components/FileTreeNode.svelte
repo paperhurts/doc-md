@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { VaultEntry } from "../types";
   import { vaultStore } from "../stores/vault.svelte";
+  import { dialogStore } from "../stores/dialogs.svelte";
   import FileTreeNode from "./FileTreeNode.svelte";
 
   let { entry, depth = 0 }: { entry: VaultEntry; depth: number } = $props();
@@ -83,7 +84,7 @@
   async function handleDelete() {
     contextMenu = null;
     const label = entry.is_dir ? "folder and all its contents" : "file";
-    if (confirm(`Delete ${label} "${entry.name}"?`)) {
+    if (await dialogStore.confirm(`Delete ${label} "${entry.name}"?`)) {
       await vaultStore.deleteNote(entry.path);
     }
   }

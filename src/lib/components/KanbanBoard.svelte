@@ -13,6 +13,7 @@
     moveColumn,
     type KanbanBoard,
   } from "../services/kanban";
+  import { dialogStore } from "../stores/dialogs.svelte";
 
   let {
     content = "",
@@ -81,10 +82,12 @@
     }
   }
 
-  function handleDeleteColumn(colIdx: number) {
+  async function handleDeleteColumn(colIdx: number) {
     const col = board.columns[colIdx];
     const n = cardsOf(col).length;
-    if (n > 0 && !confirm(`Delete column "${col.title}" and its ${n} card(s)?`)) return;
+    if (n > 0 && !(await dialogStore.confirm(`Delete column "${col.title}" and its ${n} card(s)?`))) {
+      return;
+    }
     commit(deleteColumn(board, colIdx));
   }
 
