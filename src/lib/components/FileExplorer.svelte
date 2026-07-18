@@ -4,6 +4,7 @@
   import FileTreeNode from "./FileTreeNode.svelte";
   import TagsPanel from "./TagsPanel.svelte";
   import { open } from "@tauri-apps/plugin-dialog";
+  import { dialogStore } from "../stores/dialogs.svelte";
 
   async function openVault() {
     try {
@@ -17,7 +18,7 @@
   }
 
   async function createNote() {
-    const name = prompt("Note name:");
+    const name = await dialogStore.prompt("Note name:", "My note");
     if (name) {
       await vaultStore.createNote(name);
     }

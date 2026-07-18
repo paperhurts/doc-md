@@ -8,6 +8,7 @@
   import GraphView from "./lib/components/GraphView.svelte";
   import CommandPalette from "./lib/components/CommandPalette.svelte";
   import SettingsPanel from "./lib/components/SettingsPanel.svelte";
+  import DialogHost from "./lib/components/DialogHost.svelte";
   import { vaultStore } from "./lib/stores/vault.svelte";
   import { themeStore } from "./lib/stores/theme.svelte";
   import { settingsStore } from "./lib/stores/settings.svelte";
@@ -109,6 +110,7 @@
 <SearchModal open={searchOpen} onclose={() => (searchOpen = false)} />
 <CommandPalette open={paletteOpen} onclose={() => (paletteOpen = false)} onsearch={() => { paletteOpen = false; searchOpen = true; }} ongraph={() => { paletteOpen = false; graphOpen = true; }} onsettings={() => { paletteOpen = false; settingsOpen = true; }} />
 <SettingsPanel open={settingsOpen} onclose={() => (settingsOpen = false)} />
+<DialogHost />
 
 {#if graphOpen}
   <GraphView onclose={() => (graphOpen = false)} />
