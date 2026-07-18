@@ -90,8 +90,18 @@ pub async fn get_current_vault(
     Ok(current.clone())
 }
 
+/// Allow the asset protocol to serve files from the vault directory only.
+/// The static scope in tauri.conf.json is empty; access is granted at runtime
+/// per-vault so images resolve while everything else on disk stays blocked.
+pub fn allow_vault_assets(app: &AppHandle, vault_path: &str) {
+    if let Err(e) = app.asset_protocol_scope().allow_directory(vault_path, true) {
+        eprintln!("[vault] failed to extend asset scope: {}", e);
+    }
+}
+
 #[tauri::command]
 pub async fn set_current_vault(
+    app: AppHandle,
     state: tauri::State<'_, VaultState>,
     path: String,
 ) -> Result<VaultConfig, String> {
@@ -111,5 +121,6 @@ pub async fn set_current_vault(
     };
 
     state.set_vault(config.clone()).await?;
+    allow_vault_assets(&app, &path);
     Ok(config)
 }

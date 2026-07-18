@@ -18,6 +18,10 @@ pub fn run() {
 
             // Initialize vault state (loads last-used vault from config)
             let vault_state = VaultState::new(&handle);
+            // Grant asset-protocol access to the loaded vault (images in preview)
+            if let Some(config) = vault_state.current.blocking_lock().as_ref() {
+                commands::vault::allow_vault_assets(&handle, &config.path);
+            }
             app.manage(vault_state);
 
             // Initialize watcher state (empty until a vault is opened)
