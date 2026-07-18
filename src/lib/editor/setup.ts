@@ -22,6 +22,7 @@ export function createEditorExtensions(
   onUpdate?: (content: string) => void,
   onNavigate?: (noteName: string) => void,
   onSelectionChange?: (info: SelectionInfo) => void,
+  onPasteImage?: (blob: File) => Promise<string | null>,
 ): Extension[] {
   const extensions: Extension[] = [
     lineNumbers(),
@@ -74,6 +75,35 @@ export function createEditorExtensions(
             if (pos >= from && pos <= to) {
               event.preventDefault();
               onNavigate(match[1]);
+              return true;
+            }
+          }
+          return false;
+        },
+      }),
+    );
+  }
+
+  // Paste images: save to vault attachments and insert a markdown link
+  if (onPasteImage) {
+    extensions.push(
+      EditorView.domEventHandlers({
+        paste(event, view) {
+          const items = event.clipboardData?.items;
+          if (!items) return false;
+          for (const item of items) {
+            if (item.type.startsWith("image/")) {
+              const file = item.getAsFile();
+              if (!file) continue;
+              event.preventDefault();
+              onPasteImage(file).then((mdText) => {
+                if (!mdText) return;
+                const { from, to } = view.state.selection.main;
+                view.dispatch({
+                  changes: { from, to, insert: mdText },
+                  selection: { anchor: from + mdText.length },
+                });
+              });
               return true;
             }
           }

@@ -1,11 +1,16 @@
 <script lang="ts">
   import { renderMarkdown } from "../editor/markdown";
   import { vaultStore } from "../stores/vault.svelte";
+  import { resolveImageSrc } from "../services/images";
   import "katex/dist/katex.min.css";
 
   let { content = "" }: { content: string } = $props();
 
-  const html = $derived(renderMarkdown(content));
+  const html = $derived(
+    renderMarkdown(content, {
+      resolveImage: (src) => resolveImageSrc(src, vaultStore.vault?.path ?? ""),
+    }),
+  );
 
   function handleClick(e: MouseEvent) {
     const target = e.target as HTMLElement;
