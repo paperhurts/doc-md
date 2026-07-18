@@ -80,8 +80,8 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
 
 ## Recent Work (2026-07-18, downloads/signing session)
 - Recovered cleanly from a Windows/BIOS failure — no work lost
-- #45 downloads page: site/index.html (accessible, client-side latest-release fetch, per-OS install walkthroughs, 4 screenshots) + pages.yml Pages deploy; verified locally (live fetch showed v0.2.0 + real asset sizes, no console errors). Committed on issue-45-downloads-page, awaiting user test → merge → enable Pages (build_type=workflow)
-- #43 signing scaffolding: release.yml signs Windows (Azure Artifact Signing) and macOS (Developer ID + notarization) automatically once credentials exist; docs/SIGNING.md walks through the one-time setup. Credentials not yet configured — issue stays open
+- #45 downloads page: site/index.html (accessible, client-side latest-release fetch, per-OS install walkthroughs, 4 screenshots) + pages.yml Pages deploy. User-tested and approved; merged to main; **live at https://paperhurts.github.io/doc-md/** (deploy run green, live URL verified). Future releases appear on the page automatically — no redeploy needed. #45 closed
+- #43 signing scaffolding: release.yml signs Windows (Azure Artifact Signing) and macOS (Developer ID + notarization) automatically once credentials exist; docs/SIGNING.md walks through the one-time setup (Azure resources scoped to paperhurts org-wide, not per-project — one $9.99/mo account signs everything). User is holding off on the Azure setup for now — issue stays open, no new release planned until then
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
