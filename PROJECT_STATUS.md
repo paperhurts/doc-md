@@ -1,10 +1,10 @@
 # Project Status
 
-**Last updated**: 2026-07-17
-**Release**: v0.1.0 + July feature wave (local, not yet pushed)
+**Last updated**: 2026-07-18
+**Release**: v0.2.0 (user-tested and approved; see CHANGELOG.md)
 
 ## Current State
-Phases 1-9 complete; Phase 10 (Plugin System) not started. July 2026 wave added five features (all merged to **local** main, awaiting user testing before push — see tasks/user.md):
+Phases 1-9 complete; Phase 10 (Plugin System) not started. v0.2.0 shipped the July 2026 wave (user-tested 2026-07-18):
 - Preview-edit view mode (#36) — CM6 live preview, 3 view modes, Ctrl+Shift+E
 - Clipboard image paste (#39) — attachments/ + asset-protocol rendering (security-hardened)
 - Kanban boards (#40) — markdown-backed, drag & drop, share-ready (docs/COLLABORATION.md)
@@ -79,4 +79,3 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
-- #35–#40 — implemented locally, will close after user testing + push

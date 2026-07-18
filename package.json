@@ -1,6 +1,6 @@
 {
   "name": "doc-md",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "A local-first markdown knowledge management app",
   "type": "module",
   "scripts": {

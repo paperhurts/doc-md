@@ -173,7 +173,7 @@ doc-md/
 24. Plugin architecture (JS plugins in `.doc-md/plugins/`)
 25. Plugin manager UI
 
-### Phase 11: Desktop & Boards Wave (July 2026) — COMPLETE (local, pending push)
+### Phase 11: Desktop & Boards Wave (July 2026) — COMPLETE (shipped in v0.2.0)
 26. Test infrastructure: Vitest + browser mock backend (#35) ✅ — prerequisite for 27–31 test coverage
 27. Preview-edit view mode: CM6 live preview, 3 view modes (#36) ✅
 28. Clipboard image paste + asset-protocol rendering (#39) ✅ — depends on 26 (mock binary FS)
