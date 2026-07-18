@@ -3,6 +3,7 @@
   import { themeStore } from "../stores/theme.svelte";
   import { settingsStore } from "../stores/settings.svelte";
   import { KANBAN_TEMPLATE } from "../services/kanban";
+  import { popOutSticky, toggleAllStickies } from "../services/stickyWindows";
 
   let {
     open = false,
@@ -41,6 +42,8 @@
     { label: "View: split (source + preview)", action: () => { onclose(); settingsStore.update({ viewMode: "split" }); } },
     { label: "View: preview edit (formatted)", shortcut: "Ctrl+E", action: () => { onclose(); settingsStore.update({ viewMode: "preview" }); } },
     { label: "Graph view", shortcut: "Ctrl+Shift+G", action: () => ongraph() },
+    { label: "Pop out as sticky note", action: () => { onclose(); if (vaultStore.activeFilePath) popOutSticky(vaultStore.activeFilePath); } },
+    { label: "Toggle sticky notes", action: () => { onclose(); toggleAllStickies(); } },
     { label: "Switch theme...", action: () => { mode = "themes"; query = ""; selectedIndex = 0; } },
     { label: "Settings", shortcut: "Ctrl+,", action: () => onsettings() },
   ];

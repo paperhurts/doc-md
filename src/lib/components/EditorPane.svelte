@@ -8,6 +8,8 @@
   import { savePastedImage } from "../services/images";
   import { isKanbanContent } from "../services/kanban";
   import KanbanBoard from "./KanbanBoard.svelte";
+  import { popOutSticky } from "../services/stickyWindows";
+  import { isTauri } from "../services/env";
 
   const file = $derived(vaultStore.activeFile);
   let selectionInfo = $state<SelectionInfo | null>(null);
@@ -91,6 +93,16 @@
       class="flex items-center justify-end gap-2 px-3 py-1"
       style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border);"
     >
+      {#if isTauri()}
+        <button
+          class="mr-auto rounded px-2 py-0.5 text-xs"
+          style="color: var(--text-secondary);"
+          onclick={() => file && popOutSticky(file.path)}
+          title="Pop out as desktop sticky note"
+        >
+          📌 Stick
+        </button>
+      {/if}
       {#if isKanban}
         <button
           class="rounded px-2 py-0.5 text-xs"

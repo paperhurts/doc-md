@@ -12,6 +12,7 @@
   import { themeStore } from "./lib/stores/theme.svelte";
   import { settingsStore } from "./lib/stores/settings.svelte";
   import { initCloseToTray } from "./lib/services/appWindow";
+  import { initStickies } from "./lib/services/stickyWindows";
 
   let searchOpen = $state(false);
   let graphOpen = $state(false);
@@ -27,6 +28,7 @@
         settingsStore.init();
         vaultStore.init();
         initCloseToTray();
+        initStickies();
       });
     }
   });
