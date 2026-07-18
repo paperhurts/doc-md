@@ -80,3 +80,4 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
+- #43 — Code signing + notarization for release builds
