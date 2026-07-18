@@ -1,5 +1,8 @@
 const STORAGE_KEY = "doc-md-settings";
 
+/** How the editor pane presents a note. */
+export type ViewMode = "source" | "split" | "preview";
+
 export interface AppSettings {
   fontSize: number;
   editorFontSize: number;
@@ -7,8 +10,11 @@ export interface AppSettings {
   autoSaveDelay: number;
   dailyNoteFolder: string;
   templateFolder: string;
+  attachmentFolder: string;
   showLineNumbers: boolean;
   showPreviewByDefault: boolean;
+  viewMode: ViewMode;
+  closeToTray: boolean;
 }
 
 const DEFAULTS: AppSettings = {
@@ -18,8 +24,11 @@ const DEFAULTS: AppSettings = {
   autoSaveDelay: 1000,
   dailyNoteFolder: "daily",
   templateFolder: "_templates",
+  attachmentFolder: "attachments",
   showLineNumbers: true,
   showPreviewByDefault: true,
+  viewMode: "split",
+  closeToTray: true,
 };
 
 class SettingsStore {
@@ -62,6 +71,7 @@ export const settingsStore = new SettingsStore();
 /** Keyboard shortcuts reference. */
 export const SHORTCUTS = [
   { key: "Ctrl+K", action: "Command palette" },
+  { key: "Ctrl+E", action: "Cycle view mode (source / split / preview)" },
   { key: "Ctrl+,", action: "Settings" },
   { key: "Ctrl+S", action: "Save file" },
   { key: "Ctrl+D", action: "Daily note" },
