@@ -4,6 +4,7 @@
   import { settingsStore } from "../stores/settings.svelte";
   import { KANBAN_TEMPLATE } from "../services/kanban";
   import { popOutSticky, toggleAllStickies } from "../services/stickyWindows";
+  import { dialogStore } from "../stores/dialogs.svelte";
 
   let {
     open = false,
@@ -33,9 +34,9 @@
 
   const commands: Command[] = [
     { label: "Open file...", action: () => { mode = "files"; query = ""; selectedIndex = 0; } },
-    { label: "New note", action: () => { onclose(); const name = prompt("Note name:"); if (name) vaultStore.createNote(name); } },
+    { label: "New note", action: async () => { onclose(); const name = await dialogStore.prompt("Note name:", "My note"); if (name) vaultStore.createNote(name); } },
     { label: "New from template...", action: () => loadTemplates() },
-    { label: "New kanban board", action: () => { onclose(); const name = prompt("Board name:"); if (name) vaultStore.createNote(name, KANBAN_TEMPLATE); } },
+    { label: "New kanban board", action: async () => { onclose(); const name = await dialogStore.prompt("Board name:", "Project board"); if (name) vaultStore.createNote(name, KANBAN_TEMPLATE); } },
     { label: "Daily note", shortcut: "Ctrl+D", action: () => { onclose(); vaultStore.openDailyNote(); } },
     { label: "Search notes", shortcut: "Ctrl+Shift+F", action: () => onsearch() },
     { label: "View: markdown source", action: () => { onclose(); settingsStore.update({ viewMode: "source" }); } },
@@ -51,7 +52,7 @@
   async function loadTemplates() {
     templates = await vaultStore.getTemplates();
     if (templates.length === 0) {
-      alert("No templates found. Create .md files in a _templates/ folder in your vault.");
+      await dialogStore.alert("No templates found. Create .md files in a _templates/ folder in your vault.");
       return;
     }
     mode = "templates";
@@ -95,9 +96,9 @@
         .filter((t) => t.name.toLowerCase().includes(q))
         .map((t) => ({
           label: t.name,
-          action: () => {
+          action: async () => {
             onclose();
-            const name = prompt("Note name:");
+            const name = await dialogStore.prompt("Note name:", "My note");
             if (name) vaultStore.createFromTemplate(t.path, name);
           },
         }));
