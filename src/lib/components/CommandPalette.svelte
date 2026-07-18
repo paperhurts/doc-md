@@ -40,7 +40,7 @@
     { label: "Search notes", shortcut: "Ctrl+Shift+F", action: () => onsearch() },
     { label: "View: markdown source", action: () => { onclose(); settingsStore.update({ viewMode: "source" }); } },
     { label: "View: split (source + preview)", action: () => { onclose(); settingsStore.update({ viewMode: "split" }); } },
-    { label: "View: preview edit (formatted)", shortcut: "Ctrl+E", action: () => { onclose(); settingsStore.update({ viewMode: "preview" }); } },
+    { label: "View: preview edit (formatted)", shortcut: "Ctrl+Shift+E", action: () => { onclose(); settingsStore.update({ viewMode: "preview" }); } },
     { label: "Graph view", shortcut: "Ctrl+Shift+G", action: () => ongraph() },
     { label: "Pop out as sticky note", action: () => { onclose(); if (vaultStore.activeFilePath) popOutSticky(vaultStore.activeFilePath); } },
     { label: "Toggle sticky notes", action: () => { onclose(); toggleAllStickies(); } },

@@ -47,7 +47,8 @@
   }
 
   function handleWindowKeydown(e: KeyboardEvent) {
-    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "e") {
+    // Ctrl+Shift+E (plain Ctrl+E is taken by the inline-code formatting shortcut)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "E") {
       e.preventDefault();
       cycleMode();
     }
@@ -118,7 +119,7 @@
           class="rounded px-2 py-0.5 text-xs"
           style="color: {!showBoard && viewMode === mode.id ? 'var(--accent)' : 'var(--text-secondary)'}; background-color: {!showBoard && viewMode === mode.id ? 'var(--bg-surface)' : 'transparent'};"
           onclick={() => { boardView = false; setMode(mode.id); }}
-          title="{mode.title} (Ctrl+E cycles)"
+          title="{mode.title} (Ctrl+Shift+E cycles)"
         >
           {mode.label}
         </button>

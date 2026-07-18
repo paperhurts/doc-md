@@ -1,10 +1,17 @@
 # Project Status
 
-**Last updated**: 2026-04-03
-**Release**: v0.1.0
+**Last updated**: 2026-07-17
+**Release**: v0.1.0 + July feature wave (local, not yet pushed)
 
 ## Current State
-Phases 1-9 complete. Only Phase 10 (Plugin System) remains. Architecture refactored to eliminate Python sidecar. All logic runs in frontend JS for mobile compatibility.
+Phases 1-9 complete; Phase 10 (Plugin System) not started. July 2026 wave added five features (all merged to **local** main, awaiting user testing before push — see tasks/user.md):
+- Preview-edit view mode (#36) — CM6 live preview, 3 view modes, Ctrl+Shift+E
+- Clipboard image paste (#39) — attachments/ + asset-protocol rendering (security-hardened)
+- Kanban boards (#40) — markdown-backed, drag & drop, share-ready (docs/COLLABORATION.md)
+- System tray + close-to-tray (#37)
+- Desktop sticky notes (#38) — always-on-top pop-out windows, persisted
+
+Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser mock mode for the Tauri layer, screenshot verification into git-ignored .verify/ (all 6 shots evaluated PASS).
 
 ## Phase Completion
 
@@ -59,5 +66,16 @@ Phases 1-9 complete. Only Phase 10 (Plugin System) remains. Architecture refacto
 - Graph highlight: fixed Windows UNC path mismatch
 - Floating formatting toolbar with 10 actions + keyboard shortcuts
 
+## Recent Work (2026-07-17)
+- #35 test infra: Vitest + jsdom, in-memory mock backend (app fully usable in a plain browser), .verify/ screenshot pipeline
+- #36 preview-edit: livepreview.ts decorations (syntax hiding, clickable checkboxes, active-line reveal); MD/Split/Preview modes persisted in settings
+- #39 image paste: write_binary_file Rust command, savePastedImage service, preview img resolution; hardened after security review (vault-scoped asset protocol, traversal + scheme guards)
+- #40 kanban: kanban.ts lossless parser/serializer + KanbanBoard.svelte with HTML5 drag & drop; "New kanban board" palette command
+- #37 tray: Rust tray icon (Show / Toggle sticky notes / Quit), closeToTray setting intercepts window close in frontend
+- #38 stickies: sticky-* WebviewWindows running same bundle with ?sticky=<path>, stickies.svelte.ts store persisted in localStorage, geometry tracking
+- Ctrl+E collision fixed: view-mode cycle moved to Ctrl+Shift+E (Ctrl+E = inline code)
+- Branches merged to local main only; nothing pushed (Handoff Protocol pending)
+
 ## Open Issues
-- #21 — Cloud sync via Git/GitHub (future feature)
+- #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
+- #35–#40 — implemented locally, will close after user testing + push
