@@ -76,8 +76,15 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
 - Ctrl+E collision fixed: view-mode cycle moved to Ctrl+Shift+E (Ctrl+E = inline code)
 - #41 (2026-07-18): native prompt/alert/confirm replaced with in-app dialog service (dialogs.svelte.ts + DialogHost) — user reported "localhost:5420 says" popup
 - v0.2.0 pushed to main (CI green), issues #35–#41 closed
-- #42 release scaffolding: bundle config + icons + tag-triggered release.yml (RELEASING.md documents the process); local Windows build verified; v0.2.0 draft release created with 7 artifacts (awaiting publish on GitHub)
+- #42 release scaffolding: bundle config + icons + tag-triggered release.yml (RELEASING.md documents the process); local Windows build verified; v0.2.0 published on GitHub with 7 artifacts
+
+## Recent Work (2026-07-18, downloads/signing session)
+- Recovered cleanly from a Windows/BIOS failure — no work lost
+- #45 downloads page: site/index.html (accessible, client-side latest-release fetch, per-OS install walkthroughs, 4 screenshots) + pages.yml Pages deploy; verified locally (live fetch showed v0.2.0 + real asset sizes, no console errors). Committed on issue-45-downloads-page, awaiting user test → merge → enable Pages (build_type=workflow)
+- #43 signing scaffolding: release.yml signs Windows (Azure Artifact Signing) and macOS (Developer ID + notarization) automatically once credentials exist; docs/SIGNING.md walks through the one-time setup. Credentials not yet configured — issue stays open
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
-- #43 — Code signing + notarization for release builds
+- #43 — Code signing + notarization for release builds (workflow wired; awaiting Azure/Apple credentials, see docs/SIGNING.md)
+- #45 — Downloads page on GitHub Pages (built + verified locally; awaiting user test on issue-45-downloads-page)
+- #46 — Accessibility audit of the app (screen reader support)
