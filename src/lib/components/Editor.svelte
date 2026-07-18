@@ -1,11 +1,13 @@
 <script lang="ts">
   import { EditorView } from "@codemirror/view";
-  import { EditorState } from "@codemirror/state";
+  import { EditorState, Compartment } from "@codemirror/state";
   import { createEditorExtensions } from "../editor/setup";
+  import { livePreviewExtensions } from "../editor/livepreview";
   import { applyFormat, type SelectionInfo, type FormatAction } from "../editor/toolbar";
 
   let {
     content = "",
+    livePreview = false,
     onchange,
     onsave,
     onnavigate,
@@ -13,12 +15,15 @@
     onformatready,
   }: {
     content: string;
+    livePreview?: boolean;
     onchange?: (content: string) => void;
     onsave?: () => void;
     onnavigate?: (noteName: string) => void;
     onselectionchange?: (info: SelectionInfo) => void;
     onformatready?: (handler: (action: FormatAction) => void) => void;
   } = $props();
+
+  const modeCompartment = new Compartment();
 
   let container: HTMLDivElement;
   let view: EditorView | undefined;
@@ -41,7 +46,10 @@
   $effect(() => {
     if (!container) return;
 
-    const extensions = createEditorExtensions(handleUpdate, onnavigate, onselectionchange);
+    const extensions = [
+      ...createEditorExtensions(handleUpdate, onnavigate, onselectionchange),
+      modeCompartment.of(livePreview ? livePreviewExtensions() : []),
+    ];
 
     const state = EditorState.create({
       doc: initialContent,
@@ -62,6 +70,16 @@
       view?.destroy();
       view = undefined;
     };
+  });
+
+  // Reconfigure live preview mode without recreating the editor
+  $effect(() => {
+    const enabled = livePreview;
+    if (view) {
+      view.dispatch({
+        effects: modeCompartment.reconfigure(enabled ? livePreviewExtensions() : []),
+      });
+    }
   });
 
   // Update editor content when the prop changes externally (e.g. switching files)
