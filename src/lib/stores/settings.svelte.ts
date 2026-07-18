@@ -71,7 +71,7 @@ export const settingsStore = new SettingsStore();
 /** Keyboard shortcuts reference. */
 export const SHORTCUTS = [
   { key: "Ctrl+K", action: "Command palette" },
-  { key: "Ctrl+E", action: "Cycle view mode (source / split / preview)" },
+  { key: "Ctrl+Shift+E", action: "Cycle view mode (source / split / preview)" },
   { key: "Ctrl+,", action: "Settings" },
   { key: "Ctrl+S", action: "Save file" },
   { key: "Ctrl+D", action: "Daily note" },

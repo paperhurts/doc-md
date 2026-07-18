@@ -173,6 +173,19 @@ doc-md/
 24. Plugin architecture (JS plugins in `.doc-md/plugins/`)
 25. Plugin manager UI
 
+### Phase 11: Desktop & Boards Wave (July 2026) — COMPLETE (local, pending push)
+26. Test infrastructure: Vitest + browser mock backend (#35) ✅ — prerequisite for 27–31 test coverage
+27. Preview-edit view mode: CM6 live preview, 3 view modes (#36) ✅
+28. Clipboard image paste + asset-protocol rendering (#39) ✅ — depends on 26 (mock binary FS)
+29. Kanban boards, markdown-backed (#40) ✅ — data model designed for Phase 12
+30. System tray + close-to-tray (#37) ✅
+31. Desktop sticky notes via multi-window (#38) ✅ — depends on 30 (tray toggle entry)
+
+### Phase 12: Team Sharing — NOT STARTED
+32. Git/GitHub vault sync (#21) — unblocked by 26–29's file-first data model (see docs/COLLABORATION.md)
+33. Conflict surfacing UI
+34. Attribution via git history
+
 ---
 
 ## Dependencies
