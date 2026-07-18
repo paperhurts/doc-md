@@ -2,6 +2,7 @@
   import { vaultStore } from "../stores/vault.svelte";
   import { themeStore } from "../stores/theme.svelte";
   import { settingsStore } from "../stores/settings.svelte";
+  import { KANBAN_TEMPLATE } from "../services/kanban";
 
   let {
     open = false,
@@ -33,6 +34,7 @@
     { label: "Open file...", action: () => { mode = "files"; query = ""; selectedIndex = 0; } },
     { label: "New note", action: () => { onclose(); const name = prompt("Note name:"); if (name) vaultStore.createNote(name); } },
     { label: "New from template...", action: () => loadTemplates() },
+    { label: "New kanban board", action: () => { onclose(); const name = prompt("Board name:"); if (name) vaultStore.createNote(name, KANBAN_TEMPLATE); } },
     { label: "Daily note", shortcut: "Ctrl+D", action: () => { onclose(); vaultStore.openDailyNote(); } },
     { label: "Search notes", shortcut: "Ctrl+Shift+F", action: () => onsearch() },
     { label: "View: markdown source", action: () => { onclose(); settingsStore.update({ viewMode: "source" }); } },
