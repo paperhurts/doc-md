@@ -145,6 +145,22 @@
             </div>
 
             <div class="flex items-center justify-between">
+              <label class="text-sm" style="color: var(--text-primary);">Close to tray</label>
+              <button
+                class="rounded px-3 py-1 text-xs"
+                style="
+                  background-color: {settingsStore.settings.closeToTray ? 'var(--accent-subtle)' : 'var(--bg-surface)'};
+                  color: {settingsStore.settings.closeToTray ? 'var(--accent)' : 'var(--text-secondary)'};
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius);
+                "
+                onclick={() => settingsStore.update({ closeToTray: !settingsStore.settings.closeToTray })}
+              >
+                {settingsStore.settings.closeToTray ? "On" : "Off"}
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between">
               <label class="text-sm" style="color: var(--text-primary);">Preview by default</label>
               <button
                 class="rounded px-3 py-1 text-xs"
