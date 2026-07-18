@@ -19,10 +19,17 @@ your PC" scare screen for users.
    required; new accounts get free credit). Sign in to
    <https://portal.azure.com>.
 
+> **One account signs everything.** Billing is per signing *account*, and the
+> Basic tier includes exactly one Public Trust certificate profile — so name
+> everything at the paperhurts level, not per-project. The same account +
+> profile signs doc-md and every future paperhurts app at no extra cost
+> (5,000 signatures/month shared); apps are distinguished at sign time by the
+> `-d <name>` description flag the workflow passes.
+
 2. **Create the signing account**: in the portal search bar, type
    **"Artifact Signing"** (older docs call it "Trusted Signing accounts" —
    same thing) → **Create**:
-   - Resource group: create new, e.g. `docmd-signing`
+   - Resource group: create new, e.g. `paperhurts-signing`
    - Account name: globally unique, e.g. `paperhurts-signing`
    - Region: **East US** (endpoint will be `https://eus.codesigning.azure.net`)
      or **West US 2** (`https://wus2.codesigning.azure.net`) — note which!
@@ -36,13 +43,15 @@ your PC" scare screen for users.
    days. Status must read **Completed** before step 4 works.
 
 4. **Certificate profile**: in the account → **Certificate profiles** →
-   **Create** → type **Public Trust**. Name it e.g. `docmd`, link it to your
-   completed identity validation. The CN on the cert will be your verified
-   legal name — that's what users see as the publisher.
+   **Create** → type **Public Trust**. Name it `paperhurts` (Basic allows only
+   one Public Trust profile, and it's shared by all your apps), link it to
+   your completed identity validation. The CN on the cert will be your
+   verified legal name — that's what users see as the publisher.
 
 5. **App registration** (the CI robot identity):
    portal search → **Microsoft Entra ID** → **App registrations** →
-   **New registration**, name e.g. `docmd-ci`, defaults fine → Register.
+   **New registration**, name e.g. `paperhurts-ci` (reusable by future repos),
+   defaults fine → Register.
    - Copy **Application (client) ID** and **Directory (tenant) ID** from the
      overview page.
    - **Certificates & secrets** → **New client secret** (24-month expiry) →
@@ -51,7 +60,7 @@ your PC" scare screen for users.
 6. **Grant the robot signing rights**: back on the Artifact Signing account →
    **Access control (IAM)** → **Add role assignment** → role
    **"Trusted Signing Certificate Profile Signer"** → assign to the
-   `docmd-ci` app registration.
+   `paperhurts-ci` app registration.
 
 ### Wire it into GitHub (run these yourself in the repo)
 
@@ -69,7 +78,7 @@ Variables (not sensitive — visible in logs, which helps debugging):
 ```bash
 gh variable set AZURE_SIGNING_ENDPOINT --body "https://eus.codesigning.azure.net"
 gh variable set AZURE_SIGNING_ACCOUNT  --body "paperhurts-signing"
-gh variable set AZURE_CERT_PROFILE     --body "docmd"
+gh variable set AZURE_CERT_PROFILE     --body "paperhurts"
 ```
 
 (Substitute your actual endpoint/account/profile names from steps 2 and 4.)
