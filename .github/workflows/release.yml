@@ -56,14 +56,58 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # Windows code signing via Azure Artifact Signing (formerly Trusted
+      # Signing). Only activates when the Azure secrets/variables exist, so
+      # builds stay unsigned-but-working until Azure is set up.
+      # Setup guide: docs/SIGNING.md
+      - name: Check Windows signing credentials
+        if: matrix.platform == 'windows-latest'
+        shell: bash
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ENDPOINT: ${{ vars.AZURE_SIGNING_ENDPOINT }}
+          ACCOUNT: ${{ vars.AZURE_SIGNING_ACCOUNT }}
+          PROFILE: ${{ vars.AZURE_CERT_PROFILE }}
+        run: |
+          if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$ENDPOINT" ] && [ -n "$ACCOUNT" ] && [ -n "$PROFILE" ]; then
+            echo "SIGN_WINDOWS=true" >> "$GITHUB_ENV"
+            echo "Windows signing: enabled ($ACCOUNT/$PROFILE)"
+          else
+            echo "Windows signing: credentials not configured, building unsigned"
+          fi
+
+      - name: Install trusted-signing-cli
+        if: env.SIGN_WINDOWS == 'true'
+        run: cargo install trusted-signing-cli --locked
+
+      # Tauri signs the .exe first, then the installer that wraps it — both
+      # get signed in the one build via this config overlay.
+      - name: Write Windows signing config
+        if: env.SIGN_WINDOWS == 'true'
+        shell: bash
+        run: |
+          printf '%s' '{"bundle":{"windows":{"signCommand":"trusted-signing-cli -e ${{ vars.AZURE_SIGNING_ENDPOINT }} -a ${{ vars.AZURE_SIGNING_ACCOUNT }} -c ${{ vars.AZURE_CERT_PROFILE }} -d doc-md %1"}}}' > src-tauri/windows.sign.conf.json
+          echo 'SIGN_ARGS=--config src-tauri/windows.sign.conf.json' >> "$GITHUB_ENV"
+
       - name: Build and upload to draft release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Windows signing (trusted-signing-cli reads these; empty = unused)
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          # macOS signing + notarization (tauri-action skips these while empty)
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "doc-md ${{ github.ref_name }}"
           releaseBody: "See [CHANGELOG.md](https://github.com/paperhurts/doc-md/blob/main/CHANGELOG.md) for details."
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.args }}
+          args: ${{ matrix.args }} ${{ env.SIGN_ARGS }}

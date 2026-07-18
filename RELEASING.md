@@ -23,6 +23,9 @@ installers for Windows, macOS (universal), and Linux, and attach them to a
    platforms and creates a draft release with the installers.
 7. **Review the draft** on GitHub (artifacts present, notes correct) and
    click **Publish**.
+8. Nothing else — the [downloads page](https://paperhurts.github.io/doc-md/)
+   fetches the latest release client-side, so it updates itself the moment
+   the release is published.
 
 ## Artifacts produced
 
@@ -32,8 +35,9 @@ installers for Windows, macOS (universal), and Linux, and attach them to a
 | macOS | `.dmg`, `.app` (universal: Apple Silicon + Intel) |
 | Linux | `.deb`, `.rpm`, `.AppImage` |
 
-Builds are unsigned for now — Windows SmartScreen and macOS Gatekeeper will
-warn on first run. Code signing / notarization is future work.
+Code signing activates automatically when credentials exist — see
+`docs/SIGNING.md` for the one-time Azure (Windows) and Apple (macOS) setup.
+Until then builds are unsigned and SmartScreen/Gatekeeper warn on first run.
 
 ## Icons
 

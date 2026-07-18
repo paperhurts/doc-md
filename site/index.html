@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Download doc-md — local-first markdown notes</title>
+<meta name="description" content="Download doc-md for Windows, macOS, or Linux. A free, open source, local-first markdown knowledge app: live preview editing, wiki links, kanban boards, sticky notes, and full-text search — your notes stay on your computer.">
+<meta name="theme-color" content="#0c0a14">
+<link rel="canonical" href="https://paperhurts.github.io/doc-md/">
+<meta property="og:title" content="Download doc-md">
+<meta property="og:description" content="Free, open source, local-first markdown notes with live preview, kanban boards, and sticky notes. Windows, macOS, and Linux.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://paperhurts.github.io/doc-md/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%230c0a14'/%3E%3Ctext x='32' y='52' font-family='Georgia,serif' font-size='52' fill='%2300e5ff' text-anchor='middle'%3E*%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0a14;
+    --surface: #13111d;
+    --text: #e8e4f0;
+    --muted: #8a839b;
+    --cyan: #00e5ff;
+    --purple: #b44aff;
+    --magenta: #ff006e;
+    --grad: linear-gradient(135deg, var(--cyan), var(--purple), var(--magenta));
+    --serif: 'Crimson Pro', Georgia, serif;
+    --mono: 'JetBrains Mono', Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(180,74,255,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(0,229,255,0.05) 0%, transparent 60%),
+      linear-gradient(rgba(180,74,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180,74,255,0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 60px 60px, 60px 60px;
+    color: var(--text);
+    font: 400 19px/1.6 var(--serif);
+    text-wrap: pretty;
+  }
+  a { color: inherit; text-decoration: none; }
+  main a:not(.dl-btn):not(.card-link), footer a { text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: var(--cyan); }
+  :focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+    border-radius: 4px;
+    box-shadow: 0 0 20px rgba(0,229,255,0.35);
+  }
+  .skip-link {
+    position: absolute; left: 16px; top: -60px; z-index: 10;
+    background: var(--text); color: var(--bg);
+    font: 500 15px/1 var(--serif);
+    padding: 12px 22px; border-radius: 999px;
+    transition: top 0.2s;
+  }
+  .skip-link:focus { top: 16px; color: var(--bg); }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+
+  header .wrap {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 28px; padding-bottom: 28px; flex-wrap: wrap; gap: 16px;
+  }
+  .wordmark { font: 700 20px/1 var(--serif); letter-spacing: -0.02em; }
+  .wordmark .star { color: var(--cyan); text-shadow: 0 0 20px rgba(0,229,255,0.4); }
+  header nav ul { display: flex; gap: 36px; align-items: center; list-style: none; }
+  header nav a { font: 500 15px/1 var(--serif); color: var(--muted); }
+  header nav a.pill {
+    background: var(--text); color: var(--bg);
+    padding: 10px 20px; border-radius: 999px;
+  }
+  header nav a.pill:hover { color: var(--bg); opacity: 0.85; }
+
+  .hero { padding: 90px 0 70px; }
+  .eyebrow {
+    font: 500 14px/1 var(--mono);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--cyan);
+  }
+  h1 {
+    font: 600 clamp(44px, 8vw, 88px)/1.05 var(--serif);
+    letter-spacing: -0.02em;
+    margin: 20px 0 24px;
+  }
+  h1 .glow { color: var(--cyan); text-shadow: 0 0 40px rgba(0,229,255,0.35); }
+  .lede { color: var(--muted); max-width: 640px; }
+  .lede strong { color: var(--text); font-weight: 500; }
+
+  h2 {
+    font: 600 36px/1.15 var(--serif); letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  h3 { font: 700 24px/1.2 var(--serif); letter-spacing: -0.02em; }
+  section { padding-bottom: 90px; }
+  .section-eyebrow {
+    display: block;
+    font: 500 14px/1 var(--mono);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--purple); margin-bottom: 14px;
+  }
+
+  #release-status {
+    font: 500 15px/1.5 var(--mono);
+    color: var(--muted);
+    margin: 12px 0 36px;
+  }
+  #release-status strong { color: var(--cyan); font-weight: 500; }
+
+  .os-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; list-style: none; }
+  .os-card {
+    display: flex; flex-direction: column; gap: 24px;
+    background: var(--surface);
+    padding: 32px; border-radius: 20px;
+    border: 1px solid rgba(0,229,255,0.25);
+  }
+  .os-card.accent-purple { border-color: rgba(180,74,255,0.25); }
+  .os-card.accent-magenta { border-color: rgba(255,0,110,0.25); }
+  .os-card .os-tag { font: 500 14px/1 var(--mono); color: var(--cyan); }
+  .os-card.accent-purple .os-tag { color: var(--purple); }
+  .os-card.accent-magenta .os-tag { color: var(--magenta); }
+  .os-card .os-note { font: 400 15px/1.55 var(--serif); color: var(--muted); }
+  .dl-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+  .dl-btn {
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+    background: var(--bg);
+    border: 1px solid rgba(0,229,255,0.3);
+    border-radius: 14px; padding: 16px 22px;
+    transition: box-shadow 0.25s, transform 0.25s;
+  }
+  .accent-purple .dl-btn { border-color: rgba(180,74,255,0.3); }
+  .accent-magenta .dl-btn { border-color: rgba(255,0,110,0.3); }
+  .dl-btn .kind { font: 700 19px/1.2 var(--serif); }
+  .dl-btn .meta { font: 500 13px/1 var(--mono); color: var(--muted); }
+  .dl-btn .arrow { color: var(--cyan); margin-left: auto; }
+  .accent-purple .dl-btn .arrow { color: var(--purple); }
+  .accent-magenta .dl-btn .arrow { color: var(--magenta); }
+  .dl-btn:hover, .dl-btn:focus-visible {
+    color: var(--text);
+    background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--grad) border-box;
+    border-color: transparent;
+    box-shadow: 0 0 25px rgba(0,229,255,0.2);
+    transform: translateY(-2px);
+  }
+  .dl-btn.primary { border-width: 1px; }
+  .badge {
+    display: inline-block;
+    font: 500 12px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--bg); background: var(--cyan);
+    padding: 5px 10px; border-radius: 999px;
+  }
+
+  .steps { counter-reset: step; list-style: none; display: flex; flex-direction: column; gap: 18px; margin-top: 22px; max-width: 720px; }
+  .steps > li { display: flex; gap: 18px; align-items: baseline; }
+  .steps > li::before {
+    counter-increment: step; content: counter(step, decimal-leading-zero);
+    font: 500 14px/1.8 var(--mono); color: var(--cyan); flex-shrink: 0;
+  }
+  .install-block { margin-top: 44px; }
+  .install-block > p { color: var(--muted); margin-top: 8px; max-width: 720px; }
+  .steps .detail { display: block; color: var(--muted); font-size: 16px; margin-top: 4px; }
+  kbd {
+    font: 500 14px/1 var(--mono);
+    background: var(--surface); border: 1px solid rgba(138,131,155,0.4);
+    border-radius: 6px; padding: 3px 8px; white-space: nowrap;
+    margin: 0 2px;
+  }
+
+  .shot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 36px; align-items: start; }
+  .shot-grid figure {
+    background: var(--surface); border: 1px solid rgba(180,74,255,0.25);
+    border-radius: 20px; padding: 20px; margin: 0;
+  }
+  .shot-grid img {
+    width: 100%; height: auto; border-radius: 10px; display: block;
+    border: 1px solid rgba(138,131,155,0.25);
+  }
+  .shot-grid figcaption { font: 500 14px/1.5 var(--mono); color: var(--muted); margin-top: 14px; }
+  .shot-grid figcaption strong { color: var(--text); font-weight: 500; }
+
+  .help-panel {
+    background: var(--surface); border: 1px solid rgba(255,0,110,0.25);
+    border-radius: 24px; padding: 44px 48px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .help-panel p { color: var(--muted); max-width: 720px; }
+
+  footer .wrap {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-top: 24px; padding-bottom: 24px;
+    border-top: 1px solid rgba(180,74,255,0.15);
+    font: 400 13px/1.6 var(--mono); color: var(--muted);
+    flex-wrap: wrap; gap: 12px;
+  }
+  footer ul { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; }
+
+  @media (max-width: 1020px) {
+    .os-grid { grid-template-columns: 1fr 1fr; }
+    .shot-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .wrap { padding-left: 20px; padding-right: 20px; }
+    .os-grid { grid-template-columns: 1fr; }
+    .os-card { padding: 24px; }
+    .hero { padding: 60px 0 50px; }
+    section { padding-bottom: 64px; }
+    .help-panel { padding: 28px 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; }
+    .dl-btn:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#download">Skip to downloads</a>
+
+<header>
+  <div class="wrap">
+    <a class="wordmark" href="https://paperhurts.dev">paperhurts<span class="star" aria-hidden="true">*</span></a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="#install">How to install</a></li>
+        <li><a href="https://github.com/paperhurts/doc-md">Source on GitHub</a></li>
+        <li><a class="pill" href="#download">Download</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap hero">
+    <p class="eyebrow">free &amp; open source · no account · no telemetry</p>
+    <h1>Download <span class="glow">doc-md</span>.</h1>
+    <p class="lede">A local-first markdown knowledge app. Live-preview editing, wiki
+    links, kanban boards, sticky notes, graph view, and full-text search —
+    over <strong>plain markdown files in a folder you choose</strong>. Your notes never
+    leave your computer.</p>
+  </div>
+
+  <section id="download" class="wrap" aria-labelledby="download-heading">
+    <span class="section-eyebrow" aria-hidden="true">01 — get it</span>
+    <h2 id="download-heading">Download</h2>
+    <p id="release-status" aria-live="polite">Fetching the latest version from GitHub…</p>
+
+    <ul class="os-grid" id="os-grid">
+      <li class="os-card" id="windows">
+        <span class="os-tag" aria-hidden="true">win · 10 / 11 · 64-bit</span>
+        <div>
+          <h3>Windows</h3>
+          <p class="os-note">Most people want the <strong>.exe installer</strong>. The
+          .msi does the same job and exists for IT tools that prefer it.</p>
+        </div>
+        <ul class="dl-list" id="dl-windows">
+          <li><a class="dl-btn" href="https://github.com/paperhurts/doc-md/releases/latest">
+            <span class="kind">See files on the releases page</span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </li>
+      <li class="os-card accent-purple" id="macos">
+        <span class="os-tag" aria-hidden="true">mac · apple silicon + intel</span>
+        <div>
+          <h3>macOS</h3>
+          <p class="os-note">One universal <strong>.dmg</strong> covers both Apple Silicon
+          and Intel Macs.</p>
+        </div>
+        <ul class="dl-list" id="dl-macos">
+          <li><a class="dl-btn" href="https://github.com/paperhurts/doc-md/releases/latest">
+            <span class="kind">See files on the releases page</span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </li>
+      <li class="os-card accent-magenta" id="linux">
+        <span class="os-tag" aria-hidden="true">linux · x86_64</span>
+        <div>
+          <h3>Linux</h3>
+          <p class="os-note"><strong>.AppImage</strong> runs anywhere with no install;
+          .deb for Debian/Ubuntu, .rpm for Fedora/openSUSE.</p>
+        </div>
+        <ul class="dl-list" id="dl-linux">
+          <li><a class="dl-btn" href="https://github.com/paperhurts/doc-md/releases/latest">
+            <span class="kind">See files on the releases page</span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </li>
+    </ul>
+    <noscript>
+      <p style="margin-top:24px; color:#8a839b;">JavaScript is off, so version numbers
+      aren't shown above — the buttons link to the
+      <a href="https://github.com/paperhurts/doc-md/releases/latest">latest release on GitHub</a>,
+      which always has every installer attached.</p>
+    </noscript>
+  </section>
+
+  <section id="install" class="wrap" aria-labelledby="install-heading">
+    <span class="section-eyebrow" aria-hidden="true">02 — set it up</span>
+    <h2 id="install-heading">How to install</h2>
+
+    <div class="install-block" aria-labelledby="install-win">
+      <h3 id="install-win">On Windows</h3>
+      <ol class="steps">
+        <li><div>Choose <strong>Download for Windows (.exe installer)</strong> above and save the file.
+          <span class="detail">Your browser's downloads list opens with <kbd>Ctrl</kbd>+<kbd>J</kbd> in Chrome, Edge, and Firefox.</span></div></li>
+        <li><div>Open the downloaded file, named like <strong>doc-md_0.2.0_x64-setup.exe</strong>.</div></li>
+        <li><div>If Windows shows a "Windows protected your PC" message (SmartScreen), choose <strong>More info</strong>, then <strong>Run anyway</strong>.
+          <span class="detail">By keyboard: press <kbd>Tab</kbd> until "More info" is focused, press <kbd>Enter</kbd>, then <kbd>Tab</kbd> to "Run anyway" and press <kbd>Enter</kbd>. Newer doc-md releases are code-signed, so this screen only appears for older unsigned versions — the app is open source and safe to run either way.</span></div></li>
+        <li><div>Follow the installer — the defaults are all fine. It finishes by launching doc-md.</div></li>
+        <li><div>On first launch, doc-md asks you to <strong>choose a vault</strong>: a normal folder where every note is stored as a plain markdown file.
+          <span class="detail">Pick or create any folder you like, for example <strong>Documents\Notes</strong>. You can open it in Explorer any time — there's no hidden database.</span></div></li>
+      </ol>
+    </div>
+
+    <div class="install-block" aria-labelledby="install-mac">
+      <h3 id="install-mac">On macOS</h3>
+      <ol class="steps">
+        <li><div>Choose <strong>Download for macOS (.dmg)</strong> above and open the downloaded file.</div></li>
+        <li><div>Drag <strong>doc-md</strong> into the <strong>Applications</strong> folder shown next to it.</div></li>
+        <li><div>First open only: right-click (or <kbd>Control</kbd>-click) doc-md in Applications, choose <strong>Open</strong>, then confirm <strong>Open</strong>.
+          <span class="detail">This is macOS Gatekeeper meeting a new app. If it still refuses: System Settings → Privacy &amp; Security → "Open Anyway".</span></div></li>
+        <li><div>Choose a vault folder on first launch — any folder; notes are plain markdown files inside it.</div></li>
+      </ol>
+    </div>
+
+    <div class="install-block" aria-labelledby="install-linux">
+      <h3 id="install-linux">On Linux</h3>
+      <ol class="steps">
+        <li><div><strong>AppImage</strong> (any distro): make it executable and run it — <kbd>chmod +x doc-md_*.AppImage &amp;&amp; ./doc-md_*.AppImage</kbd></div></li>
+        <li><div><strong>Debian / Ubuntu</strong>: <kbd>sudo apt install ./doc-md_*_amd64.deb</kbd></div></li>
+        <li><div><strong>Fedora / openSUSE</strong>: <kbd>sudo dnf install ./doc-md-*.x86_64.rpm</kbd></div></li>
+        <li><div>Launch <strong>doc-md</strong> from your app menu and choose a vault folder on first run.</div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="tour" class="wrap" aria-labelledby="tour-heading">
+    <span class="section-eyebrow" aria-hidden="true">03 — what you get</span>
+    <h2 id="tour-heading">A quick look</h2>
+    <div class="shot-grid">
+      <figure>
+        <img src="assets/editor.jpg" width="1440" height="900"          alt="The doc-md main window. A file explorer sidebar on the left lists markdown notes. The main area shows a note in live preview: headings, bold text, and links appear fully formatted while you type, with markdown symbols hidden except on the line being edited.">
+        <figcaption><strong>Live preview editing.</strong> Formatted text as you type — the markdown syntax only appears on the line you're editing.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/kanban.jpg" width="1440" height="900"          alt="A kanban board inside doc-md with columns titled To Do, Doing, and Done, each holding task cards. The board is an ordinary markdown file: columns are headings and cards are checklist items, shown here as draggable cards.">
+        <figcaption><strong>Kanban boards.</strong> Any note can become a board — columns and cards stay readable as plain markdown.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/sticky.jpg" width="500" height="460"          alt="A small sticky-note window titled Welcome with a pin icon in its slim header. The note's content is fully formatted: a heading, a checklist with one item checked, and links — no markdown symbols visible.">
+        <figcaption><strong>Sticky notes.</strong> Pop any note out as an always-on-top desktop sticky, and toggle them all from the system tray.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/palette.jpg" width="1440" height="900"          alt="The doc-md command palette open over the editor: a search box reading 'Type a command' above a list including Open file, New note, New from template, New kanban board, Daily note, Search notes, and view mode switches.">
+        <figcaption><strong>Command palette.</strong> <kbd>Ctrl</kbd>+<kbd>K</kbd> reaches everything — notes, boards, view modes — without touching the mouse.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap" aria-labelledby="help-heading">
+    <div class="help-panel">
+      <span class="section-eyebrow" aria-hidden="true">04 — stuck?</span>
+      <h2 id="help-heading">Need help?</h2>
+      <p>Something unclear, broken, or missing? <a href="https://github.com/paperhurts/doc-md/issues/new/choose">Open an issue on GitHub</a> —
+      the templates walk you through what to include. The
+      <a href="https://github.com/paperhurts/doc-md#readme">README</a> covers every
+      feature and keyboard shortcut.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 paperhurts LLC</span>
+    <ul>
+      <li><a href="https://paperhurts.dev">paperhurts.dev</a></li>
+      <li><a href="https://github.com/paperhurts/doc-md">GitHub</a></li>
+      <li><a href="https://github.com/paperhurts/doc-md/releases">All releases</a></li>
+      <li><a href="https://github.com/paperhurts/doc-md/blob/main/CHANGELOG.md">Changelog</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var REPO = "paperhurts/doc-md";
+  var RELEASES_PAGE = "https://github.com/" + REPO + "/releases/latest";
+
+  function detectOS() {
+    var ua = navigator.userAgent;
+    if (/Windows/i.test(ua)) return "windows";
+    if (/Macintosh|Mac OS X/i.test(ua)) return "macos";
+    if (/Linux|X11/i.test(ua) && !/Android/i.test(ua)) return "linux";
+    return null;
+  }
+
+  function mb(bytes) { return (bytes / 1048576).toFixed(1) + " MB"; }
+
+  // Ordered per-OS matchers; first match in each OS list is the recommended one.
+  var KINDS = [
+    { os: "windows", test: /-setup\.exe$/i, label: ".exe installer", rec: true },
+    { os: "windows", test: /\.msi$/i, label: ".msi installer", rec: false },
+    { os: "macos", test: /\.dmg$/i, label: ".dmg", rec: true },
+    { os: "linux", test: /\.AppImage$/i, label: ".AppImage", rec: true },
+    { os: "linux", test: /\.deb$/i, label: ".deb — Debian/Ubuntu", rec: false },
+    { os: "linux", test: /\.rpm$/i, label: ".rpm — Fedora/openSUSE", rec: false }
+  ];
+  var OS_NAMES = { windows: "Windows", macos: "macOS", linux: "Linux" };
+
+  function buttonHTML(asset, kind, version) {
+    var a = document.createElement("a");
+    a.className = "dl-btn" + (kind.rec ? " primary" : "");
+    a.href = asset.browser_download_url;
+    var srText = "Download doc-md " + version + " for " + OS_NAMES[kind.os] + " — " +
+      kind.label + (kind.rec ? ", recommended" : "") + ", " + mb(asset.size);
+    a.setAttribute("aria-label", srText);
+    var kindSpan = document.createElement("span");
+    kindSpan.className = "kind";
+    kindSpan.textContent = kind.rec
+      ? "Download for " + OS_NAMES[kind.os] + " (" + kind.label + ")"
+      : kind.label;
+    var meta = document.createElement("span");
+    meta.className = "meta";
+    meta.textContent = mb(asset.size);
+    var arrow = document.createElement("span");
+    arrow.className = "arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = "→";
+    a.appendChild(kindSpan); a.appendChild(meta);
+    if (kind.rec) {
+      var badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent = "recommended";
+      a.appendChild(badge);
+    }
+    a.appendChild(arrow);
+    var li = document.createElement("li");
+    li.appendChild(a);
+    return li;
+  }
+
+  function render(release) {
+    var version = release.tag_name;
+    var date = new Date(release.published_at).toLocaleDateString("en-US",
+      { year: "numeric", month: "long", day: "numeric" });
+    var lists = { windows: [], macos: [], linux: [] };
+    KINDS.forEach(function (kind) {
+      release.assets.forEach(function (asset) {
+        if (kind.test.test(asset.name)) lists[kind.os].push(buttonHTML(asset, kind, version));
+      });
+    });
+    Object.keys(lists).forEach(function (os) {
+      if (!lists[os].length) return;   // keep the releases-page fallback link
+      var ul = document.getElementById("dl-" + os);
+      ul.textContent = "";
+      lists[os].forEach(function (li) { ul.appendChild(li); });
+    });
+
+    var os = detectOS();
+    var status = document.getElementById("release-status");
+    var hint = os
+      ? " You appear to be using " + OS_NAMES[os] + " — the " + OS_NAMES[os] + " section below has the file you need."
+      : "";
+    status.innerHTML = "";
+    var strong = document.createElement("strong");
+    strong.textContent = "Latest: " + version;
+    status.appendChild(strong);
+    status.appendChild(document.createTextNode(" · released " + date + "." + hint));
+    if (os) {
+      var link = document.createElement("a");
+      link.href = "#" + os;
+      link.textContent = "Jump to " + OS_NAMES[os] + " download.";
+      status.appendChild(document.createTextNode(" "));
+      status.appendChild(link);
+    }
+  }
+
+  fetch("https://api.github.com/repos/" + REPO + "/releases/latest")
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(render)
+    .catch(function () {
+      var status = document.getElementById("release-status");
+      status.textContent = "Couldn't reach GitHub to look up the latest version — the buttons below go to the releases page, which always has every installer. ";
+      var link = document.createElement("a");
+      link.href = RELEASES_PAGE;
+      link.textContent = "Open the latest release.";
+      status.appendChild(link);
+    });
+})();
+</script>
+</body>
+</html>

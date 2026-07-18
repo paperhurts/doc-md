@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Downloads & install help
+    url: https://paperhurts.github.io/doc-md/
+    about: The downloads page has the right installer for your OS plus step-by-step install instructions.
   - name: Documentation
     url: https://github.com/paperhurts/doc-md#readme
     about: Feature docs, keyboard shortcuts, and setup instructions live in the README.
