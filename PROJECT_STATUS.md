@@ -75,7 +75,8 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
 - #38 stickies: sticky-* WebviewWindows running same bundle with ?sticky=<path>, stickies.svelte.ts store persisted in localStorage, geometry tracking
 - Ctrl+E collision fixed: view-mode cycle moved to Ctrl+Shift+E (Ctrl+E = inline code)
 - #41 (2026-07-18): native prompt/alert/confirm replaced with in-app dialog service (dialogs.svelte.ts + DialogHost) — user reported "localhost:5420 says" popup
-- Branches merged to local main only; nothing pushed (Handoff Protocol pending)
+- v0.2.0 pushed to main (CI green), issues #35–#41 closed
+- #42 release scaffolding: bundle config + icons + tag-triggered release.yml (RELEASING.md documents the process); local Windows build verified (.msi + setup.exe)
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)

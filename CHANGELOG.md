@@ -15,6 +15,7 @@
 - Browser mock mode: the full app runs in a plain browser against an in-memory demo vault — used for automated screenshot verification.
 - Security hardening: asset protocol scoped to the open vault at runtime; image src resolution rejects path traversal and unsafe URL schemes; binary writes are path-validated in Rust.
 - CI now runs the frontend test suite.
+- Release scaffolding (#42): installer bundling (MSI/NSIS, DMG, deb/rpm/AppImage), full icon set, tag-triggered release workflow drafting GitHub Releases — see RELEASING.md.
 
 ### Design
 - All new data (boards, attachments, notes) is plain files in the vault — groundwork for team sharing via git sync (#21); see `docs/COLLABORATION.md`.
