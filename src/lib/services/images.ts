@@ -72,16 +72,30 @@ const mockUrlCache = new Map<string, string>();
 
 /**
  * Resolve an image src from markdown to something the webview can display.
- * Absolute URLs (http/https/data/asset) pass through; vault-relative paths
- * are converted via the Tauri asset protocol (or a blob URL in mock mode).
- * Returns null when the path can't be resolved.
+ * Only http(s) and data:image/ URLs pass through; vault-relative paths are
+ * validated (no traversal, no absolute paths) and converted via the Tauri
+ * asset protocol (or a blob URL in mock mode). Returns null otherwise.
  */
 export function resolveImageSrc(src: string, vaultPath: string): string | null {
-  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(src)) return src; // already a URL
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(src)) {
+    // Scheme allowlist: block file:, asset:, and the asset.localhost host so
+    // notes can't address arbitrary disk paths directly
+    if (/^https?:\/\/asset\.localhost/i.test(src)) return null;
+    return /^(https?:|data:image\/)/i.test(src) ? src : null;
+  }
   if (!vaultPath) return null;
-  const decoded = decodeURIComponent(src);
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(src);
+  } catch {
+    return null;
+  }
+  // Reject absolute paths (/x, \x, C:...) and any traversal/empty component
+  if (/^[/\\]/.test(decoded) || /^[a-zA-Z]:/.test(decoded)) return null;
+  const parts = decoded.split(/[/\\]/);
+  if (parts.some((p) => p === ".." || p === "." || p === "")) return null;
   const sep = vaultPath.includes("\\") ? "\\" : "/";
-  const abs = `${vaultPath}${sep}${decoded.replace(/[/\\]/g, sep)}`;
+  const abs = `${vaultPath}${sep}${parts.join(sep)}`;
 
   if (isTauri()) {
     return convertFileSrc(abs);
