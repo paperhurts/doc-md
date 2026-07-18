@@ -4,6 +4,8 @@ A local-first markdown knowledge management app — an Obsidian alternative buil
 
 Notes are stored as **plain markdown files** on disk. No proprietary formats, no cloud lock-in. Targets **Windows, macOS, iOS, and Android** from a single codebase.
 
+**⬇️ [Download the latest release](https://paperhurts.github.io/doc-md/)** — installers for Windows, macOS, and Linux, with install instructions. (Or browse [raw releases](https://github.com/paperhurts/doc-md/releases).)
+
 ## Features
 
 - **Markdown editor** — CodeMirror 6 with syntax highlighting, live preview, and split pane editing

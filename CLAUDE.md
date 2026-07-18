@@ -30,11 +30,13 @@
 - If something goes sideways, STOP and re-plan immediately — don't keep pushing
 - Use plan mode for verification steps, not just building
 - Write detailed specs upfront to reduce ambiguity
+- Before marking ANY task complete, ask: "If someone cloned this repo right now, would the docs accurately describe what they'd find?"  If no → update docs first.
 
 ## Self-Improvement Loop
 - After ANY correction from the user: update `tasks/lessons.md` with the pattern
 - Write rules for yourself that prevent the same mistake
 - Review lessons at session start
+- if you refactor, fix bugs, change architecture, etc., then update the readme file
 
 ## Verification Before Done
 - Never mark a task complete without proving it works
