@@ -5,6 +5,7 @@
   import MarkdownPreview from "./MarkdownPreview.svelte";
   import FormattingToolbar from "./FormattingToolbar.svelte";
   import type { SelectionInfo, FormatAction } from "../editor/toolbar";
+  import { savePastedImage } from "../services/images";
 
   const file = $derived(vaultStore.activeFile);
   let selectionInfo = $state<SelectionInfo | null>(null);
@@ -49,6 +50,22 @@
   function handleSave() {
     if (file) vaultStore.saveFile(file.path);
   }
+
+  async function handlePasteImage(blob: File): Promise<string | null> {
+    if (!vaultStore.vault) return null;
+    try {
+      const { markdown } = await savePastedImage(
+        blob,
+        vaultStore.vault.path,
+        settingsStore.settings.attachmentFolder,
+      );
+      vaultStore.refreshTree();
+      return markdown;
+    } catch (e) {
+      console.error("[editor] paste image failed:", e);
+      return null;
+    }
+  }
 </script>
 
 <svelte:window onkeydown={handleWindowKeydown} />
@@ -84,6 +101,7 @@
           onnavigate={(name) => vaultStore.navigateToNote(name)}
           onselectionchange={(info) => { selectionInfo = info; }}
           onformatready={(handler) => { formatHandler = handler; }}
+          onpasteimage={handlePasteImage}
         />
       </div>
 

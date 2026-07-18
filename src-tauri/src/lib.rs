@@ -3,7 +3,7 @@ mod watcher;
 
 use commands::{
     create_directory, delete_file, get_current_vault, list_files, read_file, rename_file,
-    set_current_vault, write_file,
+    set_current_vault, write_binary_file, write_file,
 };
 use commands::vault::VaultState;
 use watcher::{start_watching, stop_watching, WatcherState};
@@ -29,6 +29,7 @@ pub fn run() {
             list_files,
             read_file,
             write_file,
+            write_binary_file,
             delete_file,
             rename_file,
             create_directory,
