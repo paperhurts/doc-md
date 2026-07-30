@@ -11,4 +11,7 @@ Goal: OneNote-style capture features. Plan approved (~/.claude/plans/immutable-s
   - [x] Tests: 77 vitest / 12 cargo green; mock flow verified in real browser
   - [x] Docs: README, PROJECT_STATUS, TECHNICAL_CONTEXT, tasks/user.md
   - [ ] User test → push branch → PR → merge → close #47
-- #48 Transcription notes — NEXT (2A frontend/mock pipeline first, then 2B Rust audio+whisper; plan file has full detail)
+- #48 Transcription notes (branch issue-48-transcription-notes, stacked on issue-47)
+  - [x] 2A: transcription.ts (template/detector/format/wrappers/mock engine), TranscriptionBar, EditorPane hook, palette, settings — 87 vitest green, browser-verified
+  - [ ] 2B: Rust transcription/ module (cpal loopback+mic, chunker, whisper-rs, model download), CI toolchain — check CMake/LLVM present before starting
+  - [ ] User test → PRs in order (#47 then #48)

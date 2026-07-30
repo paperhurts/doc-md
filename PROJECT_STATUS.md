@@ -91,10 +91,16 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
   - New primitives for #48: `vaultStore.appendToNote/appendToDailyNote`, editor insert-at-cursor bridge
   - Settings → Screenshot section (hotkey rebind + conflict surfacing); palette "Capture screenshot"
   - Tests: 77 vitest (18 new) + 12 cargo (5 new) green; mock-mode flow browser-verified
+- #48 Phase 2A built on `issue-48-transcription-notes` (stacked on issue-47 branch — merge #47 first):
+  - transcription.ts: note type (`transcription: true`), transcript line formatting, engine command wrappers + full mock engine (canned script, fake downloads)
+  - TranscriptionBar.svelte: Listen/Stop, mic+system toggles, live partial line, model download with progress; finals append via appendToNote
+  - Palette "New transcription note"; Settings → Transcription (model picker w/ downloaded badges)
+  - 87 vitest green (10 new); full flow browser-verified in mock mode
+  - Phase 2B (Rust: cpal loopback+mic, whisper-rs, model download) NOT started — see plan file
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
 - #43 — Code signing + notarization for release builds (workflow wired; awaiting Azure/Apple credentials, see docs/SIGNING.md)
 - #46 — Accessibility audit of the app (screen reader support)
 - #47 — Screenshot capture (implemented on branch, awaiting user test)
-- #48 — Transcription notes: system+mic audio → local Whisper (planned, not started; do 2A frontend/mock first, then 2B Rust audio)
+- #48 — Transcription notes: 2A (UI + mock pipeline) done on branch; 2B (Rust audio + whisper) not started

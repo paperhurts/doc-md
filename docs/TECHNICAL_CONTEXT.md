@@ -50,6 +50,16 @@ User action → Svelte component → VaultStore → Tauri IPC (file I/O only) �
 - **indexer.ts** — `LinkIndex` class: backlinks, forward links, tags, graph data, content cache
 - **search.ts** — `SearchIndex` class: MiniSearch wrapper with snippet highlighting
 - **screenshot.ts** — Screenshot capture wrappers, save + routing (insert at cursor vs daily note)
+- **transcription.ts** — Transcription note type (template, `isTranscriptionContent`, `formatTranscriptLine`), engine command wrappers, and a full mock engine (canned script on an interval)
+
+### Transcription notes (`src/lib/services/transcription.ts` + `TranscriptionBar.svelte`)
+- Typed-note pattern like kanban: `transcription: true` frontmatter → `EditorPane` mounts `TranscriptionBar` above the (normal, editable) editor.
+- Event contract (Rust → JS, also emitted by the mock engine):
+  - `transcription-line` `{source: "mic"|"system", text, tMs, kind: "partial"|"final"}` — partials only update the bar; finals are appended to the note via `vaultStore.appendToNote()` as `- **[HH:MM:SS] [me|audio]** text`
+  - `transcription-status` `{state: "listening"|"stopped"|"error", message?}`
+  - `transcription-model-progress` `{model, downloaded, total, done?, error?}`
+- Commands (Rust side lands in Phase 2B of #48): `start_transcription {mic, system}`, `stop_transcription`, `get_transcription_models`, `download_transcription_model {model}`. Until then (and on mobile/feature-off builds) the bar surfaces the invoke error as its error state — degradation is by design.
+- Mock engine: `startTranscription()` outside Tauri runs a 1.2 s interval over a canned script, alternating sources, each line partial-then-final; model downloads emit fake progress. Fully drives the UI at :5420 and in Vitest (fake timers).
 
 ### Screenshot capture (`src-tauri/src/screenshot.rs` + `src/lib/services/screenshot.ts`)
 - Global hotkey via `tauri-plugin-global-shortcut` (registered Rust-side in `setup()`; failure is stored, surfaced in Settings, never fatal). Screen grab via `xcap` (GDI path — the `wgc` feature is deliberately off to avoid Windows' capture border).

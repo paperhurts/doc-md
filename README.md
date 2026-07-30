@@ -12,6 +12,7 @@ Notes are stored as **plain markdown files** on disk. No proprietary formats, no
 - **Preview-edit mode** — Edit formatted text directly (Obsidian-style live preview): markdown syntax hides, headings/bold/checkboxes render inline, the active line reveals its source. Three view modes — MD / Split / Preview — cycle with Ctrl+E
 - **Image paste** — Paste an image from the clipboard: it's saved to `attachments/` in the vault and a markdown link is inserted; images render in the preview
 - **Screenshot capture** — Press **Ctrl+Shift+S** anywhere (even with doc-md in the tray, OneNote-style): the screen freezes, drag a region, and the shot lands in `attachments/` with a link inserted at the cursor — or appended to today's daily note when no note is open. Hotkey rebindable in Settings
+- **Transcription notes** — A note with `transcription: true` frontmatter gets a recorder bar: it listens to your mic (`[me]`) and/or system audio (`[audio]` — videos, calls) and appends timestamped transcript lines, transcribed **locally** by Whisper (audio never leaves your machine)
 - **Kanban boards** — Any note with `kanban: true` frontmatter opens as a drag & drop board (`## headings` = columns, `- [ ]` items = cards). Boards stay plain markdown: diffable, syncable, editable as text
 - **Sticky notes** — Pop any note out as a small always-on-top desktop sticky (📌 Stick button or command palette). Toggle all stickies from the tray; positions persist across restarts
 - **System tray** — Closing the window minimizes to the tray (setting-gated); tray menu: Show, Toggle sticky notes, Quit
@@ -167,6 +168,15 @@ Press **Ctrl+Shift+S** anywhere — the hotkey is system-wide and works while do
 - Otherwise (window hidden, nothing open, kanban board showing), it's appended to today's daily note — capture always succeeds silently, like OneNote's quick notes.
 
 The hotkey is rebindable under Settings → Screenshot; if another app owns the combo, the conflict is shown there with a prompt to pick another. (Windows reserves Win+Shift+S for its own Snipping Tool, so that one can't be used.) Capture can also be triggered from the command palette.
+
+### Transcription notes
+Ctrl+K → "New transcription note" creates a note with `transcription: true` frontmatter and a `## Transcript` section. Opening any such note shows a recorder bar above the editor:
+
+- **● Listen / ■ Stop** with an elapsed timer and a live partial line while speech is being decoded.
+- Independent **Mic** and **System audio** toggles — mic lines are attributed `[me]`, system audio (a video you're watching, the other side of a call) `[audio]`.
+- Final lines append to the note as `- **[HH:MM:SS] [me]** text` — plain markdown you can edit like anything else.
+
+Transcription runs locally via Whisper (whisper.cpp). Pick a model under Settings → Transcription (tiny 75 MB / base 142 MB / small 466 MB); it downloads on first use with a progress bar. Windows note: mic capture requires desktop apps to be allowed microphone access in Windows Privacy settings.
 
 ### Kanban boards
 Ctrl+K → "New kanban board" creates a note like:
