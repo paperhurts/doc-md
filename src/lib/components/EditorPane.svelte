@@ -8,6 +8,8 @@
   import { savePastedImage } from "../services/images";
   import { isKanbanContent } from "../services/kanban";
   import KanbanBoard from "./KanbanBoard.svelte";
+  import { isTranscriptionContent } from "../services/transcription";
+  import TranscriptionBar from "./TranscriptionBar.svelte";
   import { popOutSticky } from "../services/stickyWindows";
   import { isTauri } from "../services/env";
   import { editorBridge } from "../stores/editorBridge.svelte";
@@ -26,6 +28,8 @@
 
   // Kanban notes (frontmatter kanban: true) open as a board by default
   const isKanban = $derived(file ? isKanbanContent(file.content) : false);
+  // Transcription notes (frontmatter transcription: true) get a recorder bar
+  const isTranscription = $derived(file ? isTranscriptionContent(file.content) : false);
   let boardView = $state(true);
   let lastPath: string | null = null;
   $effect(() => {
@@ -132,6 +136,10 @@
         </button>
       {/each}
     </div>
+
+    {#if isTranscription}
+      <TranscriptionBar path={file.path} />
+    {/if}
 
     {#if showBoard}
       <KanbanBoard content={file.content} onchange={handleChange} />

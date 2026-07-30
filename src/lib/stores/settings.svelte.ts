@@ -17,6 +17,11 @@ export interface AppSettings {
   closeToTray: boolean;
   /** Global screenshot hotkey (system-wide, registered by Rust). */
   captureHotkey: string;
+  /** Whisper model for transcription notes. */
+  transcriptionModel: string;
+  /** Default source toggles for new transcription sessions. */
+  transcriptionMic: boolean;
+  transcriptionSystem: boolean;
 }
 
 const DEFAULTS: AppSettings = {
@@ -32,6 +37,9 @@ const DEFAULTS: AppSettings = {
   viewMode: "split",
   closeToTray: true,
   captureHotkey: "Ctrl+Shift+S",
+  transcriptionModel: "base.en",
+  transcriptionMic: true,
+  transcriptionSystem: true,
 };
 
 class SettingsStore {
