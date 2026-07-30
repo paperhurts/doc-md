@@ -234,27 +234,56 @@ class VaultStore {
     }
   }
 
-  async openDailyNote() {
-    if (!this.vault) return;
+  /** Read-or-create today's daily note (no UI open). */
+  private async ensureDailyNote(): Promise<{ filePath: string; fileName: string } | null> {
+    if (!this.vault) return null;
     const folder = settingsStore.settings.dailyNoteFolder;
     const { filePath, fileName, title } = getDailyNotePath(this.vault.path, folder);
-    try {
-      // Try to open existing daily note
-      const content = await readFile(filePath).catch(() => null);
-      if (content !== null) {
-        await this.openFile(filePath, fileName);
-        return;
-      }
-      // Create with daily note template
+    const existing = await readFile(filePath).catch(() => null);
+    if (existing === null) {
       const sep = this.vault.path.includes("\\") ? "\\" : "/";
-      const dailyDir = `${this.vault.path}${sep}${folder}`;
-      await createDirectory(dailyDir);
-      const newContent = applyTemplate(DAILY_NOTE_TEMPLATE, getTemplateVars(title));
-      await writeFile(filePath, newContent);
+      await createDirectory(`${this.vault.path}${sep}${folder}`);
+      await writeFile(filePath, applyTemplate(DAILY_NOTE_TEMPLATE, getTemplateVars(title)));
       await this.refreshTree();
-      await this.openFile(filePath, fileName);
+    }
+    return { filePath, fileName };
+  }
+
+  async openDailyNote() {
+    try {
+      const note = await this.ensureDailyNote();
+      if (note) await this.openFile(note.filePath, note.fileName);
     } catch (e) {
       console.error("Failed to open daily note:", e);
+    }
+  }
+
+  /**
+   * Append text to a note. Goes through the open buffer when there is one so
+   * unsaved edits are preserved; otherwise read + concat + write. The FS
+   * watcher's debounced refresh only touches non-dirty buffers, so this
+   * never fights the editor.
+   */
+  async appendToNote(path: string, text: string) {
+    const file = this.openFiles.find((f) => f.path === path);
+    if (file) {
+      file.content = file.content + text;
+      file.dirty = true;
+      await this.saveFile(path);
+      return;
+    }
+    const content = await readFile(path);
+    await writeFile(path, content + text);
+  }
+
+  /** Append to today's daily note (auto-created). Never opens or shows UI —
+   * used by tray-resident capture with the main window hidden. */
+  async appendToDailyNote(text: string) {
+    try {
+      const note = await this.ensureDailyNote();
+      if (note) await this.appendToNote(note.filePath, text);
+    } catch (e) {
+      console.error("Failed to append to daily note:", e);
     }
   }
 

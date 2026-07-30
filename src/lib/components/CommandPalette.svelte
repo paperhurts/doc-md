@@ -4,6 +4,7 @@
   import { settingsStore } from "../stores/settings.svelte";
   import { KANBAN_TEMPLATE } from "../services/kanban";
   import { popOutSticky, toggleAllStickies } from "../services/stickyWindows";
+  import { triggerCapture } from "../services/screenshot";
   import { dialogStore } from "../stores/dialogs.svelte";
 
   let {
@@ -38,6 +39,7 @@
     { label: "New from template...", action: () => loadTemplates() },
     { label: "New kanban board", action: async () => { onclose(); const name = await dialogStore.prompt("Board name:", "Project board"); if (name) vaultStore.createNote(name, KANBAN_TEMPLATE); } },
     { label: "Daily note", shortcut: "Ctrl+D", action: () => { onclose(); vaultStore.openDailyNote(); } },
+    { label: "Capture screenshot", shortcut: "Ctrl+Shift+S", action: () => { onclose(); triggerCapture(); } },
     { label: "Search notes", shortcut: "Ctrl+Shift+F", action: () => onsearch() },
     { label: "View: markdown source", action: () => { onclose(); settingsStore.update({ viewMode: "source" }); } },
     { label: "View: split (source + preview)", action: () => { onclose(); settingsStore.update({ viewMode: "split" }); } },

@@ -1,8 +1,43 @@
 <script lang="ts">
   import { settingsStore, SHORTCUTS } from "../stores/settings.svelte";
   import { themeStore } from "../stores/theme.svelte";
+  import { setCaptureShortcut, getCaptureShortcutError } from "../services/screenshot";
+  import { isTauri } from "../services/env";
 
   let { open = false, onclose }: { open: boolean; onclose: () => void } = $props();
+
+  let hotkeyInput = $state("");
+  let hotkeyError = $state<string | null>(null);
+  let hotkeySaved = $state(false);
+
+  // Refresh hotkey state each time the panel opens; surface any startup
+  // registration failure (e.g. another app owns the combo)
+  $effect(() => {
+    if (open) {
+      hotkeyInput = settingsStore.settings.captureHotkey;
+      hotkeyError = null;
+      hotkeySaved = false;
+      if (isTauri()) {
+        getCaptureShortcutError().then((e) => {
+          if (e) hotkeyError = e;
+        });
+      }
+    }
+  });
+
+  async function applyHotkey() {
+    const next = hotkeyInput.trim();
+    if (!next || next === settingsStore.settings.captureHotkey) return;
+    hotkeyError = null;
+    hotkeySaved = false;
+    try {
+      await setCaptureShortcut(next, settingsStore.settings.captureHotkey);
+      settingsStore.update({ captureHotkey: next });
+      hotkeySaved = true;
+    } catch (e) {
+      hotkeyError = String(e);
+    }
+  }
 
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === "Escape") onclose();
@@ -202,6 +237,43 @@
                 style="background-color: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--radius);"
               />
             </div>
+          </div>
+        </section>
+
+        <!-- Screenshot -->
+        <section>
+          <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider" style="color: var(--text-secondary);">Screenshot</h3>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-sm" style="color: var(--text-primary);">Capture hotkey (global)</label>
+              <div class="flex items-center gap-2">
+                <input
+                  type="text"
+                  bind:value={hotkeyInput}
+                  placeholder="Ctrl+Shift+S"
+                  class="rounded px-2 py-1 text-xs outline-none w-28"
+                  style="background-color: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--radius); font-family: var(--font-mono);"
+                />
+                <button
+                  class="rounded px-3 py-1 text-xs"
+                  style="color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--radius);"
+                  onclick={applyHotkey}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+            {#if hotkeyError}
+              <p class="text-xs" style="color: var(--error, #e5534b);">
+                Hotkey unavailable: {hotkeyError}. Try another combination (e.g. Alt+Shift+S).
+              </p>
+            {:else if hotkeySaved}
+              <p class="text-xs" style="color: var(--accent);">Hotkey updated.</p>
+            {:else}
+              <p class="text-xs" style="color: var(--text-secondary);">
+                Works system-wide, even with doc-md in the tray. Windows reserves Win+Shift+S.
+              </p>
+            {/if}
           </div>
         </section>
 

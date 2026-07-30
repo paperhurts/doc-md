@@ -13,6 +13,7 @@
     onnavigate,
     onselectionchange,
     onformatready,
+    oninsertready,
     onpasteimage,
   }: {
     content: string;
@@ -22,6 +23,8 @@
     onnavigate?: (noteName: string) => void;
     onselectionchange?: (info: SelectionInfo) => void;
     onformatready?: (handler: (action: FormatAction) => void) => void;
+    /** Insert text at the cursor; returns false when no live view exists. */
+    oninsertready?: (handler: (text: string) => boolean) => void;
     onpasteimage?: (blob: File) => Promise<string | null>;
   } = $props();
 
@@ -66,6 +69,17 @@
     // Expose format handler so parent can dispatch commands without accessing view
     onformatready?.((action: FormatAction) => {
       if (view) applyFormat(view, action);
+    });
+
+    // Expose insert-at-cursor for external content (e.g. screenshots)
+    oninsertready?.((text: string) => {
+      if (!view) return false;
+      const { from, to } = view.state.selection.main;
+      view.dispatch({
+        changes: { from, to, insert: text },
+        selection: { anchor: from + text.length },
+      });
+      return true;
     });
 
     return () => {
