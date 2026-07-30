@@ -1,4 +1,5 @@
 mod commands;
+mod screenshot;
 mod watcher;
 
 use commands::{
@@ -6,6 +7,10 @@ use commands::{
     set_current_vault, write_binary_file, write_file,
 };
 use commands::vault::VaultState;
+use screenshot::{
+    cancel_capture, finish_capture, get_capture_frame, get_capture_shortcut_error,
+    set_capture_shortcut, trigger_capture,
+};
 use watcher::{start_watching, stop_watching, WatcherState};
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
@@ -64,6 +69,14 @@ pub fn run() {
         .setup(|app| {
             let handle = app.handle().clone();
 
+            // Screenshot capture: global-shortcut plugin + default hotkey
+            // (registration failure is stored for Settings, never fatal)
+            #[cfg(desktop)]
+            {
+                handle.plugin(tauri_plugin_global_shortcut::Builder::new().build())?;
+                screenshot::init(&handle);
+            }
+
             // Initialize vault state (loads last-used vault from config)
             let vault_state = VaultState::new(&handle);
             // Grant asset-protocol access to the loaded vault (images in preview)
@@ -92,7 +105,23 @@ pub fn run() {
             set_current_vault,
             start_watching,
             stop_watching,
+            get_capture_frame,
+            finish_capture,
+            cancel_capture,
+            trigger_capture,
+            set_capture_shortcut,
+            get_capture_shortcut_error,
         ])
+        .on_window_event(|window, event| {
+            // However the capture overlay dies (finish, Escape, Alt+F4),
+            // drop the frozen frame and restore the main window
+            #[cfg(desktop)]
+            if window.label() == "capture" {
+                if let tauri::WindowEvent::Destroyed = event {
+                    screenshot::on_overlay_destroyed(window.app_handle());
+                }
+            }
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

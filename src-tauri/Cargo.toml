@@ -10,6 +10,16 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }
 notify = "7"
+base64 = "0.22"
+
+# Desktop-only: screenshot capture (global hotkey + screen grab). Mobile
+# builds get stub commands instead (see screenshot.rs).
+[target.'cfg(any(target_os = "windows", target_os = "macos", target_os = "linux"))'.dependencies]
+tauri-plugin-global-shortcut = "2"
+# No "wgc" feature: Windows Graphics Capture draws a non-removable capture
+# border; the default GDI path is silent.
+xcap = { version = "0.9", features = ["image"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

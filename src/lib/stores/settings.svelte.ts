@@ -15,6 +15,8 @@ export interface AppSettings {
   showPreviewByDefault: boolean;
   viewMode: ViewMode;
   closeToTray: boolean;
+  /** Global screenshot hotkey (system-wide, registered by Rust). */
+  captureHotkey: string;
 }
 
 const DEFAULTS: AppSettings = {
@@ -29,6 +31,7 @@ const DEFAULTS: AppSettings = {
   showPreviewByDefault: true,
   viewMode: "split",
   closeToTray: true,
+  captureHotkey: "Ctrl+Shift+S",
 };
 
 class SettingsStore {
@@ -75,6 +78,7 @@ export const SHORTCUTS = [
   { key: "Ctrl+,", action: "Settings" },
   { key: "Ctrl+S", action: "Save file" },
   { key: "Ctrl+D", action: "Daily note" },
+  { key: "Ctrl+Shift+S", action: "Capture screenshot (works system-wide)" },
   { key: "Ctrl+Shift+F", action: "Search notes" },
   { key: "Ctrl+Shift+G", action: "Graph view" },
   { key: "Ctrl+Click", action: "Navigate to wikilink" },

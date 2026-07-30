@@ -10,6 +10,7 @@
   import KanbanBoard from "./KanbanBoard.svelte";
   import { popOutSticky } from "../services/stickyWindows";
   import { isTauri } from "../services/env";
+  import { editorBridge } from "../stores/editorBridge.svelte";
 
   const file = $derived(vaultStore.activeFile);
   let selectionInfo = $state<SelectionInfo | null>(null);
@@ -35,6 +36,12 @@
     }
   });
   const showBoard = $derived(isKanban && boardView);
+
+  // No live editor (no file, or kanban board showing) -> clear the insert
+  // bridge so screenshot routing falls back to the daily note
+  $effect(() => {
+    if (!file || showBoard) editorBridge.insertAtCursor = null;
+  });
 
   function setMode(mode: ViewMode) {
     settingsStore.update({ viewMode: mode });
@@ -142,6 +149,7 @@
             onnavigate={(name) => vaultStore.navigateToNote(name)}
             onselectionchange={(info) => { selectionInfo = info; }}
             onformatready={(handler) => { formatHandler = handler; }}
+            oninsertready={(handler) => { editorBridge.insertAtCursor = handler; }}
             onpasteimage={handlePasteImage}
           />
         </div>
