@@ -96,7 +96,9 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
   - TranscriptionBar.svelte: Listen/Stop, mic+system toggles, live partial line, model download with progress; finals append via appendToNote
   - Palette "New transcription note"; Settings → Transcription (model picker w/ downloaded badges)
   - 87 vitest green (10 new); full flow browser-verified in mock mode
-  - Phase 2B (Rust: cpal loopback+mic, whisper-rs, model download) NOT started — see plan file
+  - Phase 2B (2026-08-01): Rust engine built — src-tauri/src/transcription/ (audio.rs cpal WASAPI-loopback + mic w/ device-switch rebuild, chunker.rs energy-VAD windowing [pure, tested], whisper.rs-in-mod.rs shared WhisperContext + per-source sessions, download.rs .part-atomic model download, models.rs catalog); feature `transcription` default-ON, stubs for mobile/feature-off; CI/release get cmake+libclang steps; 21 cargo tests + 87 vitest green; --no-default-features build verified
+  - Toolchain notes: whisper-rs needs CMake + libclang. This machine: CMake via winget; LLVM winget install failed on UAC → libclang via `pip install libclang` + user-level LIBCLANG_PATH env var (set). WHISPER_DONT_GENERATE_BINDINGS does NOT work on Windows (Linux-generated bindings)
+  - NOT yet done: real-audio end-to-end test (needs user, see tasks/user.md), whisper accuracy/latency tuning, PRs
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)

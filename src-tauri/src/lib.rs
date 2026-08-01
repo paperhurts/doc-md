@@ -1,5 +1,6 @@
 mod commands;
 mod screenshot;
+mod transcription;
 mod watcher;
 
 use commands::{
@@ -10,6 +11,10 @@ use commands::vault::VaultState;
 use screenshot::{
     cancel_capture, finish_capture, get_capture_frame, get_capture_shortcut_error,
     set_capture_shortcut, trigger_capture,
+};
+use transcription::{
+    download_transcription_model, get_transcription_models, start_transcription,
+    stop_transcription,
 };
 use watcher::{start_watching, stop_watching, WatcherState};
 use tauri::menu::{Menu, MenuItem};
@@ -77,6 +82,9 @@ pub fn run() {
                 screenshot::init(&handle);
             }
 
+            #[cfg(all(desktop, feature = "transcription"))]
+            app.manage(transcription::TranscriptionState::default());
+
             // Initialize vault state (loads last-used vault from config)
             let vault_state = VaultState::new(&handle);
             // Grant asset-protocol access to the loaded vault (images in preview)
@@ -111,6 +119,10 @@ pub fn run() {
             trigger_capture,
             set_capture_shortcut,
             get_capture_shortcut_error,
+            get_transcription_models,
+            download_transcription_model,
+            start_transcription,
+            stop_transcription,
         ])
         .on_window_event(|window, event| {
             // However the capture overlay dies (finish, Escape, Alt+F4),

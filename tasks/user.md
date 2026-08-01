@@ -1,39 +1,42 @@
-# Handoff: Test #47 — Screenshot capture (branch `issue-47-screenshot-capture`)
+# Handoff: Test #47 screenshots + #48 transcription notes
 
-**Context if you've been AFK:** You asked for OneNote-style screenshots that land directly in doc-md. That's built and awaiting your test before I push. (The second ask — transcription notes — is planned as #48, not started.)
+**Context if you've been AFK:** Both features from your goal are built and awaiting your test before anything is pushed. Screenshot capture is on branch `issue-47-screenshot-capture`; transcription notes are stacked on top of it on `issue-48-transcription-notes` (currently checked out — testing this branch tests both).
 
-## What changed
-Press **Ctrl+Shift+S** from anywhere (even with doc-md hidden in the tray): the screen freezes, you drag a rectangle, and the shot is saved into your vault's `attachments/` folder. The markdown link is inserted at your cursor if a note is open, otherwise appended to today's daily note. Hotkey is rebindable in Settings → Screenshot.
+**Machine changes I made (for the Whisper build, all reversible):**
+- Installed **CMake** via winget (whisper.cpp builds with it).
+- Tried to install **LLVM** via winget — the UAC elevation prompt got canceled, so instead I did `pip install --user libclang` and set a **user-level `LIBCLANG_PATH` env var** pointing at it (bindgen needs libclang). If you'd rather have real LLVM: `winget install LLVM.LLVM` (approve the UAC prompt), then you can `pip uninstall libclang` and delete the env var.
+- **Open new terminals** for these env changes to be visible — a terminal opened before today won't have them.
 
 ## How to test
 
-1. **Start the app** (dev servers from earlier sessions should be closed first):
+1. **Start** (from a NEW terminal):
    ```
    cd C:\dev\doc-md
-   git status            # confirm you're on issue-47-screenshot-capture
+   git status                # should say issue-48-transcription-notes
    cargo tauri dev
    ```
-   Note: first Rust build pulls new crates (xcap, global-shortcut) — a couple extra minutes.
+   First build compiles whisper.cpp — expect several extra minutes.
 
-2. **Basic capture into a note:** Open any note, put the cursor somewhere, press **Ctrl+Shift+S**. Expect: app window vanishes, screen freezes with a "Drag to capture a region" hint, drag a box, release. Expect: window comes back, `![](attachments/screenshot-….png)` is at your cursor, and the image renders in Split/Preview view.
+### Screenshots (#47)
+2. Open a note, place the cursor, press **Ctrl+Shift+S** → screen freezes → drag a region → window returns with `![](attachments/screenshot-….png)` at the cursor, image renders in Split/Preview.
+3. **Esc cancels** (overlay closes, nothing saved).
+4. **Tray flow:** close the window (tray), Ctrl+Shift+S from another app, drag → doc-md stays hidden; the shot lands at the bottom of today's daily note.
+5. **DPI:** if your display scale isn't 100%, verify the crop matches exactly what you selected.
+6. **Rebind:** Settings → Screenshot → e.g. `Alt+Shift+S` → Apply. Conflicting/invalid combos show an inline error and keep the old binding.
 
-3. **Escape cancels:** Ctrl+Shift+S, then press Esc. Expect: overlay closes, window returns, nothing inserted, no file created.
+### Transcription (#48)
+7. Ctrl+K → **"New transcription note"** → name it. A recorder bar appears above the editor.
+8. First use: click **⬇ Download base.en (142 MB)** — progress %, then a **● Listen** button.
+9. Play a YouTube video, click Listen. Within ~5–15 s, `- **[HH:MM:SS] [audio]** …` lines should append under `## Transcript` (finals arrive at natural pauses in speech; the italic line in the bar is the live partial).
+10. Say something out loud → a `[me]` line (Windows Settings → Privacy → Microphone must allow desktop apps).
+11. Uncheck one source, Listen again — only the other source's lines appear.
+12. Mid-session, switch audio output (speakers→headphones) — capture should recover within a few seconds.
+13. **Stop**, edit the transcript text like any markdown — it's a plain note.
 
-4. **Tray capture → daily note:** Close the window (goes to tray). From any app, Ctrl+Shift+S and drag a region. Expect: **doc-md stays hidden.** Reopen from the tray — today's daily note (auto-created if needed) has the screenshot appended at the bottom.
-
-5. **DPI check (important if your display scale isn't 100%):** capture a region with recognizable content (e.g. a specific window's title bar) and confirm the saved image is exactly what you selected — not shifted or scaled. My DPI math is tested in unit tests but real-monitor verification needs eyes.
-
-6. **Hotkey rebind:** Settings (Ctrl+,) → Screenshot → change to e.g. `Alt+Shift+S`, Apply. Old combo should stop working, new one should work. Try a combo another app owns (or something invalid like `Ctrl`) — expect an inline error, old binding still active.
-
-7. **Palette:** Ctrl+K → "Capture screenshot" should trigger the same flow.
-
-## Known limitations (deliberate v1 scope)
-- Single monitor: captures the monitor under the mouse cursor.
-- No annotation tools, no clipboard copy — the shot goes straight to the vault.
-- Win+Shift+S can't be the hotkey (Windows reserves it).
+Expectations to calibrate: base.en is decent-not-perfect on accented/noisy audio (try small.en for better accuracy); lines lag real time by roughly 5–15 s because finals flush at pauses; background music can produce odd fragments (non-speech markers are filtered but not perfectly).
 
 ## When you're happy
-Say the word and I'll push the branch + open the PR. If anything misbehaves, tell me what step and what you saw.
+Say the word and I'll push both branches and open PRs (#47 first, #48 stacked). If something misbehaves, tell me the step number and what you saw.
 
 ---
 
