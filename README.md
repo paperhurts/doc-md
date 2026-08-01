@@ -48,6 +48,7 @@ All indexing, search, and parsing runs in the frontend JS layer — no backend p
 - **Node.js** 18+
 - **Rust** (latest stable)
 - **Tauri 2 CLI**: installed via npm (`@tauri-apps/cli`)
+- **CMake + LLVM** — required by the local-Whisper transcription feature (whisper.cpp builds via CMake, its Rust bindings via libclang). Windows: `winget install Kitware.CMake LLVM.LLVM`. Not needed if you build with `--no-default-features` (below).
 
 ## Setup
 
@@ -64,6 +65,11 @@ cargo tauri dev
 
 # Build for production
 cargo tauri build
+
+# Faster dev builds without the Whisper transcription engine
+# (skips the whisper.cpp compile; transcription notes show
+# "not available in this build" instead)
+cargo tauri dev --no-default-features
 ```
 
 ## Testing

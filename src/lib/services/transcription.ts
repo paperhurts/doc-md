@@ -91,7 +91,11 @@ export function formatTranscriptLine(
 
 export async function startTranscription(mic: boolean, system: boolean): Promise<void> {
   if (!isTauri()) return mockStart(mic, system);
-  return await invoke("start_transcription", { mic, system });
+  return await invoke("start_transcription", {
+    mic,
+    system,
+    model: settingsStore.settings.transcriptionModel,
+  });
 }
 
 export async function stopTranscription(): Promise<void> {
