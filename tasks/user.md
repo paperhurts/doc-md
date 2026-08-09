@@ -1,5 +1,20 @@
 # Handoff: Test #47 screenshots + #48 transcription notes
 
+## ROUND 2 (2026-08-09) — read this first
+
+Your round-1 feedback (inline below) is diagnosed and fixed in commit `0e2bed7`. All four symptoms traced to real bugs — none of it was you:
+
+1. **Booted back to folder base / tabs closing (4x)** — the dev server was force-reloading the whole app the first time capture code touched certain Tauri modules. This also silently killed the screenshot insert (the link never appeared because the listener died mid-capture). Fixed (#50).
+2. **Screen blacking out on Ctrl+Shift+S** — the capture overlay showed before the frozen screen image finished loading, so you stared at a black window. It now stays invisible until the image is painted: expect doc-md to hide, a beat of normal desktop, then your *frozen, dimmed* screen with a "Drag to capture" hint. That dimmed screen IS the capture surface — drag on it.
+3. **Tray flow** — most likely collateral of bug 1. Please just retest it.
+4. **Can't create a note in a subfolder** — right-click a folder → **New note** (new, #51).
+
+**To retest:** quit the app + `cargo tauri dev` from a fresh terminal (Rust changed, full restart required — a couple of minutes, not the long whisper build). Then redo steps 2–6 below. Steps 7–13 (transcription) were untouched and still need their first pass.
+
+One heads-up: you're using the doc-md repo itself as your vault. That now works much better (watcher noise from `.git`/build dirs is filtered), but it's still the noisiest possible vault — if anything looks off, try a plain folder vault to compare.
+
+---
+
 **Context if you've been AFK:** Both features from your goal are built and awaiting your test before anything is pushed. Screenshot capture is on branch `issue-47-screenshot-capture`; transcription notes are stacked on top of it on `issue-48-transcription-notes` (currently checked out — testing this branch tests both).
 
 **Machine changes I made (for the Whisper build, all reversible):**
