@@ -2,6 +2,8 @@
 
 ## ROUND 3 (2026-08-09 midday) — read this first
 
+> **Evening update:** your "Cannot resolve parent directory" alert is fixed — the first screenshot into a vault with no `attachments/` folder yet was failing path validation. **Restart `cargo tauri dev` once more** (Rust changed), then screenshots should finally land in ANY vault. This was also the silent killer in `.sid_archive` and your other repo earlier.
+
 Round-2 feedback diagnosed and fixed in `e730f6c`. **Quit the app and restart `cargo tauri dev`** (Rust changed again).
 
 1. **"Booted out of docs every few seconds"** — this was NOT the dev server this time. The editor replaced its *entire document* whenever content changed from outside (a watcher refresh, a transcript line, even a tab switch), throwing your cursor away — and each replacement re-marked the file dirty, so the app kept re-saving and re-triggering its own watcher in a loop. Now it applies only the changed span: cursor and scroll stay where you put them. This same fix is why **transcripts no longer scroll to the top** — I verified live appends leave the cursor untouched while lines stream in below.
