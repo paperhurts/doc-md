@@ -9,7 +9,7 @@
 
 ## How to test
 
-1. **Start** (from a NEW terminal):
+1. **Start** (from a NEW terminal). ⚠️ **Do NOT use the desktop shortcut or Start-menu entry** — that launches the installed v0.2.0 from July, which has none of this work. The only way to test these features is `cargo tauri dev`:
    ```
    cd C:\dev\doc-md
    git status                # should say issue-48-transcription-notes
@@ -18,9 +18,9 @@
    First build compiles whisper.cpp — expect several extra minutes.
 
 ### Screenshots (#47)
-2. Open a note, place the cursor, press **Ctrl+Shift+S** → screen freezes → drag a region → window returns with `![](attachments/screenshot-….png)` at the cursor, image renders in Split/Preview.
+2. Open a note, place the cursor, press **Ctrl+Shift+S** → screen freezes → drag a region → window returns with `![](attachments/screenshot-….png)` at the cursor, image renders in Split/Preview. --> this doesn't work; i tried, it minimizes doc-md screen which is fine, but then blacks out entire screen, then screen sort of comes back, but after i keep getting booted from this file four times now i have had to come back in here to write this comment.  let's test IN THE APP, using desktop controls, 
 3. **Esc cancels** (overlay closes, nothing saved).
-4. **Tray flow:** close the window (tray), Ctrl+Shift+S from another app, drag → doc-md stays hidden; the shot lands at the bottom of today's daily note.
+4. **Tray flow:** close the window (tray), Ctrl+Shift+S from another app, drag → doc-md stays hidden; the shot lands at the bottom of today's daily note. --> as far as i can tell this doesn't work, but 
 5. **DPI:** if your display scale isn't 100%, verify the crop matches exactly what you selected.
 6. **Rebind:** Settings → Screenshot → e.g. `Alt+Shift+S` → Apply. Conflicting/invalid combos show an inline error and keep the old binding.
 

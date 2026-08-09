@@ -216,11 +216,14 @@ class VaultStore {
     this.refreshBacklinks();
   }
 
-  async createNote(name: string, template?: string) {
+  /** Create a note in `folder` (absolute dir path inside the vault; defaults
+   * to the vault root — e.g. the file tree's per-folder "New note"). */
+  async createNote(name: string, template?: string, folder?: string) {
     if (!this.vault) return;
     const fileName = name.endsWith(".md") ? name : `${name}.md`;
     const sep = this.vault.path.includes("\\") ? "\\" : "/";
-    const filePath = `${this.vault.path}${sep}${fileName}`;
+    const dir = folder ?? this.vault.path;
+    const filePath = `${dir}${sep}${fileName}`;
     const title = name.replace(/\.md$/, "");
     const content = template
       ? applyTemplate(template, getTemplateVars(title))

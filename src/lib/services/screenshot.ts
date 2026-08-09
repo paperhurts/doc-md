@@ -72,6 +72,13 @@ export async function cancelCapture(): Promise<void> {
   return await invoke("cancel_capture");
 }
 
+/** Reveal the overlay window once the frozen frame has painted (it is
+ * created hidden so the user never sees a black fullscreen window). */
+export async function showCaptureOverlay(): Promise<void> {
+  if (!isTauri()) return;
+  return await invoke("show_capture_overlay");
+}
+
 /**
  * Start a capture. In Tauri this kicks off the Rust flow (overlay etc.); in
  * mock mode it saves a synthetic PNG and emits the event directly so the

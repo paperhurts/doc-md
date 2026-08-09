@@ -1,18 +1,11 @@
-# Current Session TODO — 2026-07-30
+# Session todo — 2026-08-09 (user test feedback on #47/#48)
 
-Goal: OneNote-style capture features. Plan approved (~/.claude/plans/immutable-shimmying-dongarra.md).
+User-reported bugs (from tasks/user.md inline comments + chat):
+- [ ] A. Dev reload storm: dynamic `@tauri-apps/api/*` imports trigger Vite dep re-optimize → full page reload → all tabs close ("booted to folder base"), capture listener dies (no markdown inserted). Fix: optimizeDeps.include.
+- [ ] B. Capture overlay blacks out screen: overlay shown before frozen frame arrives over IPC. Fix: keep hidden, show after <img> paints (+ Rust watchdog so main window can't stay hidden forever).
+- [ ] C. Cannot create note in subfolder: createNote hardcodes vault root; no folder context-menu entry. Fix: folder param + "New note" in dir context menu + test.
+- [ ] D. Watcher forwards .git/node_modules/target events (repo-as-vault). Fix: filter in watcher.rs to match list_files rules + tests.
+- [ ] Verify: vitest + cargo test green; then handoff update in tasks/user.md.
+- [ ] GitHub: comment findings on #47, #49; new issues for C and A.
 
-- #47 Screenshot capture (branch issue-47-screenshot-capture) — CODE COMPLETE, awaiting user test (tasks/user.md)
-  - [x] Rust: Cargo deps, screenshot.rs, lib.rs wiring, capabilities
-  - [x] Frontend: images.ts prefix, screenshot.ts service + mocks, ?capture=1 routing, CaptureOverlay
-  - [x] Editor insert bridge (editorBridge store, Editor/EditorPane props)
-  - [x] vaultStore.appendToNote / appendToDailyNote (ensureDailyNote refactor)
-  - [x] Settings (captureHotkey) + SettingsPanel section + palette command + App listener
-  - [x] Tests: 77 vitest / 12 cargo green; mock flow verified in real browser
-  - [x] Docs: README, PROJECT_STATUS, TECHNICAL_CONTEXT, tasks/user.md
-  - [ ] User test → push branch → PR → merge → close #47
-- #48 Transcription notes (branch issue-48-transcription-notes, stacked on issue-47)
-  - [x] 2A: transcription.ts (template/detector/format/wrappers/mock engine), TranscriptionBar, EditorPane hook, palette, settings — 87 vitest green, browser-verified
-  - [x] 2B: Rust transcription/ module (audio.rs cpal loopback+mic, chunker.rs VAD/windows, download.rs, models.rs, mod.rs whisper engine + sessions); CI/release toolchain steps; 21 cargo + 87 vitest green; stub build verified
-    - Machine changes made: CMake (winget), libclang (pip install libclang; LLVM winget failed on UAC), user env LIBCLANG_PATH set
-  - [ ] User test → PRs in order (#47 then #48)
+Constraint: user's `cargo tauri dev` may be running — do NOT switch branches, do NOT start vite.

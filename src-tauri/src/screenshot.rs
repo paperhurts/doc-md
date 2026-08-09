@@ -121,13 +121,28 @@ mod desktop {
         .map_err(|e| e.to_string())?;
 
         // Builder units are logical; set the monitor rect in physical units
-        // after creation so no DPI math is needed here.
+        // after creation so no DPI math is needed here. The overlay stays
+        // hidden until the frontend has painted the frozen frame and calls
+        // show_capture_overlay — otherwise the user sees a black fullscreen
+        // window while the frame PNG crosses IPC.
         overlay
             .set_position(PhysicalPosition::new(mx, my))
             .and_then(|_| overlay.set_size(PhysicalSize::new(mw, mh)))
-            .and_then(|_| overlay.show())
-            .and_then(|_| overlay.set_focus())
             .map_err(|e| e.to_string())?;
+
+        // Watchdog: if the frontend never manages to show the overlay (JS
+        // error, dead dev server), don't leave the main window hidden with an
+        // invisible always-on-top window holding the frame.
+        let app = app.clone();
+        std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_secs(15));
+            if let Some(overlay) = app.get_webview_window(OVERLAY_LABEL) {
+                if !overlay.is_visible().unwrap_or(true) {
+                    eprintln!("[screenshot] overlay never shown; cancelling capture");
+                    let _ = overlay.destroy(); // Destroyed handler restores main
+                }
+            }
+        });
         Ok(())
     }
 
@@ -214,6 +229,16 @@ mod desktop {
             clamp_rect(frame.width(), frame.height(), x, y, w, h).ok_or("Empty selection")?;
         let cropped = image::imageops::crop_imm(&frame, x, y, w, h).to_image();
         encode_png_base64(&cropped)
+    }
+
+    /// Called by the overlay once the frozen frame has painted: reveal the
+    /// (until now hidden) overlay window.
+    #[tauri::command]
+    pub fn show_capture_overlay(app: AppHandle) {
+        if let Some(overlay) = app.get_webview_window(OVERLAY_LABEL) {
+            let _ = overlay.show();
+            let _ = overlay.set_focus();
+        }
     }
 
     #[tauri::command]
@@ -324,6 +349,9 @@ mod mobile {
     pub fn finish_capture(_x: u32, _y: u32, _w: u32, _h: u32) -> Result<String, String> {
         Err(UNSUPPORTED.into())
     }
+
+    #[tauri::command]
+    pub fn show_capture_overlay() {}
 
     #[tauri::command]
     pub fn cancel_capture() {}

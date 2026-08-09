@@ -10,7 +10,7 @@ use commands::{
 use commands::vault::VaultState;
 use screenshot::{
     cancel_capture, finish_capture, get_capture_frame, get_capture_shortcut_error,
-    set_capture_shortcut, trigger_capture,
+    set_capture_shortcut, show_capture_overlay, trigger_capture,
 };
 use transcription::{
     download_transcription_model, get_transcription_models, start_transcription,
@@ -116,6 +116,7 @@ pub fn run() {
             get_capture_frame,
             finish_capture,
             cancel_capture,
+            show_capture_overlay,
             trigger_capture,
             set_capture_shortcut,
             get_capture_shortcut_error,
