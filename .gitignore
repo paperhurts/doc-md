@@ -63,4 +63,4 @@ Thumbs.db
 # Type checkers
 .mypy_cache/
 .ruff_cache/
-tasks/.user-screenshots/
+tasks/.user-*/

@@ -4,6 +4,7 @@
   import { createEditorExtensions } from "../editor/setup";
   import { livePreviewExtensions } from "../editor/livepreview";
   import { applyFormat, type SelectionInfo, type FormatAction } from "../editor/toolbar";
+  import { minimalChange } from "../editor/diff";
 
   let {
     content = "",
@@ -34,10 +35,14 @@
   let view: EditorView | undefined;
   let currentContent = $state(content);
   let initialContent = content;
+  // True while WE dispatch an external sync into the view — those updates
+  // must not re-enter onchange (which would mark the file dirty and schedule
+  // a save, feeding the FS-watcher a loop of our own echoes).
+  let syncingExternal = false;
 
   function handleUpdate(newContent: string) {
     currentContent = newContent;
-    onchange?.(newContent);
+    if (!syncingExternal) onchange?.(newContent);
   }
 
   function handleKeydown(e: KeyboardEvent) {
@@ -98,16 +103,21 @@
     }
   });
 
-  // Update editor content when the prop changes externally (e.g. switching files)
+  // Update editor content when the prop changes externally (switching files,
+  // transcript appends, FS-watcher refreshes). Dispatch only the changed span
+  // so CM maps the cursor through it and the scroll position survives —
+  // full-document replacement yanked the user to the top of the file.
   $effect(() => {
     if (view && content !== currentContent) {
-      view.dispatch({
-        changes: {
-          from: 0,
-          to: view.state.doc.length,
-          insert: content,
-        },
-      });
+      const change = minimalChange(view.state.doc.toString(), content);
+      if (change) {
+        syncingExternal = true;
+        try {
+          view.dispatch({ changes: change });
+        } finally {
+          syncingExternal = false;
+        }
+      }
       currentContent = content;
     }
   });

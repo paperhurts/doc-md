@@ -38,6 +38,9 @@ interface OpenFile {
   name: string;
   content: string;
   dirty: boolean;
+  /** Content as last written to (or read from) disk by US — used to tell a
+   * genuine external change from the FS watcher echoing our own save. */
+  lastSynced: string;
 }
 
 class VaultStore {
@@ -201,10 +204,13 @@ class VaultStore {
         const parts = filePath.replace(/\\/g, "/").split("/");
         searchIndex.updateFile(filePath, parts[parts.length - 1] ?? "", content);
 
-        // Update open file content if changed externally
+        // Update open file content if changed externally. Skip when the read
+        // matches what we last wrote — that's the watcher echoing our own
+        // save, and pushing it into the editor disturbs the user for nothing.
         const openFile = this.openFiles.find((f) => f.path === filePath);
-        if (openFile && !openFile.dirty) {
+        if (openFile && !openFile.dirty && content !== openFile.lastSynced) {
           openFile.content = content;
+          openFile.lastSynced = content;
         }
       } catch {
         // File was likely deleted — remove from search index
@@ -361,7 +367,7 @@ class VaultStore {
     try {
       const content = await readFile(path);
       if (!this.openFiles.some((f) => f.path === path)) {
-        this.openFiles.push({ path, name, content, dirty: false });
+        this.openFiles.push({ path, name, content, dirty: false, lastSynced: content });
       }
       this.activeFilePath = path;
       this.refreshBacklinks();
@@ -401,8 +407,11 @@ class VaultStore {
   async saveFile(path: string) {
     const file = this.openFiles.find((f) => f.path === path);
     if (file) {
-      await writeFile(path, file.content);
-      file.dirty = false;
+      const written = file.content;
+      await writeFile(path, written);
+      file.lastSynced = written;
+      // Keep dirty if the user typed while the write was in flight
+      file.dirty = file.content !== written;
       // Re-index the saved file locally
       try {
         await linkIndex.indexFile(path, file.content);
