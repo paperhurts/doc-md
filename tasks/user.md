@@ -1,17 +1,15 @@
 # Handoff: Test #47 screenshots + #48 transcription notes
 
-## ROUND 2 (2026-08-09) — read this first
+## ROUND 3 (2026-08-09 midday) — read this first
 
-Your round-1 feedback (inline below) is diagnosed and fixed in commit `0e2bed7`. All four symptoms traced to real bugs — none of it was you:
+Round-2 feedback diagnosed and fixed in `e730f6c`. **Quit the app and restart `cargo tauri dev`** (Rust changed again).
 
-1. **Booted back to folder base / tabs closing (4x)** — the dev server was force-reloading the whole app the first time capture code touched certain Tauri modules. This also silently killed the screenshot insert (the link never appeared because the listener died mid-capture). Fixed (#50).
-2. **Screen blacking out on Ctrl+Shift+S** — the capture overlay showed before the frozen screen image finished loading, so you stared at a black window. It now stays invisible until the image is painted: expect doc-md to hide, a beat of normal desktop, then your *frozen, dimmed* screen with a "Drag to capture" hint. That dimmed screen IS the capture surface — drag on it.
-3. **Tray flow** — most likely collateral of bug 1. Please just retest it.
-4. **Can't create a note in a subfolder** — right-click a folder → **New note** (new, #51).
+1. **"Booted out of docs every few seconds"** — this was NOT the dev server this time. The editor replaced its *entire document* whenever content changed from outside (a watcher refresh, a transcript line, even a tab switch), throwing your cursor away — and each replacement re-marked the file dirty, so the app kept re-saving and re-triggering its own watcher in a loop. Now it applies only the changed span: cursor and scroll stay where you put them. This same fix is why **transcripts no longer scroll to the top** — I verified live appends leave the cursor untouched while lines stream in below.
+2. **Screenshots doing nothing anywhere** — the frozen screen image was so slow to transfer on a big monitor that my 15-second safety timer killed the overlay before it appeared. It now loads near-instantly from a temp file. Also, **any capture failure now pops an in-app alert** — so if round 3 misbehaves, you'll get an actual error message: tell me its exact text.
+3. If Ctrl+Shift+S *still* does nothing: try Ctrl+K → "Capture screenshot". If the palette works but the hotkey doesn't, another app owns Ctrl+Shift+S — check Settings → Screenshot for a red error line and tell me what it says.
+4. **`[me]` vs `[audio]` confusion with background noise** — known limitation (your speakers bleed into your mic); logged on #48, no fix planned this round.
 
-**To retest:** quit the app + `cargo tauri dev` from a fresh terminal (Rust changed, full restart required — a couple of minutes, not the long whisper build). Then redo steps 2–6 below. Steps 7–13 (transcription) were untouched and still need their first pass.
-
-One heads-up: you're using the doc-md repo itself as your vault. That now works much better (watcher noise from `.git`/build dirs is filtered), but it's still the noisiest possible vault — if anything looks off, try a plain folder vault to compare.
+Retest: screenshots (steps 2–6), tray flow (step 4), and a quick "does editing feel normal now" pass in the doc-md repo vault.
 
 ---
 
