@@ -5,6 +5,7 @@
     getCaptureFrame,
     cancelCapture,
     completeCaptureFromOverlay,
+    showCaptureOverlay,
   } from "../services/screenshot";
   import { isTauri } from "../services/env";
 
@@ -97,7 +98,14 @@
   }}
 >
   {#if frameSrc}
-    <img class="frame" src={frameSrc} alt="" draggable="false" />
+    <img
+      class="frame"
+      src={frameSrc}
+      alt=""
+      draggable="false"
+      onload={() => void showCaptureOverlay()}
+      onerror={() => void cancel()}
+    />
   {/if}
 
   {#if dragging}
