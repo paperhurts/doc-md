@@ -33,7 +33,7 @@ One heads-up: you're using the doc-md repo itself as your vault. That now works 
    First build compiles whisper.cpp — expect several extra minutes.
 
 ### Screenshots (#47)
-2. Open a note, place the cursor, press **Ctrl+Shift+S** → screen freezes → drag a region → window returns with `![](attachments/screenshot-….png)` at the cursor, image renders in Split/Preview. --> this doesn't work; i tried, it minimizes doc-md screen which is fine, but then blacks out entire screen, then screen sort of comes back, but after i keep getting booted from this file four times now i have had to come back in here to write this comment.  let's test IN THE APP, using desktop controls, 
+2. Open a note, place the cursor, press **Ctrl+Shift+S** → screen freezes → drag a region → window returns with `![](attachments/screenshot-….png)` at the cursor, image renders in Split/Preview. 
 3. **Esc cancels** (overlay closes, nothing saved).
 4. **Tray flow:** close the window (tray), Ctrl+Shift+S from another app, drag → doc-md stays hidden; the shot lands at the bottom of today's daily note. --> as far as i can tell this doesn't work, but 
 5. **DPI:** if your display scale isn't 100%, verify the crop matches exactly what you selected.
