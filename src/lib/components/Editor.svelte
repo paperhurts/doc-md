@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from "svelte";
   import { EditorView } from "@codemirror/view";
   import { EditorState, Compartment } from "@codemirror/state";
   import { createEditorExtensions } from "../editor/setup";
@@ -9,6 +10,7 @@
   let {
     content = "",
     livePreview = false,
+    resolveImage,
     onchange,
     onsave,
     onnavigate,
@@ -19,6 +21,8 @@
   }: {
     content: string;
     livePreview?: boolean;
+    /** Resolve a markdown image src for live-preview rendering (null = leave raw). */
+    resolveImage?: (src: string) => string | null;
     onchange?: (content: string) => void;
     onsave?: () => void;
     onnavigate?: (noteName: string) => void;
@@ -52,45 +56,51 @@
     }
   }
 
-  // Create the editor once when the container is available
+  // Create the editor exactly once when the container is available. Everything
+  // except `container` is read inside untrack: if this effect tracked any
+  // other prop (livePreview, callbacks), a prop change would DESTROY and
+  // RECREATE the view from initialContent — silently reverting all edits made
+  // since the file was opened. Mode switches go through the reconfigure
+  // effect below instead.
   $effect(() => {
     if (!container) return;
+    return untrack(() => {
+      const extensions = [
+        ...createEditorExtensions(handleUpdate, onnavigate, onselectionchange, onpasteimage),
+        modeCompartment.of(livePreview ? livePreviewExtensions({ resolveImage }) : []),
+      ];
 
-    const extensions = [
-      ...createEditorExtensions(handleUpdate, onnavigate, onselectionchange, onpasteimage),
-      modeCompartment.of(livePreview ? livePreviewExtensions() : []),
-    ];
-
-    const state = EditorState.create({
-      doc: initialContent,
-      extensions,
-    });
-
-    view = new EditorView({
-      state,
-      parent: container,
-    });
-
-    // Expose format handler so parent can dispatch commands without accessing view
-    onformatready?.((action: FormatAction) => {
-      if (view) applyFormat(view, action);
-    });
-
-    // Expose insert-at-cursor for external content (e.g. screenshots)
-    oninsertready?.((text: string) => {
-      if (!view) return false;
-      const { from, to } = view.state.selection.main;
-      view.dispatch({
-        changes: { from, to, insert: text },
-        selection: { anchor: from + text.length },
+      const state = EditorState.create({
+        doc: initialContent,
+        extensions,
       });
-      return true;
-    });
 
-    return () => {
-      view?.destroy();
-      view = undefined;
-    };
+      view = new EditorView({
+        state,
+        parent: container,
+      });
+
+      // Expose format handler so parent can dispatch commands without accessing view
+      onformatready?.((action: FormatAction) => {
+        if (view) applyFormat(view, action);
+      });
+
+      // Expose insert-at-cursor for external content (e.g. screenshots)
+      oninsertready?.((text: string) => {
+        if (!view) return false;
+        const { from, to } = view.state.selection.main;
+        view.dispatch({
+          changes: { from, to, insert: text },
+          selection: { anchor: from + text.length },
+        });
+        return true;
+      });
+
+      return () => {
+        view?.destroy();
+        view = undefined;
+      };
+    });
   });
 
   // Reconfigure live preview mode without recreating the editor
@@ -98,7 +108,7 @@
     const enabled = livePreview;
     if (view) {
       view.dispatch({
-        effects: modeCompartment.reconfigure(enabled ? livePreviewExtensions() : []),
+        effects: modeCompartment.reconfigure(enabled ? livePreviewExtensions({ resolveImage }) : []),
       });
     }
   });
