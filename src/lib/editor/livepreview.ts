@@ -21,6 +21,10 @@ export interface LivePreviewOptions {
   /** Map a markdown image src to a loadable URL (vault-relative -> asset
    * protocol). Return null to leave the raw source visible. */
   resolveImage?: (src: string) => string | null;
+  /** false = editor unfocused: no line counts as active, the whole document
+   * renders. Without this, a freshly opened note shows its H1 as raw "# ..."
+   * because the cursor defaults to line 1. Default true. */
+  focused?: boolean;
 }
 
 class BulletWidget extends WidgetType {
@@ -126,15 +130,37 @@ export function computeLivePreviewDecorations(
   options: LivePreviewOptions = {},
 ): Range<Decoration>[] {
   const decorations: Range<Decoration>[] = [];
-  const active = selectedLines(state);
+  const active = options.focused === false ? new Set<number>() : selectedLines(state);
   const hidden = Decoration.replace({});
 
   const lineIsActive = (pos: number) => active.has(state.doc.lineAt(pos).number);
+
+  // Leading frontmatter ("---\nkey: value\n---") is data, not markdown — the
+  // parser would render it as a setext heading plus horizontal rules. Style
+  // the block as dimmed metadata and suppress markdown decorations inside it.
+  let frontmatterEnd = 0;
+  if (state.doc.lines >= 2 && state.doc.line(1).text.trim() === "---") {
+    for (let n = 2; n <= state.doc.lines; n++) {
+      if (state.doc.line(n).text.trim() === "---") {
+        frontmatterEnd = state.doc.line(n).to;
+        for (let m = 1; m <= n; m++) {
+          const line = state.doc.line(m);
+          if (line.from >= from && line.from <= to) {
+            decorations.push(
+              Decoration.line({ class: "cm-lp-frontmatter" }).range(line.from),
+            );
+          }
+        }
+        break;
+      }
+    }
+  }
 
   syntaxTree(state).iterate({
     from,
     to,
     enter: (node) => {
+      if (node.from < frontmatterEnd) return;
       switch (node.name) {
         case "HeaderMark": {
           if (lineIsActive(node.from)) break;
@@ -318,7 +344,12 @@ export function livePreviewPlugin(options: LivePreviewOptions = {}) {
       }
 
       update(update: ViewUpdate) {
-        if (update.docChanged || update.selectionSet || update.viewportChanged) {
+        if (
+          update.docChanged ||
+          update.selectionSet ||
+          update.viewportChanged ||
+          update.focusChanged
+        ) {
           this.decorations = this.build(update.view);
         }
       }
@@ -326,7 +357,12 @@ export function livePreviewPlugin(options: LivePreviewOptions = {}) {
       build(view: EditorView): DecorationSet {
         const all: Range<Decoration>[] = [];
         for (const { from, to } of view.visibleRanges) {
-          all.push(...computeLivePreviewDecorations(view.state, from, to, options));
+          all.push(
+            ...computeLivePreviewDecorations(view.state, from, to, {
+              ...options,
+              focused: view.hasFocus,
+            }),
+          );
         }
         all.sort((a, b) => a.from - b.from || a.to - b.to);
         return Decoration.set(all, true);
@@ -354,6 +390,19 @@ export const livePreviewTheme = EditorView.theme({
   ".cm-lp-code": {
     backgroundColor: "var(--bg-surface)",
     fontFamily: "var(--font-mono)",
+  },
+  // Frontmatter as metadata: small mono, and neutralize the setext-heading /
+  // hr styling the highlighter puts on its spans
+  ".cm-lp-frontmatter": {
+    fontFamily: "var(--font-mono)",
+    fontSize: "0.85em",
+    color: "var(--text-secondary)",
+  },
+  "& .cm-lp-frontmatter *": {
+    color: "inherit",
+    fontSize: "inherit",
+    fontWeight: "normal",
+    textDecoration: "none",
   },
   ".cm-lp-image": {
     display: "block",

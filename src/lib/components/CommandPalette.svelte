@@ -3,7 +3,7 @@
   import { themeStore } from "../stores/theme.svelte";
   import { settingsStore } from "../stores/settings.svelte";
   import { KANBAN_TEMPLATE } from "../services/kanban";
-  import { TRANSCRIPTION_TEMPLATE } from "../services/transcription";
+  import { TRANSCRIPTION_TEMPLATE, enableTranscription } from "../services/transcription";
   import { popOutSticky, toggleAllStickies } from "../services/stickyWindows";
   import { triggerCapture } from "../services/screenshot";
   import { dialogStore } from "../stores/dialogs.svelte";
@@ -40,6 +40,7 @@
     { label: "New from template...", action: () => loadTemplates() },
     { label: "New kanban board", action: async () => { onclose(); const name = await dialogStore.prompt("Board name:", "Project board"); if (name) vaultStore.createNote(name, KANBAN_TEMPLATE); } },
     { label: "New transcription note", action: async () => { onclose(); const name = await dialogStore.prompt("Note name:", "Meeting notes"); if (name) vaultStore.createNote(name, TRANSCRIPTION_TEMPLATE); } },
+    { label: "Transcribe in this note", action: () => { onclose(); const path = vaultStore.activeFilePath; const file = vaultStore.activeFile; if (path && file) { vaultStore.updateContent(path, enableTranscription(file.content)); vaultStore.saveFile(path); } } },
     { label: "Daily note", shortcut: "Ctrl+D", action: () => { onclose(); vaultStore.openDailyNote(); } },
     { label: "Capture screenshot", shortcut: "Ctrl+Shift+S", action: () => { onclose(); triggerCapture(); } },
     { label: "Search notes", shortcut: "Ctrl+Shift+F", action: () => onsearch() },

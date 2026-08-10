@@ -15,6 +15,12 @@ What Preview mode is, first: it's an *editable* live preview (like Obsidian) —
 
 Retest: open a note with a screenshot in it → Preview → image should display. Click the image's line → source appears. Type somewhere, flip MD → Preview → MD → your text must survive. And the still-open round-3 items: tray-flow capture (step 4) and screenshots in your OTHER vaults (.sid_archive, other repo).
 
+**Afternoon follow-ups (your 3 items):**
+- **"# still shows on the top heading"** — that was the active-line reveal: the cursor lands on line 1 when a note opens, and the cursor's line always shows its raw source so you can edit it (that's the one intended difference from Split). But it shouldn't apply when you're not even editing — now the whole note renders whenever the editor is unfocused, and the `#` only appears when you click onto that line. If you see raw syntax anywhere else while the cursor is elsewhere, that's a bug — tell me.
+- **Formatting toolbar** — correct, the test script never mentioned it: select any text in any mode and a floating toolbar appears (Bold/Italic/Strike/Code/Heading/Link/Wikilink/Bullet/Checkbox/Quote). README now says so too.
+- **Transcription in any note** — it was frontmatter-only; now there's Ctrl+K → **"Transcribe in this note"**, which adds `transcription: true` to whatever note you're in and the recorder bar appears. Delete those frontmatter lines to get rid of the bar. Try it on a random note.
+- Bonus fix found while testing the above: frontmatter blocks used to render in Preview as a giant bold heading (markdown parses `---\nkey: value\n---` as a heading + rules). They now show as small dimmed metadata lines.
+
 ---
 
 ## ROUND 3 (2026-08-09 midday)
