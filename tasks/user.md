@@ -1,6 +1,23 @@
 # Handoff: Test #47 screenshots + #48 transcription notes
 
-## ROUND 3 (2026-08-09 midday) — read this first
+## ROUND 4 (2026-08-10) — read this first
+
+Your report: "preview view broken — split works but preview doesn't; images only display in split." Your screenshots nailed it. Also: your Ctrl+Shift+S screenshot from this morning **worked** — it's sitting in `attachments/` with its link inserted in this file, so the round-3 fix held.
+
+**No restart needed this time** — everything below is frontend-only, and the dev server hot-reloads it. If the app is already running, it's already fixed.
+
+What Preview mode is, first: it's an *editable* live preview (like Obsidian) — click a line and its markdown source appears so you can edit it; move away and it renders. It is not the read-only rendered pane from Split. That said, four real bugs made it look completely broken:
+
+1. **Images never rendered in Preview** — the live-preview renderer simply had no code for images. Now `![](…)` shows the actual picture (click the line to get the source back for editing).
+2. **The daily-note template's empty task showed as raw `[ ]`** with no bullet and no checkbox. Now it's a clickable checkbox.
+3. **It looked like source code** — monospace font, raw ``` fences everywhere. Preview now uses the same prose font as Split's rendered pane, and code blocks get a shaded background with the ``` fence lines hidden (click into the block to see them).
+4. **THE BIG ONE — switching MD/Split/Preview silently threw away unsaved edits.** The editor rebuilt itself from the content the file had when you *first opened it*, and your next keystroke wrote that stale text back over the file. If you ever felt like text you typed just vanished — this was it, and it's probably a chunk of what made rounds 0–2 feel haunted. Fixed, with a regression test that fails on the old code.
+
+Retest: open a note with a screenshot in it → Preview → image should display. Click the image's line → source appears. Type somewhere, flip MD → Preview → MD → your text must survive. And the still-open round-3 items: tray-flow capture (step 4) and screenshots in your OTHER vaults (.sid_archive, other repo).
+
+---
+
+## ROUND 3 (2026-08-09 midday)
 
 > **Evening update:** your "Cannot resolve parent directory" alert is fixed — the first screenshot into a vault with no `attachments/` folder yet was failing path validation. **Restart `cargo tauri dev` once more** (Rust changed), then screenshots should finally land in ANY vault. This was also the silent killer in `.sid_archive` and your other repo earlier.
 
@@ -33,7 +50,7 @@ Retest: screenshots (steps 2–6), tray flow (step 4), and a quick "does editing
    First build compiles whisper.cpp — expect several extra minutes.
 
 ### Screenshots (#47)
-2. Open a note, place the cursor, press **Ctrl+Shift+S** → screen freezes → drag a region → window returns with `![](attachments/screenshot-….png)` at the cursor, image renders in Split/Preview. 
+2. Open a note, place the cursor, press **Ctrl+Shift+S** → screen freezes → drag a region → window returns with `![](attachments/screenshot-….png)` at the cursor, image renders in Split/Preview. ![](attachments/screenshot-20260810-110734-732.png)
 3. **Esc cancels** (overlay closes, nothing saved).
 4. **Tray flow:** close the window (tray), Ctrl+Shift+S from another app, drag → doc-md stays hidden; the shot lands at the bottom of today's daily note. --> as far as i can tell this doesn't work, but 
 5. **DPI:** if your display scale isn't 100%, verify the crop matches exactly what you selected.

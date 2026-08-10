@@ -24,7 +24,7 @@ describe("vaultStore append primitives", () => {
 
   it("appends through an open dirty buffer, preserving unsaved edits", async () => {
     vaultStore.openFiles = [
-      { path: WELCOME, name: "Welcome.md", content: "unsaved edit", dirty: true },
+      { path: WELCOME, name: "Welcome.md", content: "unsaved edit", dirty: true, lastSynced: "" },
     ];
     await vaultStore.appendToNote(WELCOME, "\nappended\n");
 

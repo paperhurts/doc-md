@@ -5,7 +5,7 @@
   import MarkdownPreview from "./MarkdownPreview.svelte";
   import FormattingToolbar from "./FormattingToolbar.svelte";
   import type { SelectionInfo, FormatAction } from "../editor/toolbar";
-  import { savePastedImage } from "../services/images";
+  import { savePastedImage, resolveImageSrc } from "../services/images";
   import { isKanbanContent } from "../services/kanban";
   import KanbanBoard from "./KanbanBoard.svelte";
   import { isTranscriptionContent } from "../services/transcription";
@@ -152,6 +152,7 @@
           <Editor
             content={file.content}
             livePreview={viewMode === "preview"}
+            resolveImage={(src) => resolveImageSrc(src, vaultStore.vault?.path ?? "")}
             onchange={handleChange}
             onsave={handleSave}
             onnavigate={(name) => vaultStore.navigateToNote(name)}

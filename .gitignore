@@ -64,3 +64,7 @@ Thumbs.db
 .mypy_cache/
 .ruff_cache/
 tasks/.user-*/
+
+# User vault content when the repo itself is opened as a doc-md vault
+/attachments/
+/daily/
