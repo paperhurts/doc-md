@@ -168,6 +168,38 @@ describe("live preview decorations", () => {
     expect(hiddenText(doc, doc.indexOf("let")).filter((h) => h.startsWith("```"))).toHaveLength(2);
   });
 
+  it("suppresses active-line reveal when the editor is unfocused", () => {
+    // On file open the cursor sits on line 1 (usually the H1) but the editor
+    // has no focus — the note should render fully, not show "# " raw.
+    const doc = "# Title\ntext";
+    const state = makeState(doc, 2); // cursor ON the heading line
+    const decos = computeLivePreviewDecorations(state, 0, doc.length, { focused: false });
+    const hidden = decos
+      .filter((r) => !(r.value.spec as { widget?: unknown }).widget && r.value.spec.class === undefined)
+      .map((r) => doc.slice(r.from, r.to));
+    expect(hidden).toContain("# ");
+  });
+
+  it("styles frontmatter as metadata instead of rendering it as markdown", () => {
+    // "---\nkey: value\n---" would otherwise parse as a setext heading plus
+    // horizontal rules — giant bold frontmatter in every transcription note.
+    const doc = "---\ntranscription: true\n---\n\n# Title\nbody";
+    const state = makeState(doc); // cursor at end, frontmatter inactive
+    const decos = computeLivePreviewDecorations(state, 0, doc.length);
+    const fmLines = decos.filter((r) => r.value.spec.class === "cm-lp-frontmatter");
+    expect(fmLines.length).toBe(3);
+    // No hr widgets or other replacements inside the frontmatter block
+    const fmEnd = doc.indexOf("\n---") + 4;
+    expect(
+      decos.some((r) => r.from < fmEnd && r.value.spec.class !== "cm-lp-frontmatter"),
+    ).toBe(false);
+    // The real heading after the block still renders
+    const hidden = decos
+      .filter((r) => !(r.value.spec as { widget?: unknown }).widget && r.value.spec.class === undefined)
+      .map((r) => doc.slice(r.from, r.to));
+    expect(hidden).toContain("# ");
+  });
+
   it("returns sorted, non-crashing ranges for a complex document", () => {
     const doc = [
       "# Big",

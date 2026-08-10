@@ -9,7 +9,7 @@ Notes are stored as **plain markdown files** on disk. No proprietary formats, no
 ## Features
 
 - **Markdown editor** — CodeMirror 6 with syntax highlighting, live preview, and split pane editing
-- **Preview-edit mode** — Edit formatted text directly (Obsidian-style live preview): markdown syntax hides, headings/bold/checkboxes render inline, the active line reveals its source. Three view modes — MD / Split / Preview — cycle with Ctrl+E
+- **Preview-edit mode** — Edit formatted text directly (Obsidian-style live preview): markdown syntax hides, headings/bold/checkboxes render inline, the active line reveals its source while you're editing (the whole note renders when the editor is unfocused). Three view modes — MD / Split / Preview — cycle with Ctrl+Shift+E
 - **Image paste** — Paste an image from the clipboard: it's saved to `attachments/` in the vault and a markdown link is inserted; images render in the preview
 - **Screenshot capture** — Press **Ctrl+Shift+S** anywhere (even with doc-md in the tray, OneNote-style): the screen freezes, drag a region, and the shot lands in `attachments/` with a link inserted at the cursor — or appended to today's daily note when no note is open. Hotkey rebindable in Settings
 - **Transcription notes** — A note with `transcription: true` frontmatter gets a recorder bar: it listens to your mic (`[me]`) and/or system audio (`[audio]` — videos, calls) and appends timestamped transcript lines, transcribed **locally** by Whisper (audio never leaves your machine)
@@ -162,7 +162,7 @@ Create `.md` files in a `_templates/` folder in your vault. Use template variabl
 Use Ctrl+K → "New from template" to create a note from a template.
 
 ### View modes & preview editing
-Every note has three view modes (toolbar buttons or Ctrl+Shift+E): **MD** (raw source), **Split** (source + rendered preview), and **Preview** — a live-preview editing surface where markdown syntax is hidden and text renders formatted (headings, bold/italic, checkboxes you can click, bullets, quotes). Move the cursor onto a line to reveal and edit its raw syntax.
+Every note has three view modes (toolbar buttons or Ctrl+Shift+E): **MD** (raw source), **Split** (source + rendered preview), and **Preview** — a live-preview editing surface where markdown syntax is hidden and text renders formatted (headings, bold/italic, checkboxes you can click, bullets, quotes, images, shaded code blocks). Move the cursor onto a line to reveal and edit its raw syntax; when the editor loses focus the whole note renders. Selecting text pops up the formatting toolbar in every mode.
 
 ### Pasting images
 Paste an image from the clipboard directly into the editor. It's saved as `attachments/pasted-<timestamp>.png` inside the vault and `![](attachments/…)` is inserted at the cursor. Images render in the preview. The attachment folder name is configurable in Settings.
@@ -176,7 +176,7 @@ Press **Ctrl+Shift+S** anywhere — the hotkey is system-wide and works while do
 The hotkey is rebindable under Settings → Screenshot; if another app owns the combo, the conflict is shown there with a prompt to pick another. (Windows reserves Win+Shift+S for its own Snipping Tool, so that one can't be used.) Capture can also be triggered from the command palette.
 
 ### Transcription notes
-Ctrl+K → "New transcription note" creates a note with `transcription: true` frontmatter and a `## Transcript` section. Opening any such note shows a recorder bar above the editor:
+Ctrl+K → "New transcription note" creates a note with `transcription: true` frontmatter and a `## Transcript` section — or use Ctrl+K → "Transcribe in this note" to add the recorder bar to any existing note (it just adds the same frontmatter flag; delete the flag to remove the bar). Opening any such note shows a recorder bar above the editor:
 
 - **● Listen / ■ Stop** with an elapsed timer and a live partial line while speech is being decoded.
 - Independent **Mic** and **System audio** toggles — mic lines are attributed `[me]`, system audio (a video you're watching, the other side of a call) `[audio]`.

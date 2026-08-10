@@ -74,6 +74,28 @@ export function isTranscriptionContent(content: string): boolean {
   return /^\s*transcription\s*:\s*true\s*$/m.test(frontmatter);
 }
 
+/**
+ * Add `transcription: true` frontmatter to any existing note so it grows a
+ * recorder bar — the "Transcribe in this note" palette command. Creates the
+ * frontmatter block when absent, flips an explicit `transcription: false`
+ * in place, and leaves already-enabled notes untouched.
+ */
+export function enableTranscription(content: string): string {
+  if (isTranscriptionContent(content)) return content;
+  if (content.startsWith("---")) {
+    const end = content.indexOf("\n---", 3);
+    if (end !== -1) {
+      const block = content.slice(3, end);
+      if (/^\s*transcription\s*:/m.test(block)) {
+        const flipped = block.replace(/^(\s*transcription\s*:).*$/m, "$1 true");
+        return content.slice(0, 3) + flipped + content.slice(end);
+      }
+      return content.slice(0, 3) + "\ntranscription: true" + content.slice(3);
+    }
+  }
+  return `---\ntranscription: true\n---\n\n${content}`;
+}
+
 /** `- **[HH:MM:SS] [me]** text` — mic is "me", system audio is "audio". */
 export function formatTranscriptLine(
   source: TranscriptSource,

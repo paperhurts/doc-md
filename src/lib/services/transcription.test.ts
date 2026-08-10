@@ -3,6 +3,7 @@ import {
   TRANSCRIPTION_TEMPLATE,
   TRANSCRIPTION_MODELS,
   isTranscriptionContent,
+  enableTranscription,
   formatTranscriptLine,
   startTranscription,
   stopTranscription,
@@ -31,6 +32,32 @@ describe("transcription note type", () => {
     expect(isTranscriptionContent("---\nkanban: true\n---\n")).toBe(false);
     expect(isTranscriptionContent("# Plain note\ntranscription: true")).toBe(false);
     expect(isTranscriptionContent("")).toBe(false);
+  });
+});
+
+describe("enableTranscription", () => {
+  it("prepends frontmatter to a plain note", () => {
+    const out = enableTranscription("# My note\n\nbody");
+    expect(isTranscriptionContent(out)).toBe(true);
+    expect(out).toContain("# My note\n\nbody");
+  });
+
+  it("adds the flag to existing frontmatter, preserving other keys", () => {
+    const out = enableTranscription("---\ntags: [a]\n---\n\n# Note");
+    expect(isTranscriptionContent(out)).toBe(true);
+    expect(out).toContain("tags: [a]");
+    expect(out).toContain("# Note");
+  });
+
+  it("flips an explicit transcription: false instead of duplicating the key", () => {
+    const out = enableTranscription("---\ntranscription: false\n---\n\nbody");
+    expect(isTranscriptionContent(out)).toBe(true);
+    expect(out.match(/transcription/g)).toHaveLength(1);
+  });
+
+  it("is a no-op for a note that already has the flag", () => {
+    const content = "---\ntranscription: true\n---\n\nbody";
+    expect(enableTranscription(content)).toBe(content);
   });
 });
 
