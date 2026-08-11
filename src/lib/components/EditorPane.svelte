@@ -5,11 +5,14 @@
   import MarkdownPreview from "./MarkdownPreview.svelte";
   import FormattingToolbar from "./FormattingToolbar.svelte";
   import type { SelectionInfo, FormatAction } from "../editor/toolbar";
-  import { savePastedImage } from "../services/images";
+  import { savePastedImage, resolveImageSrc } from "../services/images";
   import { isKanbanContent } from "../services/kanban";
   import KanbanBoard from "./KanbanBoard.svelte";
+  import { isTranscriptionContent } from "../services/transcription";
+  import TranscriptionBar from "./TranscriptionBar.svelte";
   import { popOutSticky } from "../services/stickyWindows";
   import { isTauri } from "../services/env";
+  import { editorBridge } from "../stores/editorBridge.svelte";
 
   const file = $derived(vaultStore.activeFile);
   let selectionInfo = $state<SelectionInfo | null>(null);
@@ -25,6 +28,8 @@
 
   // Kanban notes (frontmatter kanban: true) open as a board by default
   const isKanban = $derived(file ? isKanbanContent(file.content) : false);
+  // Transcription notes (frontmatter transcription: true) get a recorder bar
+  const isTranscription = $derived(file ? isTranscriptionContent(file.content) : false);
   let boardView = $state(true);
   let lastPath: string | null = null;
   $effect(() => {
@@ -35,6 +40,12 @@
     }
   });
   const showBoard = $derived(isKanban && boardView);
+
+  // No live editor (no file, or kanban board showing) -> clear the insert
+  // bridge so screenshot routing falls back to the daily note
+  $effect(() => {
+    if (!file || showBoard) editorBridge.insertAtCursor = null;
+  });
 
   function setMode(mode: ViewMode) {
     settingsStore.update({ viewMode: mode });
@@ -126,6 +137,10 @@
       {/each}
     </div>
 
+    {#if isTranscription}
+      <TranscriptionBar path={file.path} />
+    {/if}
+
     {#if showBoard}
       <KanbanBoard content={file.content} onchange={handleChange} />
     {:else}
@@ -137,11 +152,13 @@
           <Editor
             content={file.content}
             livePreview={viewMode === "preview"}
+            resolveImage={(src) => resolveImageSrc(src, vaultStore.vault?.path ?? "")}
             onchange={handleChange}
             onsave={handleSave}
             onnavigate={(name) => vaultStore.navigateToNote(name)}
             onselectionchange={(info) => { selectionInfo = info; }}
             onformatready={(handler) => { formatHandler = handler; }}
+            oninsertready={(handler) => { editorBridge.insertAtCursor = handler; }}
             onpasteimage={handlePasteImage}
           />
         </div>

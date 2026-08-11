@@ -17,6 +17,11 @@ describe("image paste", () => {
     expect(imageFileName(d)).toBe("pasted-20260717-090503-042.png");
   });
 
+  it("supports a custom filename prefix", () => {
+    const d = new Date(2026, 6, 17, 9, 5, 3, 42);
+    expect(imageFileName(d, "png", "screenshot-")).toBe("screenshot-20260717-090503-042.png");
+  });
+
   it("maps mime types to extensions", () => {
     expect(extForMime("image/png")).toBe("png");
     expect(extForMime("image/jpeg")).toBe("jpg");

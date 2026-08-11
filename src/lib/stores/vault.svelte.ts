@@ -38,6 +38,9 @@ interface OpenFile {
   name: string;
   content: string;
   dirty: boolean;
+  /** Content as last written to (or read from) disk by US — used to tell a
+   * genuine external change from the FS watcher echoing our own save. */
+  lastSynced: string;
 }
 
 class VaultStore {
@@ -201,10 +204,13 @@ class VaultStore {
         const parts = filePath.replace(/\\/g, "/").split("/");
         searchIndex.updateFile(filePath, parts[parts.length - 1] ?? "", content);
 
-        // Update open file content if changed externally
+        // Update open file content if changed externally. Skip when the read
+        // matches what we last wrote — that's the watcher echoing our own
+        // save, and pushing it into the editor disturbs the user for nothing.
         const openFile = this.openFiles.find((f) => f.path === filePath);
-        if (openFile && !openFile.dirty) {
+        if (openFile && !openFile.dirty && content !== openFile.lastSynced) {
           openFile.content = content;
+          openFile.lastSynced = content;
         }
       } catch {
         // File was likely deleted — remove from search index
@@ -216,11 +222,14 @@ class VaultStore {
     this.refreshBacklinks();
   }
 
-  async createNote(name: string, template?: string) {
+  /** Create a note in `folder` (absolute dir path inside the vault; defaults
+   * to the vault root — e.g. the file tree's per-folder "New note"). */
+  async createNote(name: string, template?: string, folder?: string) {
     if (!this.vault) return;
     const fileName = name.endsWith(".md") ? name : `${name}.md`;
     const sep = this.vault.path.includes("\\") ? "\\" : "/";
-    const filePath = `${this.vault.path}${sep}${fileName}`;
+    const dir = folder ?? this.vault.path;
+    const filePath = `${dir}${sep}${fileName}`;
     const title = name.replace(/\.md$/, "");
     const content = template
       ? applyTemplate(template, getTemplateVars(title))
@@ -234,27 +243,56 @@ class VaultStore {
     }
   }
 
-  async openDailyNote() {
-    if (!this.vault) return;
+  /** Read-or-create today's daily note (no UI open). */
+  private async ensureDailyNote(): Promise<{ filePath: string; fileName: string } | null> {
+    if (!this.vault) return null;
     const folder = settingsStore.settings.dailyNoteFolder;
     const { filePath, fileName, title } = getDailyNotePath(this.vault.path, folder);
-    try {
-      // Try to open existing daily note
-      const content = await readFile(filePath).catch(() => null);
-      if (content !== null) {
-        await this.openFile(filePath, fileName);
-        return;
-      }
-      // Create with daily note template
+    const existing = await readFile(filePath).catch(() => null);
+    if (existing === null) {
       const sep = this.vault.path.includes("\\") ? "\\" : "/";
-      const dailyDir = `${this.vault.path}${sep}${folder}`;
-      await createDirectory(dailyDir);
-      const newContent = applyTemplate(DAILY_NOTE_TEMPLATE, getTemplateVars(title));
-      await writeFile(filePath, newContent);
+      await createDirectory(`${this.vault.path}${sep}${folder}`);
+      await writeFile(filePath, applyTemplate(DAILY_NOTE_TEMPLATE, getTemplateVars(title)));
       await this.refreshTree();
-      await this.openFile(filePath, fileName);
+    }
+    return { filePath, fileName };
+  }
+
+  async openDailyNote() {
+    try {
+      const note = await this.ensureDailyNote();
+      if (note) await this.openFile(note.filePath, note.fileName);
     } catch (e) {
       console.error("Failed to open daily note:", e);
+    }
+  }
+
+  /**
+   * Append text to a note. Goes through the open buffer when there is one so
+   * unsaved edits are preserved; otherwise read + concat + write. The FS
+   * watcher's debounced refresh only touches non-dirty buffers, so this
+   * never fights the editor.
+   */
+  async appendToNote(path: string, text: string) {
+    const file = this.openFiles.find((f) => f.path === path);
+    if (file) {
+      file.content = file.content + text;
+      file.dirty = true;
+      await this.saveFile(path);
+      return;
+    }
+    const content = await readFile(path);
+    await writeFile(path, content + text);
+  }
+
+  /** Append to today's daily note (auto-created). Never opens or shows UI —
+   * used by tray-resident capture with the main window hidden. */
+  async appendToDailyNote(text: string) {
+    try {
+      const note = await this.ensureDailyNote();
+      if (note) await this.appendToNote(note.filePath, text);
+    } catch (e) {
+      console.error("Failed to append to daily note:", e);
     }
   }
 
@@ -329,7 +367,7 @@ class VaultStore {
     try {
       const content = await readFile(path);
       if (!this.openFiles.some((f) => f.path === path)) {
-        this.openFiles.push({ path, name, content, dirty: false });
+        this.openFiles.push({ path, name, content, dirty: false, lastSynced: content });
       }
       this.activeFilePath = path;
       this.refreshBacklinks();
@@ -369,8 +407,11 @@ class VaultStore {
   async saveFile(path: string) {
     const file = this.openFiles.find((f) => f.path === path);
     if (file) {
-      await writeFile(path, file.content);
-      file.dirty = false;
+      const written = file.content;
+      await writeFile(path, written);
+      file.lastSynced = written;
+      // Keep dirty if the user typed while the write was in flight
+      file.dirty = file.content !== written;
       // Re-index the saved file locally
       try {
         await linkIndex.indexFile(path, file.content);

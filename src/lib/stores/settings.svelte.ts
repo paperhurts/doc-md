@@ -15,6 +15,13 @@ export interface AppSettings {
   showPreviewByDefault: boolean;
   viewMode: ViewMode;
   closeToTray: boolean;
+  /** Global screenshot hotkey (system-wide, registered by Rust). */
+  captureHotkey: string;
+  /** Whisper model for transcription notes. */
+  transcriptionModel: string;
+  /** Default source toggles for new transcription sessions. */
+  transcriptionMic: boolean;
+  transcriptionSystem: boolean;
 }
 
 const DEFAULTS: AppSettings = {
@@ -29,6 +36,10 @@ const DEFAULTS: AppSettings = {
   showPreviewByDefault: true,
   viewMode: "split",
   closeToTray: true,
+  captureHotkey: "Ctrl+Shift+S",
+  transcriptionModel: "base.en",
+  transcriptionMic: true,
+  transcriptionSystem: true,
 };
 
 class SettingsStore {
@@ -75,6 +86,7 @@ export const SHORTCUTS = [
   { key: "Ctrl+,", action: "Settings" },
   { key: "Ctrl+S", action: "Save file" },
   { key: "Ctrl+D", action: "Daily note" },
+  { key: "Ctrl+Shift+S", action: "Capture screenshot (works system-wide)" },
   { key: "Ctrl+Shift+F", action: "Search notes" },
   { key: "Ctrl+Shift+G", action: "Graph view" },
   { key: "Ctrl+Click", action: "Navigate to wikilink" },
