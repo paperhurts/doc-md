@@ -16,6 +16,7 @@ mod desktop {
     use base64::Engine;
     use image::RgbaImage;
     use std::io::Cursor;
+    use std::path::PathBuf;
     use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::Mutex;
     use std::time::Duration;
@@ -31,6 +32,10 @@ mod desktop {
     pub struct CaptureState {
         /// Frozen full-monitor frame while the overlay is up.
         frame: Mutex<Option<RgbaImage>>,
+        /// The frame as a PNG on disk — the overlay loads it via the asset
+        /// protocol. Sending it over IPC as base64 took many seconds on large
+        /// monitors, long enough to look completely broken.
+        frame_file: Mutex<Option<PathBuf>>,
         /// We hid the main window for this capture and owe it a restore.
         restore_main: AtomicBool,
         /// Startup hotkey registration error, surfaced in Settings.
@@ -104,7 +109,26 @@ mod desktop {
             monitor.y().map_err(|e| e.to_string())?,
         );
         let (mw, mh) = (frame.width(), frame.height());
+
+        // Write the frame PNG where the overlay can stream it via the asset
+        // protocol, and allow exactly that file in the protocol scope.
+        let cache_dir = app
+            .path()
+            .app_cache_dir()
+            .map_err(|e| e.to_string())?;
+        std::fs::create_dir_all(&cache_dir).map_err(|e| e.to_string())?;
+        let frame_path = cache_dir.join("capture-frame.png");
+        let mut png = Vec::new();
+        frame
+            .write_to(&mut Cursor::new(&mut png), image::ImageFormat::Png)
+            .map_err(|e| e.to_string())?;
+        std::fs::write(&frame_path, png).map_err(|e| e.to_string())?;
+        app.asset_protocol_scope()
+            .allow_file(&frame_path)
+            .map_err(|e| e.to_string())?;
+
         *state.frame.lock().unwrap() = Some(frame);
+        *state.frame_file.lock().unwrap() = Some(frame_path);
 
         let overlay = WebviewWindowBuilder::new(
             app,
@@ -121,13 +145,28 @@ mod desktop {
         .map_err(|e| e.to_string())?;
 
         // Builder units are logical; set the monitor rect in physical units
-        // after creation so no DPI math is needed here.
+        // after creation so no DPI math is needed here. The overlay stays
+        // hidden until the frontend has painted the frozen frame and calls
+        // show_capture_overlay — otherwise the user sees a black fullscreen
+        // window while the frame PNG crosses IPC.
         overlay
             .set_position(PhysicalPosition::new(mx, my))
             .and_then(|_| overlay.set_size(PhysicalSize::new(mw, mh)))
-            .and_then(|_| overlay.show())
-            .and_then(|_| overlay.set_focus())
             .map_err(|e| e.to_string())?;
+
+        // Watchdog: if the frontend never manages to show the overlay (JS
+        // error, dead dev server), don't leave the main window hidden with an
+        // invisible always-on-top window holding the frame.
+        let app = app.clone();
+        std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_secs(15));
+            if let Some(overlay) = app.get_webview_window(OVERLAY_LABEL) {
+                if !overlay.is_visible().unwrap_or(true) {
+                    eprintln!("[screenshot] overlay never shown; cancelling capture");
+                    let _ = overlay.destroy(); // Destroyed handler restores main
+                }
+            }
+        });
         Ok(())
     }
 
@@ -149,10 +188,14 @@ mod desktop {
     }
 
     /// Safety net for any way the overlay dies (Escape, Alt+F4, finish):
-    /// drop the frame and restore the main window exactly once.
+    /// drop the frame (memory + temp PNG) and restore the main window
+    /// exactly once.
     pub fn on_overlay_destroyed(app: &AppHandle) {
         let state = app.state::<CaptureState>();
         *state.frame.lock().unwrap() = None;
+        if let Some(path) = state.frame_file.lock().unwrap().take() {
+            let _ = std::fs::remove_file(path);
+        }
         restore_main_if_needed(app);
     }
 
@@ -179,12 +222,14 @@ mod desktop {
 
     // ---- commands -------------------------------------------------------
 
-    /// Frozen frame for the overlay to paint (PNG base64).
+    /// Absolute path of the frozen-frame PNG for the overlay to load via the
+    /// asset protocol (streaming a file is orders of magnitude faster than
+    /// pushing base64 through IPC for a full monitor).
     #[tauri::command]
     pub fn get_capture_frame(state: tauri::State<'_, CaptureState>) -> Result<String, String> {
-        let guard = state.frame.lock().unwrap();
-        let frame = guard.as_ref().ok_or("No capture in progress")?;
-        encode_png_base64(frame)
+        let guard = state.frame_file.lock().unwrap();
+        let path = guard.as_ref().ok_or("No capture in progress")?;
+        Ok(path.to_string_lossy().to_string())
     }
 
     /// Crop the frozen frame to `x,y,w,h` (physical px) and return PNG
@@ -216,9 +261,22 @@ mod desktop {
         encode_png_base64(&cropped)
     }
 
+    /// Called by the overlay once the frozen frame has painted: reveal the
+    /// (until now hidden) overlay window.
+    #[tauri::command]
+    pub fn show_capture_overlay(app: AppHandle) {
+        if let Some(overlay) = app.get_webview_window(OVERLAY_LABEL) {
+            let _ = overlay.show();
+            let _ = overlay.set_focus();
+        }
+    }
+
     #[tauri::command]
     pub fn cancel_capture(app: AppHandle, state: tauri::State<'_, CaptureState>) {
         *state.frame.lock().unwrap() = None;
+        if let Some(path) = state.frame_file.lock().unwrap().take() {
+            let _ = std::fs::remove_file(path);
+        }
         destroy_overlay(&app); // Destroyed handler restores the main window
         restore_main_if_needed(&app); // …but don't rely on it if no overlay ever opened
     }
@@ -324,6 +382,9 @@ mod mobile {
     pub fn finish_capture(_x: u32, _y: u32, _w: u32, _h: u32) -> Result<String, String> {
         Err(UNSUPPORTED.into())
     }
+
+    #[tauri::command]
+    pub fn show_capture_overlay() {}
 
     #[tauri::command]
     pub fn cancel_capture() {}

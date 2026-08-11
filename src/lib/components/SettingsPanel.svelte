@@ -2,6 +2,11 @@
   import { settingsStore, SHORTCUTS } from "../stores/settings.svelte";
   import { themeStore } from "../stores/theme.svelte";
   import { setCaptureShortcut, getCaptureShortcutError } from "../services/screenshot";
+  import {
+    getTranscriptionModels,
+    TRANSCRIPTION_MODELS,
+    type ModelInfo,
+  } from "../services/transcription";
   import { isTauri } from "../services/env";
 
   let { open = false, onclose }: { open: boolean; onclose: () => void } = $props();
@@ -9,6 +14,7 @@
   let hotkeyInput = $state("");
   let hotkeyError = $state<string | null>(null);
   let hotkeySaved = $state(false);
+  let modelInfo = $state<ModelInfo[]>([]);
 
   // Refresh hotkey state each time the panel opens; surface any startup
   // registration failure (e.g. another app owns the combo)
@@ -22,8 +28,15 @@
           if (e) hotkeyError = e;
         });
       }
+      getTranscriptionModels()
+        .then((m) => (modelInfo = m))
+        .catch(() => (modelInfo = [])); // engine unavailable — hide badges
     }
   });
+
+  function isDownloaded(id: string): boolean {
+    return modelInfo.find((m) => m.id === id)?.downloaded ?? false;
+  }
 
   async function applyHotkey() {
     const next = hotkeyInput.trim();
@@ -274,6 +287,37 @@
                 Works system-wide, even with doc-md in the tray. Windows reserves Win+Shift+S.
               </p>
             {/if}
+          </div>
+        </section>
+
+        <!-- Transcription -->
+        <section>
+          <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider" style="color: var(--text-secondary);">Transcription</h3>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-sm" style="color: var(--text-primary);">Whisper model</label>
+              <div class="flex items-center gap-2">
+                {#each TRANSCRIPTION_MODELS as model (model.id)}
+                  <button
+                    class="rounded px-3 py-1 text-xs"
+                    style="
+                      background-color: {settingsStore.settings.transcriptionModel === model.id ? 'var(--accent-subtle)' : 'var(--bg-surface)'};
+                      color: {settingsStore.settings.transcriptionModel === model.id ? 'var(--accent)' : 'var(--text-primary)'};
+                      border: 1px solid {settingsStore.settings.transcriptionModel === model.id ? 'var(--accent)' : 'var(--border)'};
+                      border-radius: var(--radius);
+                    "
+                    title="{model.label} — {model.sizeMb} MB{isDownloaded(model.id) ? ', downloaded' : ''}"
+                    onclick={() => settingsStore.update({ transcriptionModel: model.id })}
+                  >
+                    {model.id}{isDownloaded(model.id) ? " ✓" : ""}
+                  </button>
+                {/each}
+              </div>
+            </div>
+            <p class="text-xs" style="color: var(--text-secondary);">
+              Runs locally — audio never leaves this machine. Models download on first use
+              from a transcription note (tiny 75 MB / base 142 MB / small 466 MB).
+            </p>
           </div>
         </section>
 
