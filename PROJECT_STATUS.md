@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated**: 2026-07-18
+**Last updated**: 2026-08-11
 **Release**: v0.2.0 (user-tested and approved; see CHANGELOG.md)
 
 ## Current State
@@ -83,8 +83,35 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
 - #45 downloads page: site/index.html (accessible, client-side latest-release fetch, per-OS install walkthroughs, 4 screenshots) + pages.yml Pages deploy. User-tested and approved; merged to main; **live at https://paperhurts.github.io/doc-md/** (deploy run green, live URL verified). Future releases appear on the page automatically — no redeploy needed. #45 closed
 - #43 signing scaffolding: release.yml signs Windows (Azure Artifact Signing) and macOS (Developer ID + notarization) automatically once credentials exist; docs/SIGNING.md walks through the one-time setup (Azure resources scoped to paperhurts org-wide, not per-project — one $9.99/mo account signs everything). User is holding off on the Azure setup for now — issue stays open, no new release planned until then
 
+## Recent Work (2026-07-30, capture features session)
+- Plan approved for OneNote-parity capture: #47 screenshots + #48 audio transcription (plan file: ~/.claude/plans/immutable-shimmying-dongarra.md)
+- #47 screenshot capture built on `issue-47-screenshot-capture` (NOT yet merged — awaiting user test, see tasks/user.md):
+  - Rust `screenshot.rs`: tauri-plugin-global-shortcut (Ctrl+Shift+S default, rebindable, conflict-safe) + xcap monitor grab + frozen-frame overlay window (`?capture=1`), crop returned as PNG base64
+  - Frontend: CaptureOverlay.svelte (drag region, Esc cancels), routing = insert at cursor via new editorBridge, else append to auto-created daily note (window stays hidden)
+  - New primitives for #48: `vaultStore.appendToNote/appendToDailyNote`, editor insert-at-cursor bridge
+  - Settings → Screenshot section (hotkey rebind + conflict surfacing); palette "Capture screenshot"
+  - Tests: 77 vitest (18 new) + 12 cargo (5 new) green; mock-mode flow browser-verified
+- #48 Phase 2A built on `issue-48-transcription-notes` (stacked on issue-47 branch — merge #47 first):
+  - transcription.ts: note type (`transcription: true`), transcript line formatting, engine command wrappers + full mock engine (canned script, fake downloads)
+  - TranscriptionBar.svelte: Listen/Stop, mic+system toggles, live partial line, model download with progress; finals append via appendToNote
+  - Palette "New transcription note"; Settings → Transcription (model picker w/ downloaded badges)
+  - 87 vitest green (10 new); full flow browser-verified in mock mode
+  - Phase 2B (2026-08-01): Rust engine built — src-tauri/src/transcription/ (audio.rs cpal WASAPI-loopback + mic w/ device-switch rebuild, chunker.rs energy-VAD windowing [pure, tested], whisper.rs-in-mod.rs shared WhisperContext + per-source sessions, download.rs .part-atomic model download, models.rs catalog); feature `transcription` default-ON, stubs for mobile/feature-off; CI/release get cmake+libclang steps; 21 cargo tests + 87 vitest green; --no-default-features build verified
+  - Toolchain notes: whisper-rs needs CMake + libclang. This machine: CMake via winget; LLVM winget install failed on UAC → libclang via `pip install libclang` + user-level LIBCLANG_PATH env var (set). WHISPER_DONT_GENERATE_BINDINGS does NOT work on Windows (Linux-generated bindings)
+  - NOT yet done: real-audio end-to-end test (needs user, see tasks/user.md), whisper accuracy/latency tuning, PRs
+
+## Recent Work (2026-08-09 → 2026-08-11, capture test rounds)
+Four rounds of user desktop testing of #47/#48, all fixes on `issue-48-transcription-notes` (stacked on `issue-47-screenshot-capture`). **User confirmed all tests pass 2026-08-11**; branches pushed, PRs opened (#47 base main, #48 stacked).
+- Round 1: Vite mid-session dep re-optimization reloads (optimizeDeps.include), overlay shown before frame painted (show-after-paint + watchdog), subfolder "New note" context-menu action, watcher filtering of .git/node_modules/target + dot-dirs
+- Round 2: editor whole-doc external sync destroyed cursor/scroll + dirty-echo save loop (minimalChange diff + syncingExternal guard, `diff.ts`); watchdog killed slow base64 frame transfer → frame now a temp PNG via asset protocol; capture failures now surface as in-app alerts
+- Round 3: `canonicalize_or_parent` only tolerated one missing path level → first screenshot into a vault without `attachments/` failed; rewrite walks to nearest existing ancestor + rejects `..`/`.` in missing tails (closed a Windows vault-escape hole)
+- Round 4 (#49 root-caused — it was NOT the stale installed build): Editor-creation $effect tracked `livePreview` → every view-mode switch rebuilt CM from file-open-time content = silent edit loss (untrack fix + component regression test). Live preview: images render (ImageWidget + resolveImage), empty `- [ ]` tasks get checkboxes, prose font, hidden fences + shaded code blocks, focus-aware reveal (unfocused = fully rendered), frontmatter as dimmed metadata. New palette command "Transcribe in this note" (enableTranscription adds frontmatter to any note). README view-mode/toolbar docs fixed
+- Tests: 107 vitest + 29 cargo green. `/attachments/` + `/daily/` gitignored (repo doubles as user vault)
+
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
 - #43 — Code signing + notarization for release builds (workflow wired; awaiting Azure/Apple credentials, see docs/SIGNING.md)
-- #45 — Downloads page on GitHub Pages (built + verified locally; awaiting user test on issue-45-downloads-page)
 - #46 — Accessibility audit of the app (screen reader support)
+- #47 — Screenshot capture (user-tested PASS; PR open, base main)
+- #48 — Transcription notes (user-tested PASS; PR open, stacked on #47's branch)
+- #49 — Preview/tab-switch report: root-caused and fixed in round 4 (rides the #47/#48 PRs; close on merge)

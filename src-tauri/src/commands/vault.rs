@@ -5,19 +5,41 @@ use tauri::{AppHandle, Manager};
 use tokio::sync::Mutex;
 
 /// Validate that a filesystem path is within the vault boundary.
-/// For paths that don't exist yet (new files), canonicalizes the parent directory.
+/// For paths that don't exist yet (a first screenshot into a not-yet-created
+/// attachments/ folder), canonicalize the nearest EXISTING ancestor and
+/// re-append the missing components. The missing tail bypasses
+/// canonicalization, so any `.`/`..` in it is refused rather than resolved —
+/// on Windows a lexical `..` after a nonexistent component would otherwise
+/// escape the vault before the containment check.
 fn canonicalize_or_parent(path: &str) -> Result<PathBuf, String> {
-    // Try canonicalizing directly first (works for existing paths)
     if let Ok(canon) = fs::canonicalize(path) {
         return Ok(canon);
     }
-    // For new files: canonicalize the parent and append the filename
     let p = PathBuf::from(path);
-    let parent = p.parent().ok_or_else(|| format!("No parent directory for: {}", path))?;
-    let filename = p.file_name().ok_or_else(|| format!("No filename in path: {}", path))?;
-    let canon_parent = fs::canonicalize(parent)
-        .map_err(|e| format!("Cannot resolve parent directory: {}", e))?;
-    Ok(canon_parent.join(filename))
+    if p
+        .components()
+        .any(|c| matches!(c, std::path::Component::ParentDir | std::path::Component::CurDir))
+    {
+        return Err(format!("Relative components not allowed in new paths: {}", path));
+    }
+    let mut base = p.clone();
+    let mut tail: Vec<std::ffi::OsString> = Vec::new();
+    loop {
+        match (base.parent(), base.file_name()) {
+            (Some(parent), Some(name)) => {
+                tail.push(name.to_os_string());
+                base = parent.to_path_buf();
+            }
+            _ => return Err(format!("Cannot resolve path: {}", path)),
+        }
+        if let Ok(canon) = fs::canonicalize(&base) {
+            let mut out = canon;
+            for c in tail.iter().rev() {
+                out.push(c);
+            }
+            return Ok(out);
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -123,4 +145,49 @@ pub async fn set_current_vault(
     state.set_vault(config.clone()).await?;
     allow_vault_assets(&app, &path);
     Ok(config)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::canonicalize_or_parent;
+    use std::fs;
+
+    fn unique_temp_dir(tag: &str) -> std::path::PathBuf {
+        let dir = std::env::temp_dir().join(format!("docmd-vault-test-{tag}-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    #[test]
+    fn resolves_new_file_under_missing_subdirs() {
+        // <existing>/attachments/screenshot.png where attachments/ does not
+        // exist yet — the exact shape of a first screenshot in a fresh vault.
+        let root = unique_temp_dir("newdirs");
+        let target = root.join("attachments").join("screenshot.png");
+        let resolved = canonicalize_or_parent(&target.to_string_lossy()).unwrap();
+        assert!(resolved.ends_with(std::path::Path::new("attachments").join("screenshot.png")));
+        assert!(resolved.starts_with(fs::canonicalize(&root).unwrap()));
+        let _ = fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn resolves_existing_file() {
+        let root = unique_temp_dir("existing");
+        let file = root.join("note.md");
+        fs::write(&file, "x").unwrap();
+        let resolved = canonicalize_or_parent(&file.to_string_lossy()).unwrap();
+        assert_eq!(resolved, fs::canonicalize(&file).unwrap());
+        let _ = fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn rejects_traversal_in_missing_tail() {
+        // ".." inside a not-yet-existing tail bypasses canonicalization and
+        // must be refused, not resolved.
+        let root = unique_temp_dir("traversal");
+        let sneaky = root.join("nope").join("..").join("..").join("escape.png");
+        assert!(canonicalize_or_parent(&sneaky.to_string_lossy()).is_err());
+        let _ = fs::remove_dir_all(&root);
+    }
 }

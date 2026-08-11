@@ -7,14 +7,14 @@ import { isTauri } from "./env";
 import { mockBackend } from "./mock";
 import { writeBinaryFile } from "./tauri";
 
-/** pasted-YYYYMMDD-HHmmss-mmm.png (millisecond suffix avoids collisions). */
-export function imageFileName(now: Date = new Date(), ext = "png"): string {
+/** <prefix>YYYYMMDD-HHmmss-mmm.png (millisecond suffix avoids collisions). */
+export function imageFileName(now: Date = new Date(), ext = "png", prefix = "pasted-"): string {
   const pad = (n: number, w = 2) => String(n).padStart(w, "0");
   const stamp =
     `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}` +
     `-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}` +
     `-${pad(now.getMilliseconds(), 3)}`;
-  return `pasted-${stamp}.${ext}`;
+  return `${prefix}${stamp}.${ext}`;
 }
 
 /** Extension for a clipboard MIME type (defaults to png). */

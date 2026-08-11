@@ -18,7 +18,10 @@ jobs:
       - name: Install system dependencies (Tauri requires these on Linux)
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev libpipewire-0.3-dev libgbm-dev libegl1-mesa-dev libwayland-dev
+          # whisper.cpp (transcription feature): CMake to build, libclang for
+          # bindgen; ALSA headers for cpal
+          sudo apt-get install -y cmake clang libclang-dev libasound2-dev
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

@@ -3,6 +3,12 @@ name = "doc-md"
 version = "0.2.0"
 edition = "2021"
 
+[features]
+# Local Whisper transcription. Default-ON so CI/release always build it;
+# lean dev builds: cargo tauri dev --no-default-features
+default = ["transcription"]
+transcription = ["dep:whisper-rs", "dep:cpal", "dep:ureq"]
+
 [dependencies]
 tauri = { version = "2", features = ["protocol-asset", "tray-icon"] }
 tauri-plugin-dialog = "2"
@@ -10,6 +16,20 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }
 notify = "7"
+base64 = "0.22"
+
+# Desktop-only: screenshot capture (global hotkey + screen grab). Mobile
+# builds get stub commands instead (see screenshot.rs).
+[target.'cfg(any(target_os = "windows", target_os = "macos", target_os = "linux"))'.dependencies]
+tauri-plugin-global-shortcut = "2"
+# No "wgc" feature: Windows Graphics Capture draws a non-removable capture
+# border; the default GDI path is silent.
+xcap = { version = "0.9", features = ["image"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+# Transcription (feature-gated): whisper.cpp bindings, audio capture, model download
+whisper-rs = { version = "0.16", optional = true }
+cpal = { version = "0.18", optional = true }
+ureq = { version = "2", optional = true }
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
