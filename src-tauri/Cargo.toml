@@ -3,6 +3,12 @@ name = "doc-md"
 version = "0.2.0"
 edition = "2021"
 
+[features]
+# Local Whisper transcription. Default-ON so CI/release always build it;
+# lean dev builds: cargo tauri dev --no-default-features
+default = ["transcription"]
+transcription = ["dep:whisper-rs", "dep:cpal", "dep:ureq"]
+
 [dependencies]
 tauri = { version = "2", features = ["protocol-asset", "tray-icon"] }
 tauri-plugin-dialog = "2"
@@ -20,6 +26,10 @@ tauri-plugin-global-shortcut = "2"
 # border; the default GDI path is silent.
 xcap = { version = "0.9", features = ["image"] }
 image = { version = "0.25", default-features = false, features = ["png"] }
+# Transcription (feature-gated): whisper.cpp bindings, audio capture, model download
+whisper-rs = { version = "0.16", optional = true }
+cpal = { version = "0.18", optional = true }
+ureq = { version = "2", optional = true }
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

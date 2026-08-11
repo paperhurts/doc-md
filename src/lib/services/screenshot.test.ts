@@ -88,7 +88,7 @@ describe("screenshot capture (mock mode)", () => {
     await initScreenshots();
 
     vaultStore.openFiles = [
-      { path: `${MOCK_VAULT_PATH}\\Welcome.md`, name: "Welcome.md", content: "hi", dirty: false },
+      { path: `${MOCK_VAULT_PATH}\\Welcome.md`, name: "Welcome.md", content: "hi", dirty: false, lastSynced: "hi" },
     ];
     vaultStore.activeFilePath = `${MOCK_VAULT_PATH}\\Welcome.md`;
     const insert = vi.fn(() => true);
@@ -111,7 +111,7 @@ describe("screenshot capture (mock mode)", () => {
     await initScreenshots();
 
     vaultStore.openFiles = [
-      { path: `${MOCK_VAULT_PATH}\\Welcome.md`, name: "Welcome.md", content: "hi", dirty: false },
+      { path: `${MOCK_VAULT_PATH}\\Welcome.md`, name: "Welcome.md", content: "hi", dirty: false, lastSynced: "hi" },
     ];
     vaultStore.activeFilePath = `${MOCK_VAULT_PATH}\\Welcome.md`;
     editorBridge.insertAtCursor = vi.fn(() => false); // stale handler, no live view

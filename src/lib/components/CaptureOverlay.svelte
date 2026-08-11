@@ -2,9 +2,11 @@
   import { onMount } from "svelte";
   import { settingsStore } from "../stores/settings.svelte";
   import {
-    getCaptureFrame,
+    getCaptureFrameSrc,
     cancelCapture,
     completeCaptureFromOverlay,
+    showCaptureOverlay,
+    emitCaptureError,
   } from "../services/screenshot";
   import { isTauri } from "../services/env";
 
@@ -24,12 +26,13 @@
   onMount(() => {
     // Own window: boot the settings store (localStorage is shared app-wide)
     settingsStore.init();
-    getCaptureFrame()
-      .then((b64) => {
-        frameSrc = `data:image/png;base64,${b64}`;
+    getCaptureFrameSrc()
+      .then((src) => {
+        frameSrc = src;
       })
       .catch((e) => {
         console.error("[capture] no frame:", e);
+        void emitCaptureError(`couldn't load the frozen frame (${e})`);
         void cancel();
       });
   });
@@ -68,9 +71,11 @@
     if (sel.width < 3 || sel.height < 3) return; // stray click — keep the overlay up
     busy = true;
     try {
-      await completeCaptureFromOverlay(sel, window.devicePixelRatio);
+      const ok = await completeCaptureFromOverlay(sel, window.devicePixelRatio);
+      if (!ok) await emitCaptureError("no vault is open to save into");
     } catch (e) {
       console.error("[capture] finish failed:", e);
+      await emitCaptureError(String(e));
     }
     await closeSelf();
   }
@@ -97,7 +102,17 @@
   }}
 >
   {#if frameSrc}
-    <img class="frame" src={frameSrc} alt="" draggable="false" />
+    <img
+      class="frame"
+      src={frameSrc}
+      alt=""
+      draggable="false"
+      onload={() => void showCaptureOverlay()}
+      onerror={() => {
+        void emitCaptureError("frozen frame failed to render");
+        void cancel();
+      }}
+    />
   {/if}
 
   {#if dragging}

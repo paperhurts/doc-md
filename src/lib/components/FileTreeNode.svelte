@@ -81,6 +81,15 @@
     }
   }
 
+  async function handleNewNote() {
+    contextMenu = null;
+    const name = await dialogStore.prompt("Note name:", "My note");
+    if (name?.trim()) {
+      await vaultStore.createNote(name.trim(), undefined, entry.path);
+      expanded = true; // reveal the new note where it was created
+    }
+  }
+
   async function handleDelete() {
     contextMenu = null;
     const label = entry.is_dir ? "folder and all its contents" : "file";
@@ -129,6 +138,15 @@
     class="fixed z-50 min-w-[140px] rounded-md py-1 shadow-lg"
     style="left: {contextMenu.x}px; top: {contextMenu.y}px; background-color: var(--bg-surface); border: 1px solid var(--border);"
   >
+    {#if entry.is_dir}
+      <button
+        class="w-full px-3 py-1.5 text-left text-xs hover:opacity-80"
+        style="color: var(--text-primary);"
+        onclick={handleNewNote}
+      >
+        New note
+      </button>
+    {/if}
     <button
       class="w-full px-3 py-1.5 text-left text-xs hover:opacity-80"
       style="color: var(--text-primary);"

@@ -10,7 +10,7 @@
  * Mock flow (browser, Vitest): triggerCapture short-circuits the overlay —
  * it saves a tiny synthetic PNG and emits the same event.
  */
-import { invoke } from "@tauri-apps/api/core";
+import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 import { isTauri } from "./env";
 import { emitMockEvent, MOCK_VAULT_PATH } from "./mock";
 import { listenEvent } from "./events";
@@ -50,10 +50,13 @@ export function toPhysicalRect(rect: CaptureRect, dpr: number): CaptureRect {
 
 // ---- command wrappers (mock-backed outside Tauri) -------------------------
 
-/** Frozen full-monitor frame as PNG base64 (overlay window only). */
-export async function getCaptureFrame(): Promise<string> {
-  if (!isTauri()) return MOCK_PNG_BASE64;
-  return await invoke("get_capture_frame");
+/** Ready-to-use <img> src of the frozen full-monitor frame (overlay window
+ * only). Real flow streams a temp PNG via the asset protocol — base64 over
+ * IPC took seconds on large monitors. */
+export async function getCaptureFrameSrc(): Promise<string> {
+  if (!isTauri()) return `data:image/png;base64,${MOCK_PNG_BASE64}`;
+  const path = await invoke<string>("get_capture_frame");
+  return convertFileSrc(path);
 }
 
 /** Crop the frozen frame (physical px) and get the PNG base64 back. */
@@ -70,6 +73,13 @@ export async function finishCapture(rect: CaptureRect): Promise<string> {
 export async function cancelCapture(): Promise<void> {
   if (!isTauri()) return;
   return await invoke("cancel_capture");
+}
+
+/** Reveal the overlay window once the frozen frame has painted (it is
+ * created hidden so the user never sees a black fullscreen window). */
+export async function showCaptureOverlay(): Promise<void> {
+  if (!isTauri()) return;
+  return await invoke("show_capture_overlay");
 }
 
 /**
@@ -128,17 +138,33 @@ export async function emitCaptured(payload: CapturedImage): Promise<void> {
   }
 }
 
+/** Overlay-side: surface a capture failure in the main window. Without this
+ * every failure is a console.error in a window nobody can see. */
+export async function emitCaptureError(message: string): Promise<void> {
+  if (isTauri()) {
+    const { emit } = await import("@tauri-apps/api/event");
+    await emit("screenshot-error", { message });
+  } else {
+    emitMockEvent("screenshot-error", { message });
+  }
+}
+
 /**
  * Route a captured image: insert at the cursor when the main window is
  * visible with a live editor; otherwise append to today's daily note.
  * Must never show the hidden main window (tray-resident capture).
  */
 export async function routeCapturedImage(markdown: string): Promise<void> {
-  void vaultStore.refreshTree();
-  if (await isMainWindowVisible()) {
-    if (vaultStore.activeFile && editorBridge.insertAtCursor?.(markdown)) return;
+  try {
+    void vaultStore.refreshTree();
+    if (await isMainWindowVisible()) {
+      if (vaultStore.activeFile && editorBridge.insertAtCursor?.(markdown)) return;
+    }
+    await vaultStore.appendToDailyNote(`\n${markdown}\n`);
+  } catch (e) {
+    const { dialogStore } = await import("../stores/dialogs.svelte");
+    void dialogStore.alert(`Screenshot saved but couldn't be inserted: ${e}`);
   }
-  await vaultStore.appendToDailyNote(`\n${markdown}\n`);
 }
 
 async function isMainWindowVisible(): Promise<boolean> {
@@ -162,6 +188,10 @@ export async function initScreenshots(): Promise<void> {
     listenerInitialized = true;
     await listenEvent<CapturedImage>("screenshot-captured", (payload) => {
       void routeCapturedImage(payload.markdown);
+    });
+    await listenEvent<{ message: string }>("screenshot-error", async (payload) => {
+      const { dialogStore } = await import("../stores/dialogs.svelte");
+      void dialogStore.alert(`Screenshot capture failed: ${payload.message}`);
     });
   }
   const saved = settingsStore.settings.captureHotkey;

@@ -1,7 +1,8 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import Editor from "./Editor.svelte";
-  import { readFile, writeFile } from "../services/tauri";
+  import { readFile, writeFile, getCurrentVault } from "../services/tauri";
+  import { resolveImageSrc } from "../services/images";
   import { isTauri } from "../services/env";
   import { stickyStore, labelForPath } from "../stores/stickies.svelte";
   import { removeSticky } from "../services/stickyWindows";
@@ -12,6 +13,8 @@
 
   let content = $state<string | null>(null);
   let error = $state<string | null>(null);
+  // Vault root for resolving relative image srcs (own window: no vaultStore)
+  let vaultPath = $state("");
   let saveTimeout: ReturnType<typeof setTimeout> | undefined;
   let initialized = false;
 
@@ -34,6 +37,11 @@
       content = await readFile(path);
     } catch (e) {
       error = `Could not open note: ${e}`;
+    }
+    try {
+      vaultPath = (await getCurrentVault())?.path ?? "";
+    } catch (e) {
+      console.error("[sticky] vault lookup failed (images stay raw):", e);
     }
   }
 
@@ -125,7 +133,12 @@
     {#if error}
       <p class="p-3 text-xs" style="color: var(--text-secondary);">{error}</p>
     {:else if content !== null}
-      <Editor {content} livePreview={true} onchange={handleChange} />
+      <Editor
+        {content}
+        livePreview={true}
+        resolveImage={(src) => resolveImageSrc(src, vaultPath)}
+        onchange={handleChange}
+      />
     {:else}
       <p class="p-3 text-xs" style="color: var(--text-secondary);">Loading…</p>
     {/if}
