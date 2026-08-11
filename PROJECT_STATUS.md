@@ -101,7 +101,8 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
   - NOT yet done: real-audio end-to-end test (needs user, see tasks/user.md), whisper accuracy/latency tuning, PRs
 
 ## Recent Work (2026-08-09 → 2026-08-11, capture test rounds)
-Four rounds of user desktop testing of #47/#48, all fixes on `issue-48-transcription-notes` (stacked on `issue-47-screenshot-capture`). **User confirmed all tests pass 2026-08-11**; branches pushed, PRs opened (#47 base main, #48 stacked).
+Four rounds of user desktop testing of #47/#48. **User confirmed all tests pass 2026-08-11; MERGED to main** via PR #52 (PR #53 was merged into the stack first — harmless), closing #47–#51. CI needed two Linux-runner fixes for xcap link deps: `libpipewire-0.3-dev`, then `libgbm-dev libegl1-mesa-dev libwayland-dev` (also added to release.yml — first release with these + whisper.cpp builds is unproven, watch #55).
+**Next: #54 new app icon (user's candidates in gitignored `tasks/.user-logo-options/`), then #55 release v0.3.0.**
 - Round 1: Vite mid-session dep re-optimization reloads (optimizeDeps.include), overlay shown before frame painted (show-after-paint + watchdog), subfolder "New note" context-menu action, watcher filtering of .git/node_modules/target + dot-dirs
 - Round 2: editor whole-doc external sync destroyed cursor/scroll + dirty-echo save loop (minimalChange diff + syncingExternal guard, `diff.ts`); watchdog killed slow base64 frame transfer → frame now a temp PNG via asset protocol; capture failures now surface as in-app alerts
 - Round 3: `canonicalize_or_parent` only tolerated one missing path level → first screenshot into a vault without `attachments/` failed; rewrite walks to nearest existing ancestor + rejects `..`/`.` in missing tails (closed a Windows vault-escape hole)
@@ -112,6 +113,5 @@ Four rounds of user desktop testing of #47/#48, all fixes on `issue-48-transcrip
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
 - #43 — Code signing + notarization for release builds (workflow wired; awaiting Azure/Apple credentials, see docs/SIGNING.md)
 - #46 — Accessibility audit of the app (screen reader support)
-- #47 — Screenshot capture (user-tested PASS; PR open, base main)
-- #48 — Transcription notes (user-tested PASS; PR open, stacked on #47's branch)
-- #49 — Preview/tab-switch report: root-caused and fixed in round 4 (rides the #47/#48 PRs; close on merge)
+- #54 — New app icon (user candidates in `tasks/.user-logo-options/`, gitignored) — NEXT
+- #55 — Release v0.3.0 after the icon lands
