@@ -1,6 +1,14 @@
 # Session scratchpad
 
-## Current: #54 app icon → then #55 release v0.3.0
+## Current: #54 icon + #56 UI zoom awaiting user test → then #55 release v0.3.0
+
+#56 UI zoom (2026-08-12): built on `issue-56-ui-zoom` (stacked on issue-54).
+Native setZoom + CSS dev fallback, settings.uiZoom, ZoomIndicator badge,
+Display slider, graph exempt, capability `core:webview:allow-set-webview-zoom`.
+122 vitest green (15 new); build compiles; mock-mode flow browser-verified.
+User's dev server (running since 11:12) needs full restart — branch churn
+under it + capability/icon are build-time. Handoff in tasks/user.md.
+Merge order after approval: PR #54 → PR #56 → #55 release.
 
 Done this session (2026-08-12):
 - User picked the MD-monogram-with-down-arrow concept (midnight + cyan)
