@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Download doc-md — local-first markdown notes</title>
-<meta name="description" content="Download doc-md for Windows, macOS, or Linux. A free, open source, local-first markdown knowledge app: live preview editing, wiki links, kanban boards, sticky notes, and full-text search — your notes stay on your computer.">
+<meta name="description" content="Download doc-md for Windows, macOS, or Linux. A free, open source, local-first markdown knowledge app: live preview editing, wiki links, kanban boards, sticky notes, screenshot capture, local voice transcription, and full-text search — your notes stay on your computer.">
 <meta name="theme-color" content="#0c0a14">
 <link rel="canonical" href="https://paperhurts.github.io/doc-md/">
 <meta property="og:title" content="Download doc-md">
-<meta property="og:description" content="Free, open source, local-first markdown notes with live preview, kanban boards, and sticky notes. Windows, macOS, and Linux.">
+<meta property="og:description" content="Free, open source, local-first markdown notes with live preview, kanban boards, sticky notes, screenshot capture, and local voice transcription. Windows, macOS, and Linux.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://paperhurts.github.io/doc-md/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%230c0a14'/%3E%3Ctext x='32' y='52' font-family='Georgia,serif' font-size='52' fill='%2300e5ff' text-anchor='middle'%3E*%3C/text%3E%3C/svg%3E">
@@ -237,9 +237,10 @@
     <p class="eyebrow">free &amp; open source · no account · no telemetry</p>
     <h1>Download <span class="glow">doc-md</span>.</h1>
     <p class="lede">A local-first markdown knowledge app. Live-preview editing, wiki
-    links, kanban boards, sticky notes, graph view, and full-text search —
+    links, kanban boards, sticky notes, screenshot capture, voice transcription,
+    graph view, and full-text search —
     over <strong>plain markdown files in a folder you choose</strong>. Your notes never
-    leave your computer.</p>
+    leave your computer, and neither does your audio.</p>
   </div>
 
   <section id="download" class="wrap" aria-labelledby="download-heading">
@@ -302,9 +303,9 @@
       <ol class="steps">
         <li><div>Choose <strong>Download for Windows (.exe installer)</strong> above and save the file.
           <span class="detail">Your browser's downloads list opens with <kbd>Ctrl</kbd>+<kbd>J</kbd> in Chrome, Edge, and Firefox.</span></div></li>
-        <li><div>Open the downloaded file, named like <strong>doc-md_0.2.0_x64-setup.exe</strong>.</div></li>
+        <li><div>Open the downloaded file, named like <strong>doc-md_x.y.z_x64-setup.exe</strong> (x.y.z is the version number).</div></li>
         <li><div>If Windows shows a "Windows protected your PC" message (SmartScreen), choose <strong>More info</strong>, then <strong>Run anyway</strong>.
-          <span class="detail">By keyboard: press <kbd>Tab</kbd> until "More info" is focused, press <kbd>Enter</kbd>, then <kbd>Tab</kbd> to "Run anyway" and press <kbd>Enter</kbd>. Newer doc-md releases are code-signed, so this screen only appears for older unsigned versions — the app is open source and safe to run either way.</span></div></li>
+          <span class="detail">By keyboard: press <kbd>Tab</kbd> until "More info" is focused, press <kbd>Enter</kbd>, then <kbd>Tab</kbd> to "Run anyway" and press <kbd>Enter</kbd>. doc-md releases aren't code-signed yet, so this screen is expected — the app is open source, and you can read every line of what you're running.</span></div></li>
         <li><div>Follow the installer — the defaults are all fine. It finishes by launching doc-md.</div></li>
         <li><div>On first launch, doc-md asks you to <strong>choose a vault</strong>: a normal folder where every note is stored as a plain markdown file.
           <span class="detail">Pick or create any folder you like, for example <strong>Documents\Notes</strong>. You can open it in Explorer any time — there's no hidden database.</span></div></li>
@@ -340,6 +341,14 @@
       <figure>
         <img src="assets/editor.jpg" width="1440" height="900"          alt="The doc-md main window. A file explorer sidebar on the left lists markdown notes. The main area shows a note in live preview: headings, bold text, and links appear fully formatted while you type, with markdown symbols hidden except on the line being edited.">
         <figcaption><strong>Live preview editing.</strong> Formatted text as you type — the markdown syntax only appears on the line you're editing.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/capture.jpg" width="1440" height="900"          alt="A doc-md note called Logo ideas in split view. The left pane shows the markdown source, including an image link that was just inserted into the attachments folder; the right pane renders the note with the captured logo image displayed inline between two sentences.">
+        <figcaption><strong>Screenshot capture &amp; image paste.</strong> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> anywhere — even with doc-md in the tray — freezes the screen, you drag a region, and the shot lands in your note. Pasting an image from the clipboard works the same way.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/transcription.jpg" width="1440" height="900"          alt="A doc-md transcription note named Design sync while recording: a recorder bar above the editor shows a Stop button, an elapsed time of nine seconds, and checkboxes for microphone and system audio. Below, a Transcript section lists timestamped lines labeled audio and me, rendered in both the markdown source and the formatted preview.">
+        <figcaption><strong>Voice transcription.</strong> A note can listen to your microphone and system audio and append timestamped transcript lines — transcribed locally by Whisper, so audio never leaves your computer.</figcaption>
       </figure>
       <figure>
         <img src="assets/kanban.jpg" width="1440" height="900"          alt="A kanban board inside doc-md with columns titled To Do, Doing, and Done, each holding task cards. The board is an ordinary markdown file: columns are headings and cards are checklist items, shown here as draggable cards.">

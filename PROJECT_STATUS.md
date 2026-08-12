@@ -118,6 +118,7 @@ All user-tested on desktop, merged to main via PRs #60/#61/#62/#63:
 - #55 release v0.3.0: versions bumped, CHANGELOG written, local Windows bundles verified (MSI+NSIS, ~8MB with whisper), tag pushed
 - Tests: 132 vitest + 29 cargo
 - New backlog: #57 per-theme font scale (`--theme-font-scale` mechanism sketched in issue), #58 per-sticky theme persistence
+- #69 downloads-page refresh (evening): capture/paste + transcription feature bubbles with mock-mode screenshots (site/assets/capture.jpg, transcription.jpg), version-agnostic install text, honest unsigned-release note, hero/meta updated
 
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
