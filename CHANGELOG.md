@@ -20,7 +20,8 @@
 
 ### Infrastructure
 - Whisper toolchain in CI/release (CMake + libclang); `transcription` is a default-on cargo feature with mobile/feature-off stubs.
-- Linux builds gained xcap/pipewire link deps (`libpipewire-0.3-dev`, `libgbm-dev`, `libegl1-mesa-dev`, `libwayland-dev`).
+- Linux builds gained xcap/pipewire link deps (`libpipewire-0.3-dev`, `libgbm-dev`, `libegl1-mesa-dev`, `libwayland-dev`); release artifacts are now built on Ubuntu 24.04 (glibc ≥ 2.39 required — distros from ~2024).
+- macOS minimum system version is now 10.15 Catalina (whisper.cpp requires `std::filesystem`).
 - Test suite: 132 Vitest + 29 cargo tests.
 
 ## v0.2.0 — 2026-07-18
