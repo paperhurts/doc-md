@@ -30,7 +30,7 @@ Notes are stored as **plain markdown files** on disk. No proprietary formats, no
 - **UI zoom** — Browser-style whole-app zoom with Ctrl+Scroll or Ctrl+= / Ctrl+- / Ctrl+0 (50–200%, persisted, also a Settings slider) — handy when a theme's font runs small on your monitor
 - **Auto-save** — 1-second debounced auto-save with Ctrl+S manual save
 - **Frontmatter** — YAML frontmatter parsing for tags and metadata
-- **Dark theme** — Catppuccin Mocha color scheme
+- **7 themes** — Midnight, Dark TM, Editorial, Cyberpunk, Studio, All-American, Hot Dog Stand; stickies keep their pop-out theme
 
 ## Architecture
 
@@ -217,7 +217,7 @@ KaTeX math is supported:
 
 ## Themes
 
-5 built-in themes, switchable via Ctrl+K → "Switch theme":
+7 built-in themes, switchable via Ctrl+K → "Switch theme":
 
 | Theme | Style |
 |---|---|
@@ -226,8 +226,12 @@ KaTeX math is supported:
 | **Editorial** | Stark white, serif typography, minimal color |
 | **Cyberpunk** | Neon green terminal with glow + scanlines |
 | **Studio** | Warm amber/cream with soft shadows |
+| **All-American** | Red, white & blue |
+| **Hot Dog Stand** | Windows 3.1 — pure chaos |
 
-Your theme choice is saved and persists across restarts.
+Your theme choice is saved and persists across restarts. Sticky notes keep
+the theme they were popped out in, so you can build a color-coded desktop.
+If a theme's font runs small on your monitor, Ctrl+Scroll (UI zoom) fixes it.
 
 ## License
 
