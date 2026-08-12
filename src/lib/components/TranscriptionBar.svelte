@@ -2,6 +2,8 @@
   import { onMount, onDestroy } from "svelte";
   import { vaultStore } from "../stores/vault.svelte";
   import { settingsStore } from "../stores/settings.svelte";
+  import { transcriptFollow } from "../stores/transcriptFollow.svelte";
+  import { editorBridge } from "../stores/editorBridge.svelte";
   import { listenEvent, type Unlisten } from "../services/events";
   import {
     startTranscription,
@@ -102,6 +104,7 @@
       await startTranscription(micOn, systemOn);
       startedByMe = true;
       status = "listening";
+      transcriptFollow.start();
       elapsedS = 0;
       elapsedTimer = setInterval(() => elapsedS++, 1000);
       settingsStore.update({ transcriptionMic: micOn, transcriptionSystem: systemOn });
@@ -115,6 +118,7 @@
     clearInterval(elapsedTimer);
     startedByMe = false;
     status = "idle";
+    transcriptFollow.end();
     partials = { mic: null, system: null };
     try {
       await stopTranscription();
@@ -162,6 +166,19 @@
       ■ Stop
     </button>
     <span style="color: var(--text-secondary); font-family: var(--font-mono);">{elapsed}</span>
+    {#if !transcriptFollow.following}
+      <button
+        class="rounded px-3 py-1"
+        style="color: var(--accent); border: 1px solid var(--accent); border-radius: var(--radius);"
+        onclick={() => {
+          transcriptFollow.resume();
+          editorBridge.scrollToEnd?.();
+        }}
+        title="Jump to the newest transcript lines and keep following"
+      >
+        ⤓ Scroll to end
+      </button>
+    {/if}
   {:else if needsDownload}
     <button
       class="rounded px-3 py-1"

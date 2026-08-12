@@ -29,3 +29,10 @@ export function minimalChange(oldText: string, newText: string): SpanChange | nu
 
   return { from: start, to: endOld, insert: newText.slice(start, endNew) };
 }
+
+/** True when `change` purely appends text at the end of a document that was
+ * `oldLength` long — the shape of a transcript-line append, and never the
+ * shape of a tab switch (whole-span replace) or an edit elsewhere. */
+export function isPureAppend(change: SpanChange, oldLength: number): boolean {
+  return change.from === oldLength && change.to === oldLength && change.insert.length > 0;
+}

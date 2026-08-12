@@ -41,10 +41,14 @@
   });
   const showBoard = $derived(isKanban && boardView);
 
-  // No live editor (no file, or kanban board showing) -> clear the insert
-  // bridge so screenshot routing falls back to the daily note
+  // No live editor (no file, or kanban board showing) -> clear the bridges
+  // so screenshot routing falls back to the daily note and follow-mode's
+  // scroll button no-ops
   $effect(() => {
-    if (!file || showBoard) editorBridge.insertAtCursor = null;
+    if (!file || showBoard) {
+      editorBridge.insertAtCursor = null;
+      editorBridge.scrollToEnd = null;
+    }
   });
 
   function setMode(mode: ViewMode) {
@@ -138,7 +142,12 @@
     </div>
 
     {#if isTranscription}
-      <TranscriptionBar path={file.path} />
+      <!-- Keyed so switching between two transcription notes remounts the bar
+           (stopping the session) instead of silently retargeting live finals
+           into the newly opened note. -->
+      {#key file.path}
+        <TranscriptionBar path={file.path} />
+      {/key}
     {/if}
 
     {#if showBoard}
@@ -159,6 +168,7 @@
             onselectionchange={(info) => { selectionInfo = info; }}
             onformatready={(handler) => { formatHandler = handler; }}
             oninsertready={(handler) => { editorBridge.insertAtCursor = handler; }}
+            onscrollready={(handler) => { editorBridge.scrollToEnd = handler; }}
             onpasteimage={handlePasteImage}
           />
         </div>

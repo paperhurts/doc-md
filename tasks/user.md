@@ -1,4 +1,19 @@
-# Handoff: Test #54 new app icon + #56 UI zoom
+# Handoff: Test #54 new app icon + #56 UI zoom + #59 transcript follow
+
+## ⚠️ Restart `cargo tauri dev` (again — sorry)
+Follow mode (#59) added a brand-new store module to a running dev server — the exact condition that caused July's "two store instances, clicks do nothing" bug. A webview Ctrl+R is NOT enough; quit the app, stop the server, `git status` should say `issue-59-transcript-follow`, then `cargo tauri dev`.
+
+### Transcript follow (#59) — new since your last restart
+1. Open/create a transcription note, Listen, play something with speech.
+2. As lines land, the editor should stick to the bottom (terminal-style).
+3. Scroll UP mid-session → view stays where you put it; a **⤓ Scroll to end** button appears in the recorder bar.
+4. Click it → jumps to the newest lines and follows again.
+5. Edit a paragraph higher up while un-tracked → appends must not move your cursor or scroll.
+6. Known wrinkle: while an italic partial line is showing in the bar, the newest final can sit just below the fold for a few seconds until the next line lands.
+7. Behavior change: switching to a *different* transcription note mid-session now STOPS the session (it used to silently keep recording into the new note).
+Verified by me end-to-end in mock mode (follow, break, stay-put, resume, stop); real-audio pass is yours.
+
+---
 
 **Context if you've been AFK:** Two things landed today, both unpushed, stacked on one branch so a single dev run tests both:
 - **#54 app icon** — your Illustrator-refined MD-with-down-arrow SVG (`src-tauri/app-icon.svg`); all platform icons regenerated from it. I zoom-inspected the render: the corner speck you circled is gone, edges are clean.
