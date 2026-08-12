@@ -1,6 +1,15 @@
 # Session scratchpad
 
-## Current: #54 icon + #56 UI zoom awaiting user test → then #55 release v0.3.0
+## Current: #54 icon + #56 zoom + #59 follow awaiting user test → then #55 release v0.3.0
+
+#59 transcript follow (2026-08-12): `issue-59-transcript-follow` (stacked on 56).
+transcriptFollow store + isPureAppend + editorBridge.scrollToEnd + direct
+scrollTop pin (CM scrollIntoView undershoots on estimated heights — do NOT
+"simplify" back to it) + direction-based break (upward scroll only).
+{#key file.path} on TranscriptionBar fixes session-retargeting bug.
+132 vitest green (10 new); flow verified in prod-build mock mode on :5599.
+Backlog issues filed this session: #57 per-theme font scale, #58 sticky themes.
+Merge order: PR #54 → #56 → #59 → then #55 release.
 
 #56 UI zoom (2026-08-12): built on `issue-56-ui-zoom` (stacked on issue-54).
 Native setZoom + CSS dev fallback, settings.uiZoom, ZoomIndicator badge,
