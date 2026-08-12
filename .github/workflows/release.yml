@@ -109,6 +109,37 @@ jobs:
           printf '%s' '{"bundle":{"windows":{"signCommand":"trusted-signing-cli -e ${{ vars.AZURE_SIGNING_ENDPOINT }} -a ${{ vars.AZURE_SIGNING_ACCOUNT }} -c ${{ vars.AZURE_CERT_PROFILE }} -d doc-md %1"}}}' > src-tauri/windows.sign.conf.json
           echo 'SIGN_ARGS=--config src-tauri/windows.sign.conf.json' >> "$GITHUB_ENV"
 
+      # macOS signing + notarization. These must be exported ONLY when the
+      # credentials really exist: a missing GitHub secret becomes an EMPTY
+      # env var, and tauri-cli treats an empty APPLE_CERTIFICATE as "sign
+      # with this" — then fails importing nothing into the keychain
+      # (v0.3.0 release lesson). Writing to GITHUB_ENV only when non-empty
+      # keeps the vars truly unset on unsigned builds.
+      - name: Enable macOS signing when credentials exist
+        if: matrix.platform == 'macos-latest'
+        shell: bash
+        env:
+          CERT: ${{ secrets.APPLE_CERTIFICATE }}
+          CERT_PW: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          AC_ID: ${{ secrets.APPLE_ID }}
+          AC_PW: ${{ secrets.APPLE_PASSWORD }}
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          if [ -n "$CERT" ] && [ -n "$IDENTITY" ]; then
+            {
+              echo "APPLE_CERTIFICATE=$CERT"
+              echo "APPLE_CERTIFICATE_PASSWORD=$CERT_PW"
+              echo "APPLE_SIGNING_IDENTITY=$IDENTITY"
+              echo "APPLE_ID=$AC_ID"
+              echo "APPLE_PASSWORD=$AC_PW"
+              echo "APPLE_TEAM_ID=$TEAM"
+            } >> "$GITHUB_ENV"
+            echo "macOS signing: enabled"
+          else
+            echo "macOS signing: credentials not configured, building unsigned"
+          fi
+
       - name: Build and upload to draft release
         uses: tauri-apps/tauri-action@v0
         env:
@@ -117,17 +148,11 @@ jobs:
           # derives this from bundle.macOS.minimumSystemVersion — set both so
           # the cmake build and the .app metadata can't drift apart.
           MACOSX_DEPLOYMENT_TARGET: "10.15"
-          # Windows signing (trusted-signing-cli reads these; empty = unused)
+          # Windows signing (trusted-signing-cli reads these; empty = unused —
+          # it only runs at all when the SIGN_WINDOWS gate wrote signCommand)
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          # macOS signing + notarization (tauri-action skips these while empty)
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "doc-md ${{ github.ref_name }}"
