@@ -41,6 +41,12 @@ Until then builds are unsigned and SmartScreen/Gatekeeper warn on first run.
 
 ## Icons
 
-`src-tauri/icons/` is generated with `npx tauri icon src-tauri/icons/icon.png`.
-The current source is 256×256; if the logo is redone at 1024×1024, rerun that
-command to regenerate the full set (including `.icns` and the store logos).
+`src-tauri/icons/` is generated from the vector master `src-tauri/app-icon.svg`
+(the "MD" monogram whose D-stem is a cyan down-arrow). To regenerate the full
+set (including `.icns`, `.ico`, and the store logos), edit the SVG and run:
+
+```
+npm run tauri icon src-tauri/app-icon.svg
+```
+
+Never edit the PNGs in `src-tauri/icons/` by hand — change the SVG and rerun.
