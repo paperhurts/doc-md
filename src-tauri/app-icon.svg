@@ -1,17 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- doc-md app icon master (issue #54): "MD" monogram, the D's stem is a
-       cyan down-arrow (Markdown + "down" + document). Midnight + cyan palette.
-       Regenerate platform icons with: npm run tauri icon src-tauri/app-icon.svg -->
-  <rect x="0" y="0" width="1024" height="1024" rx="230" fill="#12203C"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024">
+  <!-- Generator: Adobe Illustrator 30.6.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 109)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: aqua;
+      }
 
-  <g transform="translate(-25,0)">
-    <!-- M -->
-    <path fill="#FFFFFF" d="M190,710 L190,310 L290,310 L360,500 L430,310 L530,310 L530,710 L443,710 L443,470 L383,625 L337,625 L277,470 L277,710 Z"/>
+      .st1 {
+        fill: #12203c;
+      }
 
-    <!-- D bowl + bars (stem area gets painted over by the arrow) -->
-    <path fill="#FFFFFF" fill-rule="evenodd" d="M585,310 L715,310 A170,200 0 0 1 715,710 L585,710 Z M673,398 L715,398 A82,112 0 0 1 715,622 L673,622 Z"/>
+      .st2, .st3 {
+        fill: #fff;
+      }
 
-    <!-- cyan down-arrow forming the D's stem, tip drops below the baseline -->
-    <path fill="#22C9DC" d="M585,310 L673,310 L673,640 L709,640 L629,790 L549,640 L585,640 Z"/>
-  </g>
+      .st3 {
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <rect class="st1" width="1024" height="1024" rx="230" ry="230"/>
+  <path class="st2" d="M165,710v-400h100l70,190,70-190h100v400h-87v-240l-60,155h-46l-60-155v240h-87Z"/>
+  <path class="st3" d="M560,310h130c93.89,0,170,89.54,170,200s-76.11,200-170,200h-130v-400ZM648,398h42c45.29,0,82,50.14,82,112s-36.71,112-82,112h-42v-224Z"/>
+  <path class="st0" d="M558.68,310h88.94v330h36.38l-80.85,150-80.85-150h36.38v-330h0Z"/>
 </svg>
