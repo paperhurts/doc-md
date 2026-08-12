@@ -1,12 +1,14 @@
 # Session scratchpad
 
-## Current: v0.3.0 release workflow running
+## v0.3.0 SHIPPED 2026-08-12 — session complete
 
-- #54/#56/#59 merged (PRs #60/#61/#62), #63 = version bump. Tag v0.3.0 pushed 2026-08-12 ~15:20 EDT.
-- Release run 31632127527 — FIRST tag build with whisper.cpp + xcap on Linux/macOS legs.
-  Windows leg de-risked by a successful local `npm run tauri build` (MSI + NSIS produced).
-- When it finishes: review the DRAFT release on GitHub (artifacts + notes), Publish, close #55.
-  Downloads page self-updates after publish — do NOT redeploy it.
-- If a leg fails: likely missing system dep on the runner; fix in release.yml, delete+re-push tag.
+Published: https://github.com/paperhurts/doc-md/releases/tag/v0.3.0
+Closed this session: #54 (icon), #55 (release), #56 (zoom), #59 (follow).
+Filed: #57 (per-theme font scale), #58 (sticky theme persistence).
 
-Backlog next: #57 per-theme font scale, #58 sticky theme persistence, #43 signing (on hold), #46 a11y, #21 sync.
+Next session candidates (user's pick):
+- #57 per-theme font scale — mechanism sketched in the issue, ~15 min
+- #58 sticky themes restart-proof
+- #43 signing (needs user's Azure setup first — long pole is identity verification)
+- #46 accessibility audit
+- #21 git sync (big)
