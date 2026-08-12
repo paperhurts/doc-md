@@ -106,6 +106,28 @@
           </div>
         </section>
 
+        <!-- Display -->
+        <section>
+          <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider" style="color: var(--text-secondary);">Display</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-sm" style="color: var(--text-primary);">UI zoom (Ctrl+Scroll)</label>
+              <div class="flex items-center gap-2">
+                <input
+                  type="range"
+                  min="50"
+                  max="200"
+                  step="10"
+                  value={Math.round(settingsStore.settings.uiZoom * 100)}
+                  oninput={(e) => settingsStore.update({ uiZoom: Number(e.currentTarget.value) / 100 })}
+                  class="w-24"
+                />
+                <span class="w-10 text-right text-xs" style="color: var(--text-secondary);">{Math.round(settingsStore.settings.uiZoom * 100)}%</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Editor -->
         <section>
           <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider" style="color: var(--text-secondary);">Editor</h3>
