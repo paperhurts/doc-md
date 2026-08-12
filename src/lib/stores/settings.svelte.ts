@@ -22,6 +22,8 @@ export interface AppSettings {
   /** Default source toggles for new transcription sessions. */
   transcriptionMic: boolean;
   transcriptionSystem: boolean;
+  /** Whole-UI zoom factor (0.5–2.0). Main window only — never the sticky or capture windows. */
+  uiZoom: number;
 }
 
 const DEFAULTS: AppSettings = {
@@ -40,6 +42,7 @@ const DEFAULTS: AppSettings = {
   transcriptionModel: "base.en",
   transcriptionMic: true,
   transcriptionSystem: true,
+  uiZoom: 1,
 };
 
 class SettingsStore {
@@ -89,6 +92,8 @@ export const SHORTCUTS = [
   { key: "Ctrl+Shift+S", action: "Capture screenshot (works system-wide)" },
   { key: "Ctrl+Shift+F", action: "Search notes" },
   { key: "Ctrl+Shift+G", action: "Graph view" },
+  { key: "Ctrl+= / Ctrl+-", action: "Zoom UI in / out (also Ctrl+Scroll)" },
+  { key: "Ctrl+0", action: "Reset UI zoom to 100%" },
   { key: "Ctrl+Click", action: "Navigate to wikilink" },
   { key: "Escape", action: "Close modal / cancel" },
 ];

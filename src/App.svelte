@@ -9,12 +9,14 @@
   import CommandPalette from "./lib/components/CommandPalette.svelte";
   import SettingsPanel from "./lib/components/SettingsPanel.svelte";
   import DialogHost from "./lib/components/DialogHost.svelte";
+  import ZoomIndicator from "./lib/components/ZoomIndicator.svelte";
   import { vaultStore } from "./lib/stores/vault.svelte";
   import { themeStore } from "./lib/stores/theme.svelte";
   import { settingsStore } from "./lib/stores/settings.svelte";
   import { initCloseToTray } from "./lib/services/appWindow";
   import { initStickies } from "./lib/services/stickyWindows";
   import { initScreenshots } from "./lib/services/screenshot";
+  import { applyUiZoom, clampZoom, zoomKeyAction, ZOOM_STEP } from "./lib/services/zoom";
 
   let searchOpen = $state(false);
   let graphOpen = $state(false);
@@ -36,7 +38,39 @@
     }
   });
 
+  // Zoom applies only in this (main-window) code path — the sticky and
+  // capture windows must stay at 100% (the overlay's crop math depends on it).
+  $effect(() => {
+    applyUiZoom(settingsStore.settings.uiZoom);
+  });
+
+  function zoomBy(delta: number) {
+    // Inner clamp normalizes an out-of-range stored value before stepping.
+    settingsStore.update({ uiZoom: clampZoom(clampZoom(settingsStore.settings.uiZoom) + delta) });
+  }
+
+  // Ctrl+wheel zoom (and trackpad pinch, which Chromium reports as ctrl+wheel).
+  // Manual listener: window wheel handlers are passive by default, and we must
+  // preventDefault so the page doesn't scroll while zooming.
+  $effect(() => {
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey || e.altKey) return;
+      if ((e.target as Element | null)?.closest?.("[data-zoom-exempt]")) return; // graph zooms itself
+      e.preventDefault();
+      if (e.deltaY !== 0) zoomBy(e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP);
+    };
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+  });
+
   function handleKeydown(e: KeyboardEvent) {
+    const zoomAction = zoomKeyAction(e);
+    if (zoomAction) {
+      e.preventDefault();
+      if (zoomAction === "in") zoomBy(ZOOM_STEP);
+      else if (zoomAction === "out") zoomBy(-ZOOM_STEP);
+      else settingsStore.update({ uiZoom: 1 });
+    }
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "F") {
       e.preventDefault();
       searchOpen = !searchOpen;
@@ -113,6 +147,7 @@
 <CommandPalette open={paletteOpen} onclose={() => (paletteOpen = false)} onsearch={() => { paletteOpen = false; searchOpen = true; }} ongraph={() => { paletteOpen = false; graphOpen = true; }} onsettings={() => { paletteOpen = false; settingsOpen = true; }} />
 <SettingsPanel open={settingsOpen} onclose={() => (settingsOpen = false)} />
 <DialogHost />
+<ZoomIndicator />
 
 {#if graphOpen}
   <GraphView onclose={() => (graphOpen = false)} />
