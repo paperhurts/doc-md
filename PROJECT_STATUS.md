@@ -1,7 +1,7 @@
 # Project Status
 
-**Last updated**: 2026-08-11
-**Release**: v0.2.0 (user-tested and approved; see CHANGELOG.md)
+**Last updated**: 2026-08-12
+**Release**: v0.3.0 tagged (release workflow running as of this update — first tag build with whisper.cpp + xcap; draft release needs review + Publish when it finishes; downloads page then updates itself)
 
 ## Current State
 Phases 1-9 complete; Phase 10 (Plugin System) not started. v0.2.0 shipped the July 2026 wave (user-tested 2026-07-18):
@@ -109,9 +109,20 @@ Four rounds of user desktop testing of #47/#48. **User confirmed all tests pass 
 - Round 4 (#49 root-caused — it was NOT the stale installed build): Editor-creation $effect tracked `livePreview` → every view-mode switch rebuilt CM from file-open-time content = silent edit loss (untrack fix + component regression test). Live preview: images render (ImageWidget + resolveImage), empty `- [ ]` tasks get checkboxes, prose font, hidden fences + shaded code blocks, focus-aware reveal (unfocused = fully rendered), frontmatter as dimmed metadata. New palette command "Transcribe in this note" (enableTranscription adds frontmatter to any note). README view-mode/toolbar docs fixed
 - Tests: 107 vitest + 29 cargo green. `/attachments/` + `/daily/` gitignored (repo doubles as user vault)
 
+## Recent Work (2026-08-12, icon + zoom + follow + release session)
+All user-tested on desktop, merged to main via PRs #60/#61/#62/#63:
+- #54 app icon: MD monogram w/ cyan down-arrow D-stem; vector master `src-tauri/app-icon.svg` (user-refined in Illustrator); full icon set regenerated; RELEASING.md documents SVG as source of truth
+- #56 UI zoom: Ctrl+Scroll / Ctrl+= / Ctrl+- / Ctrl+0 + Settings → Display slider (50–200%), persisted `uiZoom`; native WebView2 setZoom (capability `core:webview:allow-set-webview-zoom`), CSS `--ui-zoom` fallback in browser mode; ZoomIndicator badge; graph exempt via `data-zoom-exempt`; sticky/capture windows deliberately 100% (crop math)
+- #59 transcript follow: pins to bottom on pure appends at doc end during a session (direct scrollTop pin — CM scrollIntoView undershoots on estimated line heights, do NOT revert to it); upward-scroll-only break detection; "⤓ Scroll to end" resumes; `{#key file.path}` on TranscriptionBar fixed mid-session retargeting bug
+- Stickies keep their pop-out theme — accidental behavior promoted to documented feature (screenshot: tasks/.user-screenshots/thisisafeaturenotabug.png); restart persistence is #58
+- #55 release v0.3.0: versions bumped, CHANGELOG written, local Windows bundles verified (MSI+NSIS, ~8MB with whisper), tag pushed
+- Tests: 132 vitest + 29 cargo
+- New backlog: #57 per-theme font scale (`--theme-font-scale` mechanism sketched in issue), #58 per-sticky theme persistence
+
 ## Open Issues
 - #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
 - #43 — Code signing + notarization for release builds (workflow wired; awaiting Azure/Apple credentials, see docs/SIGNING.md)
 - #46 — Accessibility audit of the app (screen reader support)
-- #54 — New app icon (user candidates in `tasks/.user-logo-options/`, gitignored) — NEXT
-- #55 — Release v0.3.0 after the icon lands
+- #55 — Release v0.3.0 (tag pushed; close after draft release is published)
+- #57 — Per-theme default font scale (user wants to hand-tune values)
+- #58 — Make per-sticky themes restart-proof
