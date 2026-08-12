@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { minimalChange } from "./diff";
+import { minimalChange, isPureAppend } from "./diff";
 
 function apply(text: string, c: { from: number; to: number; insert: string }): string {
   return text.slice(0, c.from) + c.insert + text.slice(c.to);
@@ -42,5 +42,33 @@ describe("minimalChange", () => {
     expect(c.from).toBe(5);
     expect(c.insert).toBe("other");
     expect(apply("keep MIDDLE keep", c)).toBe("keep other keep");
+  });
+});
+
+describe("isPureAppend", () => {
+  const doc = "## Transcript\n- [00:00:01] [audio] hello\n";
+
+  it("recognizes a transcript-line append", () => {
+    const c = minimalChange(doc, doc + "- [00:00:05] [me] hi\n")!;
+    expect(isPureAppend(c, doc.length)).toBe(true);
+  });
+
+  it("rejects an insert in the middle", () => {
+    const c = minimalChange(doc, doc.replace("hello", "hello there"))!;
+    expect(isPureAppend(c, doc.length)).toBe(false);
+  });
+
+  it("rejects a replacement (tab-switch shape)", () => {
+    const c = minimalChange(doc, "# A completely different note\n")!;
+    expect(isPureAppend(c, doc.length)).toBe(false);
+  });
+
+  it("rejects a deletion at the end", () => {
+    const c = minimalChange(doc, doc.slice(0, -10))!;
+    expect(isPureAppend(c, doc.length)).toBe(false);
+  });
+
+  it("rejects an empty insert", () => {
+    expect(isPureAppend({ from: 5, to: 5, insert: "" }, 5)).toBe(false);
   });
 });

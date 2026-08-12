@@ -6,6 +6,8 @@
  */
 class EditorBridge {
   insertAtCursor = $state<((text: string) => boolean) | null>(null);
+  /** Scroll the editor to the end of the document (transcription follow mode). */
+  scrollToEnd = $state<(() => boolean) | null>(null);
 }
 
 export const editorBridge = new EditorBridge();
