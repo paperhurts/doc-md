@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.3.0 — 2026-08-12
+
+### Features
+- **Screenshot capture** (#47) — press Ctrl+Shift+S anywhere (even with doc-md in the tray, OneNote-style): the screen freezes, drag a region, and the shot lands in `attachments/` with a link inserted at the cursor — or appended to today's daily note when no note is open. Hotkey rebindable in Settings with conflict detection.
+- **Transcription notes** (#48) — a note with `transcription: true` frontmatter (or Ctrl+K → "Transcribe in this note") gets a recorder bar: listens to your mic (`[me]`) and/or system audio (`[audio]`) and appends timestamped transcript lines, transcribed **locally** by Whisper — audio never leaves your machine. In-app model download with progress; live partial line while speech is in flight.
+- **Transcript follow mode** (#59) — the editor follows new transcript lines terminal-style: scroll up to read back and it stops tracking; **⤓ Scroll to end** in the bar catches back up.
+- **UI zoom** (#56) — browser-style whole-app zoom: Ctrl+MouseWheel, Ctrl+= / Ctrl+- / Ctrl+0, or a Settings → Display slider (50–200%). Persisted; native WebView2 zoom so text stays crisp; sticky and capture windows deliberately stay at 100%.
+- **New app icon** (#54) — "MD" monogram whose D-stem is a cyan down-arrow; vector master in `src-tauri/app-icon.svg`.
+- **Per-sticky themes** — sticky notes keep the theme that was active when popped out; switch themes between pop-outs for a color-coded desktop (now documented as a feature; restart persistence tracked in #58).
+- Live-preview upgrades (#49–#51 rounds): images render inline, empty `- [ ]` tasks get checkboxes, prose font with shaded code blocks and hidden fences, frontmatter as dimmed metadata, whole-note render when the editor is unfocused. Subfolder "New note" context-menu action.
+
+### Fixes
+- **View-mode switch silently lost unsaved edits** (#49) — the editor rebuilt itself from file-open-time content on every MD/Split/Preview switch; fixed with a regression test.
+- External changes (watcher refreshes, transcript lines) now apply as a minimal span diff: cursor, scroll, and dirty state survive; the save/watcher echo loop is gone.
+- Screenshot capture into a vault without an `attachments/` folder no longer fails path validation (also closed a Windows vault-escape hole); capture failures surface as in-app alerts; overlay shows only after the frozen frame is painted.
+- FS watcher ignores `.git`/`node_modules`/`target`/dot-dirs — the repo-as-vault no longer floods the app with refreshes.
+- Switching to a different transcription note mid-session now stops the session instead of silently recording into the newly opened note.
+
+### Infrastructure
+- Whisper toolchain in CI/release (CMake + libclang); `transcription` is a default-on cargo feature with mobile/feature-off stubs.
+- Linux builds gained xcap/pipewire link deps (`libpipewire-0.3-dev`, `libgbm-dev`, `libegl1-mesa-dev`, `libwayland-dev`).
+- Test suite: 132 Vitest + 29 cargo tests.
+
 ## v0.2.0 — 2026-07-18
 
 ### Features
