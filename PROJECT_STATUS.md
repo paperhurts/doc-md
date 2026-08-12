@@ -40,7 +40,7 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
 - **Daily notes**: Ctrl+D opens today's note (daily/YYYY-MM-DD.md), auto-creates with template
 - **Templates**: `_templates/` folder, template variables ({{date}}, {{title}}, {{time}}), new from template
 - **Command palette**: Ctrl+K, fuzzy search commands/files/templates, keyboard navigation
-- **Themes**: 5 selectable themes (Midnight, Dark TM, Editorial, Cyberpunk, Studio), persisted to localStorage
+- **Themes**: 7 selectable themes (Midnight, Dark TM, Editorial, Cyberpunk, Studio, All-American, Hot Dog Stand), persisted to localStorage; stickies keep their pop-out theme
 - **Settings**: Ctrl+, settings panel — font sizes, tab size, auto-save delay, folder config, keyboard reference
 - **Formatting toolbar**: Floating toolbar on text selection — bold, italic, strike, code, heading, link, wikilink, bullet, checkbox, blockquote + keyboard shortcuts
 
