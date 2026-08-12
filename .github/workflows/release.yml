@@ -21,14 +21,17 @@ jobs:
             args: ""
           - platform: macos-latest
             args: "--target universal-apple-darwin"
-          - platform: ubuntu-22.04
+          # 24.04, not 22.04: xcap's pipewire bindings (libspa) need a newer
+          # libpipewire than 22.04 ships (v0.3.0 release lesson). Trade-off:
+          # Linux artifacts require glibc >= 2.39 (distros from ~2024).
+          - platform: ubuntu-24.04
             args: ""
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Install system dependencies (Linux)
-        if: matrix.platform == 'ubuntu-22.04'
+        if: matrix.platform == 'ubuntu-24.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev libpipewire-0.3-dev libgbm-dev libegl1-mesa-dev libwayland-dev
@@ -110,6 +113,10 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # whisper.cpp's ggml uses std::filesystem (macOS 10.15+); Tauri also
+          # derives this from bundle.macOS.minimumSystemVersion — set both so
+          # the cmake build and the .app metadata can't drift apart.
+          MACOSX_DEPLOYMENT_TARGET: "10.15"
           # Windows signing (trusted-signing-cli reads these; empty = unused)
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
