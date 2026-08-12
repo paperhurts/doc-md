@@ -245,6 +245,7 @@
   <div
     bind:this={container}
     class="flex-1 overflow-hidden"
+    data-zoom-exempt
   >
     {#if graphError}
       <div class="flex h-full items-center justify-center">

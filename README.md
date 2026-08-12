@@ -27,6 +27,7 @@ Notes are stored as **plain markdown files** on disk. No proprietary formats, no
 - **Templates** — `_templates/` folder with variable substitution (`{{date}}`, `{{title}}`, `{{time}}`)
 - **Formatting toolbar** — Select text to get a floating toolbar: Bold, Italic, Strike, Code, Heading, Link, Wikilink, Bullet, Checkbox, Blockquote
 - **Command palette** — Ctrl+K for quick access to all commands, file search, and template picker
+- **UI zoom** — Browser-style whole-app zoom with Ctrl+Scroll or Ctrl+= / Ctrl+- / Ctrl+0 (50–200%, persisted, also a Settings slider) — handy when a theme's font runs small on your monitor
 - **Auto-save** — 1-second debounced auto-save with Ctrl+S manual save
 - **Frontmatter** — YAML frontmatter parsing for tags and metadata
 - **Dark theme** — Catppuccin Mocha color scheme
@@ -124,6 +125,8 @@ doc-md/
 | Ctrl+Shift+W | Wrap in wikilink |
 | Ctrl+Click | Navigate to `[[wikilink]]` target in editor |
 | Ctrl+Shift+E | Cycle view mode (MD source → Split → Preview-edit) |
+| Ctrl+= / Ctrl+- | Zoom the UI in / out (also Ctrl+Scroll; browser-style, persisted) |
+| Ctrl+0 | Reset UI zoom to 100% |
 | Escape | Close modals, cancel rename |
 
 ## Writing Notes

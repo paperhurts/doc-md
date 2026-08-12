@@ -340,6 +340,14 @@ body,
   overflow: hidden;
 }
 
+/* Browser/dev-mode UI-zoom fallback. In the Tauri app zoom is native WebView2
+   (services/zoom.ts) and --ui-zoom is never set, so this rule stays inert —
+   likewise in the sticky/capture windows, which must remain at 100%. */
+#app {
+  zoom: var(--ui-zoom, 1);
+  height: calc(100% / var(--ui-zoom, 1));
+}
+
 body {
   font-family: var(--font-ui);
   background-color: var(--bg-primary);
