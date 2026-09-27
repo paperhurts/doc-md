@@ -16,7 +16,7 @@ cargo build              # Rust backend only (from src-tauri/)
 ```
 
 ### Port
-Vite dev server runs on port **5420** (configured in `vite.config.ts`). If you get "port in use" errors, kill stale node processes:
+Vite dev server runs on port **5420** (configured in `vite.config.ts`). With `TAURI_DEV_HOST` set (mobile/remote dev), the HMR websocket is on **5422**. `vite preview` is on **4420**. All three are strict, so a busy port is an error rather than a silent hop. They're doc-md's block in the machine port registry (`%APPDATA%\server-start\config.toml`). If you get "port in use" errors, kill stale node processes:
 ```bash
 # PowerShell
 Get-NetTCPConnection -LocalPort 5420 | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force }
