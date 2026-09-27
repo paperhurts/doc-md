@@ -4,6 +4,8 @@
 **Release**: v0.3.0 **PUBLISHED** 2026-08-12 (7 artifacts, all platforms, unsigned — #43 on hold). Took 3 tag attempts; release CI hardened: ubuntu-24.04 runner (libspa needs newer pipewire than 22.04; Linux artifacts need glibc ≥ 2.39), macOS 10.15 deployment target (whisper std::filesystem), Apple signing env gated on non-empty credentials (empty GitHub secret = empty env var = tauri-cli tries to sign). Windows attempt-1 failure was only a transient WiX download.
 
 ## Current State
+- **Ports (#80, 2026-09-27):** HMR websocket moved off Tauri's default 1421 to **5422**; `vite preview` pinned to **4420** (strictPort). With dev on 5420, doc-md stays in its 5420 block of the machine port registry (`%APPDATA%\server-start\config.toml`).
+
 Phases 1-9 complete; Phase 10 (Plugin System) not started. v0.2.0 shipped the July 2026 wave (user-tested 2026-07-18):
 - Preview-edit view mode (#36) — CM6 live preview, 3 view modes, Ctrl+Shift+E
 - Clipboard image paste (#39) — attachments/ + asset-protocol rendering (security-hardened)
