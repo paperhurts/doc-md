@@ -9,7 +9,7 @@ Status: **planned** (2026-09-27). Epic #71. Milestones: M1 foundation #72 · M2 
 |---|---|---|
 | Platform | **iOS first**, Android next | Sid's phone is an iPhone; Apple Developer Program is already active (EAS builds for Reader) |
 | Framework | **Tauri 2 iOS**, same Svelte frontend | Editor, parser, index, search, kanban, and themes are reused as-is. An Expo/React Native app would rewrite all of it and still run CodeMirror in a WebView |
-| Build | **GitHub Actions macOS runner → TestFlight** | No Mac needed. EAS can't build Tauri apps |
+| Build | **GitHub Actions macOS runner → TestFlight** for everyday installs; **Sid's M1 MacBook Air (2020)** for the dev loop | CI builds don't need the Mac to be on. The Mac gives live reload on the phone plus Safari Web Inspector. EAS can't build Tauri apps |
 | Sync | **Private GitHub repo**, via the GitHub API (this is #21) | Free, full history, same code on every platform, no git binary on the phone |
 | MVP must-haves | Quick notes, checklists, pins, labels, **share into doc-md**, **photos from camera** | Sid's answers 2026-09-27 |
 | Post-MVP | Home-screen widget, reminders, Android | "Nice to have, not MVP" |
@@ -18,7 +18,7 @@ Status: **planned** (2026-09-27). Epic #71. Milestones: M1 foundation #72 · M2 
 ### What Tauri costs us vs. Expo (accepted tradeoffs)
 - No EAS-style credential management or OTA updates: signing lives in GitHub secrets, and every change ships as a new TestFlight build.
 - Native extras (Share Extension, widget) mean hand-editing the generated Xcode project (`gen/apple/project.yml`) and writing small Swift targets. Expo has config plugins for these; Tauri does not.
-- Without a Mac there is no Safari Web Inspector for the iOS WebView. Mitigation: build and verify UI in browser mock mode at phone size (Playwright screenshots), and add an in-app debug log in Settings.
+- The cloud Claude session can't reach Sid's Mac. On-device checks happen when Sid pulls a branch and runs `tauri ios dev` there. For native-heavy work (M1 init, M6 share extension), a local Claude Code session on the Mac can drive Xcode and the simulator directly. UI is still built and verified in browser mock mode first (Playwright screenshots at phone size), and Settings gets an in-app debug log for TestFlight builds.
 
 ## Architecture
 
@@ -74,25 +74,25 @@ Files stay the only source of truth (docs/COLLABORATION.md). Sync is just moving
 **When it runs:** on app foreground, about 20 s after the last save (debounced), on pull-to-refresh or **Sync now**, and on desktop also on window focus and every few minutes.
 **Ignored:** dot-files and dot-dirs (`.git`, `.doc-md`, `.obsidian`), `node_modules`, `target` (same rules as the file tree), and files over 50 MB.
 **First connect:** an empty repo gets the vault pushed. An empty vault pulls everything. If both have content, the union is merged and conflicts become conflict copies, so nothing is overwritten.
-**Notes repo:** a dedicated private repo (e.g. `paperhurts/notes`), not the doc-md code repo. Don't also commit to the synced folder by hand with local git. Cloning the repo elsewhere to browse history is fine.
+**Notes repo:** `paperhurts/dm-notes` (private), not the doc-md code repo, which is public. Don't also commit to the synced folder by hand with local git. Cloning the repo elsewhere to browse history is fine.
 
 ## Mobile shell, Keep-style (#73)
 
 **Home**
 - A search bar at the top (tap to open search), with a label-chip row under it (labels = `#tags`).
-- **Pinned** section, then **Others**, each in a 2-column masonry grid sorted by last edited.
-- Card: title, a light rendered preview (about 8 lines; checklist items show ☐/☑, up to 6), the first image as a thumbnail, tag chips, and a color tint if the note has `color:`.
-- Tap opens the note. Long-press opens a sheet: Pin/Unpin · Archive · Color · Labels · Delete (in-app confirm dialog, never native `confirm()`, see tasks/lessons.md).
+- **Pinned** section, then **Others**, each in a 2-column masonry grid sorted by last edited. The grid shows **every note in the vault**, not just quick notes (Sid, 2026-09-27).
+- Card: title, a light rendered preview (about 8 lines; checklist items show ☐/☑, up to 6), the first image as a thumbnail, and tag chips. There are no per-note colors; the theme sets the look.
+- Tap opens the note. Long-press opens a sheet: Pin/Unpin · Archive · Labels · Delete (in-app confirm dialog, never native `confirm()`, see tasks/lessons.md).
 - Bottom bar: "Take a note…" · new checklist · photo, plus a floating **+** button.
 - The drawer has Notes · Archive · Labels · Folders (the full vault tree) · Settings.
 
 **Note screen**
-- Back (saves) · pin toggle · overflow menu (color, labels, archive, delete).
+- Back (saves) · pin toggle · overflow menu (labels, archive, delete).
 - A title field (blank means the file is named by timestamp, see below), then the **CodeMirror live-preview editor** already built for desktop, including tappable checkboxes and markdown list continuation on Enter.
 - A **keyboard toolbar** stays above the iOS keyboard (via `visualViewport`) with: ☐ checklist · • bullet · H · B · I · `[[` · `#` · 📷 photo · undo/redo.
 - An "Edited 3:42 PM" footer.
 
-**Note metadata is frontmatter:** `pinned: true`, `archived: true`, `color: teal`. State changes never move files, so wikilinks and sync stay stable, and desktop can read all of it.
+**Note metadata is frontmatter:** `pinned: true`, `archived: true`. State changes never move files, so wikilinks and sync stay stable, and desktop can read all of it.
 **Where quick notes go:** `inbox/` by default (configurable in Settings). The title field sets the filename. Untitled notes are named `YYYY-MM-DD HHmm.md` and the card shows their first line.
 **Safe areas:** `viewport-fit=cover` and `env(safe-area-inset-*)`. All 7 themes work, Hot Dog Stand included.
 **Deferred on mobile:** graph view, stickies, screenshot capture, transcription, and kanban drag-and-drop (HTML5 DnD doesn't work with touch). Boards open as markdown until a touch interaction exists.
@@ -107,7 +107,8 @@ A one-time desktop job: pick the unzipped `Takeout/Keep/` folder. Sync then carr
 | `textContent` | body |
 | `listContent[{text, isChecked}]` | `- [ ] text` / `- [x] text` |
 | `labels[{name}]` | frontmatter `tags:` |
-| `isPinned`, `isArchived`, `color` | frontmatter `pinned`, `archived`, `color` (DEFAULT is omitted) |
+| `isPinned`, `isArchived` | frontmatter `pinned`, `archived` |
+| `color` | ignored (doc-md uses themes, not per-note colors) |
 | `isTrashed` | skipped (counted in the report) |
 | `attachments[{filePath, mimetype}]` | copied to `attachments/keep/`, embedded `![](…)`; audio is linked |
 | `annotations[{title, url}]` | a `Links` list at the end |
@@ -129,7 +130,7 @@ The 📷 button uses `<input type="file" accept="image/*">`, which on iOS offers
 
 ## Build & distribution, iOS (#72)
 
-- All `tauri ios` commands run only on macOS hosts. A manually triggered workflow (`ios-init`) runs `tauri ios init --ci` on a macOS runner and pushes the generated `gen/apple` to a branch for review. From then on it's committed like any source.
+- All `tauri ios` commands run only on macOS hosts. **`gen/apple` is generated once on Sid's Mac** (`npm run tauri ios init`), after the M1 branch has `tauri.ios.conf.json`, because init reads the identifier. From then on it's committed like any source.
 - `ios.yml` runs on manual trigger and on version tags, on a macOS runner:
   1. `rustup target add aarch64-apple-ios`, then `npm ci`.
   2. `npm run tauri ios build -- --export-method app-store-connect --build-number <run number>`, which writes `src-tauri/gen/apple/build/arm64/doc-md.ipa`.
@@ -137,7 +138,19 @@ The 📷 button uses `<input type="file" accept="image/*">`, which on iOS offers
 - **Signing is automatic**, driven by the App Store Connect API key. Tauri reads `APPLE_API_ISSUER`, `APPLE_API_KEY` (key ID), `APPLE_API_KEY_PATH` (.p8 path, required on iOS) and `APPLE_DEVELOPMENT_TEAM`. Tauri's docs call for an **Admin** key for automatic signing, because it creates provisioning profiles, including the Share Extension's later. Manual signing (`IOS_CERTIFICATE`, `IOS_CERTIFICATE_PASSWORD`, `IOS_MOBILE_PROVISION`) is the fallback.
 - **Sid's one-time setup:** create the App Store Connect app record for `com.paperhurts.docmd`, create an Admin App Store Connect API key (or check whether Reader's EAS key has Admin), add GitHub secrets `APPLE_API_ISSUER`, `APPLE_API_KEY_ID`, `APPLE_API_KEY_P8` (base64 of the .p8) and `APPLE_DEVELOPMENT_TEAM`, and add herself as an internal TestFlight tester.
 - **TestFlight builds expire after 90 days**, so the plan is a rebuild at least every ~80 days, even without changes.
-- **Loop without a Mac:** push, CI builds (roughly 15–25 min), TestFlight processes it, then install on the phone. Test rounds are batched, and most UI work is verified in mock mode first.
+- **Dev loop (Mac):**
+  1. Pull the branch.
+  2. Run `npm run tauri ios dev` and pick the iPhone (cable or same Wi-Fi) or a simulator. Vite already honors `TAURI_DEV_HOST` for on-device live reload (vite.config.ts).
+  3. Debug in Safari → Develop → <iPhone> → doc-md for the Web Inspector.
+- **Everyday installs:** CI → TestFlight, so the phone app doesn't depend on the Mac being on.
+- **Mac setup (one time):**
+  - Xcode from the App Store: open it once, accept the license, add the iOS platform. Xcode plus a simulator needs roughly 30 GB free.
+  - Sign in to the Apple ID in Xcode → Settings → Accounts.
+  - Homebrew + `brew install cocoapods`.
+  - Rust via rustup, then `rustup target add aarch64-apple-ios aarch64-apple-ios-sim`.
+  - Node 18+, clone doc-md, `npm ci`.
+  - iPhone: Settings → Privacy & Security → Developer Mode on, and Settings → Safari → Advanced → Web Inspector on.
+  - Mac Safari: Settings → Advanced → "Show features for web developers".
 
 ## Post-MVP
 
@@ -146,9 +159,9 @@ The 📷 button uses `<input type="file" accept="image/*">`, which on iOS offers
 - **Android** (#79): `gen/android`, APK built in CI, signed with a self-generated keystore, installed by sideload plus Obtainium for updates. Share-into becomes an intent filter. The vault stays in app-private storage because sync makes shared-storage permissions unnecessary.
 - **macOS desktop signing (#43):** the Apple Developer membership also covers Developer ID signing and notarization for the desktop .dmg, so that half of #43 is unblocked.
 
-## Open questions (for Sid)
+## Resolved questions (Sid, 2026-09-27)
 
-1. **Home grid scope:** show every note (the plan's default: recency-sorted, pinned first, filter by label/folder), or only `inbox/` + `keep/`?
-2. **Notes repo name:** the default is `paperhurts/notes` (private). It must be separate from the doc-md repo, which is public.
-3. **Any Mac available, even an old one?** A Mac would allow `tauri ios dev` with live reload and Safari Web Inspector, instead of about 30-minute CI + TestFlight rounds.
-4. **Keep colors:** import preserves them either way. Should cards be tinted by color, or is that noise?
+1. **Home grid scope:** every note in the vault (recency-sorted, pinned first, filterable by label/folder).
+2. **Notes repo:** `paperhurts/dm-notes`, private.
+3. **Mac:** a 2020 MacBook Air (M1) is available. It's used for the dev loop and to generate `gen/apple`; CI still produces the TestFlight builds.
+4. **Keep colors:** dropped entirely (no card tints, no color menu, the importer ignores `color`). Themes cover the look.

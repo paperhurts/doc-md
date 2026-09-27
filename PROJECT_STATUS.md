@@ -138,7 +138,12 @@ Sid wants doc-md on her iPhone to **retire Google Keep**. Planning only; no code
   - All `tauri ios` commands are macOS-only; the default minimum iOS is 15.0.
 - Issues filed: epic #71, M1 #72, M2 #73, M3 #21 (rewritten), M4 #74, M5 #75, M6 #76, post-MVP #77 widget / #78 reminders / #79 Android. PLAN.md Phase 13 has the dependency graph.
 - #43: the macOS half (Developer ID + notarization) is unblocked by the Apple membership (commented).
-- **Waiting on Sid:** review the plan; answer the open questions in #73 (home-grid scope) and docs/MOBILE.md (notes repo name, Mac access); do the M1 Apple setup (App Store Connect app record, Admin API key, 4 GitHub secrets).
+- Sid's answers (same day):
+  - The home grid shows **all notes**.
+  - The notes repo is **`paperhurts/dm-notes`** (private).
+  - A **2020 M1 MacBook Air** is available. It's the dev loop (`tauri ios dev`, Safari Web Inspector) and generates `gen/apple`, so the planned `ios-init` CI workflow was dropped.
+  - **No Keep colors** (themes cover it).
+- **Waiting on Sid:** review/approve the plan (PR #81); M1 Apple setup (App Store Connect app record, Admin API key, 4 GitHub secrets); Mac toolchain setup (checklist in #72); create `paperhurts/dm-notes`.
 
 ## Open Issues
 - #21 — M3: Vault sync via private GitHub repo (GitHub API sync engine; design in docs/MOBILE.md)

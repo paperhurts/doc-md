@@ -187,10 +187,10 @@ doc-md/
 34. Attribution via git history
 
 ### Phase 13: Mobile — iOS first, replace Google Keep (#71) — PLANNED 2026-09-27
-Design + rationale: `docs/MOBILE.md`. Tauri 2 iOS reusing the Svelte frontend; CI-built on macOS runners, shipped via TestFlight (no Mac needed).
+Design + rationale: `docs/MOBILE.md`. Tauri 2 iOS reusing the Svelte frontend; CI-built on macOS runners and shipped via TestFlight; dev loop (`tauri ios dev` + Safari Web Inspector) on Sid's M1 MacBook Air. Notes sync to the private `paperhurts/dm-notes` repo.
 
 **MVP**
-35. M1 iOS foundation (#72): cfg(desktop) gating, app-sandbox vault, `tauri.ios.conf.json` (`com.paperhurts.docmd`), `ios-init` + `ios.yml` TestFlight pipeline — tracer bullet, first
+35. M1 iOS foundation (#72): cfg(desktop) gating, app-sandbox vault, `tauri.ios.conf.json` (`com.paperhurts.docmd`), `gen/apple` generated on Sid's M1 MacBook Air, `ios.yml` TestFlight pipeline — tracer bullet, first
 36. M2 Mobile shell (#73): Keep-style home grid, full-screen live-preview editor, keyboard toolbar — built in browser mock mode, parallel with 35
 37. M3 Sync via private GitHub repo (#21): TS 3-way sync core + Rust keychain/HTTP transport — core parallel with 35–36; on-device test needs 35
 38. M4 Google Keep import from Takeout (#74): pure-TS converter, desktop command — independent; reaches the phone via 37

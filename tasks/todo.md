@@ -11,12 +11,14 @@ Done this session (planning only, no code):
 
 Waiting on Sid:
 - Review the plan (docs PR)
-- Open questions:
-  - home grid shows every note, or only inbox/ + keep/? (#73)
-  - notes repo name (default `paperhurts/notes`, private)
-  - is any Mac available, even an old one? (faster iOS dev loop)
+- Open questions: ANSWERED 2026-09-27
+  - all notes on the home grid
+  - notes repo `paperhurts/dm-notes`
+  - 2020 M1 MacBook Air available (dev loop + gen/apple)
+  - no Keep colors
+- Mac toolchain setup (#72 checklist): Xcode, cocoapods, rustup iOS targets, Node, iPhone Developer Mode + Web Inspector
 - M1 Apple setup (#72 checklist): App Store Connect app record for com.paperhurts.docmd, Admin API key, GitHub secrets APPLE_API_ISSUER / APPLE_API_KEY_ID / APPLE_API_KEY_P8 / APPLE_DEVELOPMENT_TEAM
 
 Next session:
-- Start M1 (#72) Rust/frontend gating + CI workflows
+- Start M1 (#72): Rust/frontend gating + tauri.ios.conf.json + ios.yml; then Sid runs `tauri ios init` on the Mac and commits gen/apple
 - Start M2 (#73) in mock mode at the same time
