@@ -143,7 +143,8 @@ Sid wants doc-md on her iPhone to **retire Google Keep**. Planning only; no code
   - The notes repo is **`paperhurts/dm-notes`** (private).
   - A **2020 M1 MacBook Air** is available. It's the dev loop (`tauri ios dev`, Safari Web Inspector) and generates `gen/apple`, so the planned `ios-init` CI workflow was dropped.
   - **No Keep colors** (themes cover it).
-- **Waiting on Sid:** review/approve the plan (PR #81); M1 Apple setup (App Store Connect app record, Admin API key, 4 GitHub secrets); Mac toolchain setup (checklist in #72); create `paperhurts/dm-notes`.
+- **Plan approved by Sid 2026-09-27** (PR #81). M1 is native bring-up (`tauri ios init`/`dev`, Xcode, the iPhone), so it runs best in a **local Claude Code session on the Mac** (Claude Desktop app, or `claude remote-control` in the repo folder so it can be driven from the Claude app). Pure-TS work (M2 UI in mock mode, M3 sync core, M4 importer) can run anywhere.
+- **Waiting on Sid:** M1 Apple setup (App Store Connect app record, Admin API key, 4 GitHub secrets); Mac toolchain setup (checklist in #72); create `paperhurts/dm-notes`.
 
 ## Open Issues
 - #21 — M3: Vault sync via private GitHub repo (GitHub API sync engine; design in docs/MOBILE.md)

@@ -10,7 +10,7 @@ Done this session (planning only, no code):
 - [x] PLAN.md Phase 13 + dependency graph; PROJECT_STATUS.md updated
 
 Waiting on Sid:
-- Review the plan (docs PR)
+- ~~Review the plan (docs PR)~~ APPROVED 2026-09-27
 - Open questions: ANSWERED 2026-09-27
   - all notes on the home grid
   - notes repo `paperhurts/dm-notes`
@@ -19,6 +19,6 @@ Waiting on Sid:
 - Mac toolchain setup (#72 checklist): Xcode, cocoapods, rustup iOS targets, Node, iPhone Developer Mode + Web Inspector
 - M1 Apple setup (#72 checklist): App Store Connect app record for com.paperhurts.docmd, Admin API key, GitHub secrets APPLE_API_ISSUER / APPLE_API_KEY_ID / APPLE_API_KEY_P8 / APPLE_DEVELOPMENT_TEAM
 
-Next session:
+Next session (M1 on the Mac: local Claude Code session in the doc-md clone; `brew install gh && gh auth login` for the session protocol):
 - Start M1 (#72): Rust/frontend gating + tauri.ios.conf.json + ios.yml; then Sid runs `tauri ios init` on the Mac and commits gen/apple
 - Start M2 (#73) in mock mode at the same time
