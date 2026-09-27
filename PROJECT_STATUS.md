@@ -6,6 +6,8 @@
 ## Current State
 - **Ports (#80, 2026-09-27):** HMR websocket moved off Tauri's default 1421 to **5422**; `vite preview` pinned to **4420** (strictPort). With dev on 5420, doc-md stays in its 5420 block of the machine port registry (`%APPDATA%\server-start\config.toml`).
 
+**Next up: Phase 13 (mobile, #71). M1 (#72) runs on Sid's Mac. See "Recent Work (2026-09-27)" below.**
+
 Phases 1-9 complete; Phase 10 (Plugin System) not started. v0.2.0 shipped the July 2026 wave (user-tested 2026-07-18):
 - Preview-edit view mode (#36) — CM6 live preview, 3 view modes, Ctrl+Shift+E
 - Clipboard image paste (#39) — attachments/ + asset-protocol rendering (security-hardened)
@@ -128,7 +130,7 @@ Sid wants doc-md on her iPhone to **retire Google Keep**. Planning only; no code
 - Decisions:
   - **iOS first** (Apple Developer Program now active; she uses EAS builds for Reader), Android next.
   - **Tauri 2 iOS** reusing the Svelte frontend, not Expo.
-  - Builds on a **GitHub Actions macOS runner, shipped via TestFlight**. No Mac needed.
+  - Builds on a **GitHub Actions macOS runner, shipped via TestFlight**, for everyday installs. The dev loop runs on Sid's Mac (see her answers below).
   - **Sync = private GitHub repo via the GitHub API** (#21 re-scoped as M3).
   - MVP must-haves: quick notes, checklists, pins, labels, **share-into**, **camera photos**. Post-MVP: widget, reminders.
   - **Keep Takeout import**: yes.
@@ -146,7 +148,17 @@ Sid wants doc-md on her iPhone to **retire Google Keep**. Planning only; no code
   - A **2020 M1 MacBook Air** is available. It's the dev loop (`tauri ios dev`, Safari Web Inspector) and generates `gen/apple`, so the planned `ios-init` CI workflow was dropped.
   - **No Keep colors** (themes cover it).
 - **Plan approved by Sid 2026-09-27** (PR #81). M1 is native bring-up (`tauri ios init`/`dev`, Xcode, the iPhone), so it runs best in a **local Claude Code session on the Mac** (Claude Desktop app, or `claude remote-control` in the repo folder so it can be driven from the Claude app). Pure-TS work (M2 UI in mock mode, M3 sync core, M4 importer) can run anywhere.
-- **Waiting on Sid:** M1 Apple setup (App Store Connect app record, Admin API key, 4 GitHub secrets); Mac toolchain setup (checklist in #72); create `paperhurts/dm-notes`.
+- **Merged to main:**
+  - PR #81: the mobile plan (docs/MOBILE.md, PLAN.md Phase 13, status).
+  - PR #82: the #80 ports change (HMR 5422, preview 4420) from Sid's server-start session. #80 closed.
+- #72 now lists #80 as a prerequisite (done). On-device `tauri ios dev` loads from the Mac on 5420 with HMR on 5422, so node has to be allowed through the macOS firewall on first run. The Mac isn't in the Windows server-start port registry, so the Mac session checks that 5420/5422 are free first.
+- Plan page for Sid (private claude.ai artifact) mirrors docs/MOBILE.md. The repo docs remain the source of truth.
+- **Session closed 2026-09-27.** No issues completed; this was planning only.
+- **Next: M1 (#72) in a local Claude Code session on Sid's Mac.** The session reads this file, then works #72 on an `issue-72-…` branch. Order: Rust/frontend gating + `tauri.ios.conf.json` + `Info.ios.plist` + `ios.yml` → Sid runs `npm run tauri ios init` → commit `gen/apple` → `tauri ios dev` on the iPhone → first TestFlight build.
+- **Waiting on Sid:**
+  - M1 Apple setup (App Store Connect app record for `com.paperhurts.docmd`, Admin API key, 4 GitHub secrets)
+  - Mac toolchain (#72 checklist, including `brew install gh` + `gh auth login`)
+  - Create the private repo `paperhurts/dm-notes` (needed by M3)
 
 ## Open Issues
 - #21 — M3: Vault sync via private GitHub repo (GitHub API sync engine; design in docs/MOBILE.md)
