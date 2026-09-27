@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated**: 2026-08-12
+**Last updated**: 2026-09-27
 **Release**: v0.3.0 **PUBLISHED** 2026-08-12 (7 artifacts, all platforms, unsigned — #43 on hold). Took 3 tag attempts; release CI hardened: ubuntu-24.04 runner (libspa needs newer pipewire than 22.04; Linux artifacts need glibc ≥ 2.39), macOS 10.15 deployment target (whisper std::filesystem), Apple signing env gated on non-empty credentials (empty GitHub secret = empty env var = tauri-cli tries to sign). Windows attempt-1 failure was only a transient WiX download.
 
 ## Current State
@@ -27,6 +27,7 @@ Test infrastructure added (#35): Vitest (59 TS tests) + cargo tests (7), browser
 | 8. Command Palette | **COMPLETE** | — |
 | 9. Polish | **COMPLETE** | — |
 | 10. Plugin System | **NOT STARTED** | — |
+| 13. Mobile (iOS first) | **PLANNED** | M1–M6 MVP, see #71 + docs/MOBILE.md |
 
 ## What's been built
 - **File management**: Open vault, file tree with icons, create/rename/delete notes, FS watcher for live external changes
@@ -120,10 +121,35 @@ All user-tested on desktop, merged to main via PRs #60/#61/#62/#63:
 - New backlog: #57 per-theme font scale (`--theme-font-scale` mechanism sketched in issue), #58 per-sticky theme persistence
 - #69 downloads-page refresh (evening): capture/paste + transcription feature bubbles with mock-mode screenshots (site/assets/capture.jpg, transcription.jpg), version-agnostic install text, honest unsigned-release note, hero/meta updated
 
+## Recent Work (2026-09-27, mobile planning session)
+Sid wants doc-md on her iPhone to **retire Google Keep**. Planning only; no code yet.
+- Decisions:
+  - **iOS first** (Apple Developer Program now active; she uses EAS builds for Reader), Android next.
+  - **Tauri 2 iOS** reusing the Svelte frontend, not Expo.
+  - Builds on a **GitHub Actions macOS runner, shipped via TestFlight**. No Mac needed.
+  - **Sync = private GitHub repo via the GitHub API** (#21 re-scoped as M3).
+  - MVP must-haves: quick notes, checklists, pins, labels, **share-into**, **camera photos**. Post-MVP: widget, reminders.
+  - **Keep Takeout import**: yes.
+- Design spec: `docs/MOBILE.md`. It covers the sync algorithm (git-blob-SHA 3-way diff, conflict copies, token kept in the OS keychain and never exposed to JS), the Keep-style shell, the Takeout mapping, the share extension, and the CI/signing setup.
+- Tauri iOS facts checked against the v2 docs:
+  - Automatic signing via App Store Connect API key (Admin) + `APPLE_API_ISSUER` / `APPLE_API_KEY` / `APPLE_API_KEY_PATH` / `APPLE_DEVELOPMENT_TEAM`.
+  - `tauri.ios.conf.json` merge patch; `src-tauri/Info.ios.plist` auto-merged.
+  - Entitlements only via `gen/apple`, which is therefore committed.
+  - All `tauri ios` commands are macOS-only; the default minimum iOS is 15.0.
+- Issues filed: epic #71, M1 #72, M2 #73, M3 #21 (rewritten), M4 #74, M5 #75, M6 #76, post-MVP #77 widget / #78 reminders / #79 Android. PLAN.md Phase 13 has the dependency graph.
+- #43: the macOS half (Developer ID + notarization) is unblocked by the Apple membership (commented).
+- Sid's answers (same day):
+  - The home grid shows **all notes**.
+  - The notes repo is **`paperhurts/dm-notes`** (private).
+  - A **2020 M1 MacBook Air** is available. It's the dev loop (`tauri ios dev`, Safari Web Inspector) and generates `gen/apple`, so the planned `ios-init` CI workflow was dropped.
+  - **No Keep colors** (themes cover it).
+- **Plan approved by Sid 2026-09-27** (PR #81). M1 is native bring-up (`tauri ios init`/`dev`, Xcode, the iPhone), so it runs best in a **local Claude Code session on the Mac** (Claude Desktop app, or `claude remote-control` in the repo folder so it can be driven from the Claude app). Pure-TS work (M2 UI in mock mode, M3 sync core, M4 importer) can run anywhere.
+- **Waiting on Sid:** M1 Apple setup (App Store Connect app record, Admin API key, 4 GitHub secrets); Mac toolchain setup (checklist in #72); create `paperhurts/dm-notes`.
+
 ## Open Issues
-- #21 — Cloud sync via Git/GitHub (future feature; data model prepared, see docs/COLLABORATION.md)
+- #21 — M3: Vault sync via private GitHub repo (GitHub API sync engine; design in docs/MOBILE.md)
 - #43 — Code signing + notarization for release builds (workflow wired; awaiting Azure/Apple credentials, see docs/SIGNING.md)
 - #46 — Accessibility audit of the app (screen reader support)
-- #55 — Release v0.3.0 (tag pushed; close after draft release is published)
 - #57 — Per-theme default font scale (user wants to hand-tune values)
 - #58 — Make per-sticky themes restart-proof
+- #71 — Epic: Mobile app (iOS first) to replace Google Keep. Sub-issues: #72 M1 foundation, #73 M2 shell, #21 M3 sync, #74 M4 Keep import, #75 M5 photos, #76 M6 share extension, #77 widget, #78 reminders, #79 Android
